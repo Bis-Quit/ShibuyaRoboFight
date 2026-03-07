@@ -73,20 +73,17 @@ public class Dice : MonoBehaviour
 
         if (isLocked)
         {
-            originalPosition = transform.position;
-            transform.position = originalPosition + new Vector3(0,lockHeightOffset, 0);
-
-            transform.localScale = originalScale * lockMultiplier;
-
             Debug.Log($"<color=yellow>{gameObject.name} di-LOCK!</color>");
-        }
-        else
-        {
-            transform.position = originalPosition;
-            transform.localScale = originalScale;
 
-            Debug.Log($"<color=white>{gameObject.name} di-UNLOCK!</color>");
+            DiceUIManager uIManager = FindFirstObjectByType<DiceUIManager>();
+
+            if (uIManager != null)
+            {
+                uIManager.AddLockedDiceUI((int)CurrentFace);
+            }
         }
+
+        Destroy (gameObject);
     }
 
     private void DetermineTopFace()

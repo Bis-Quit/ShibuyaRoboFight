@@ -14,7 +14,6 @@ public class DiceManager : MonoBehaviour
     public int numberOfDice = 6;
 
     private List<Dice> activeDice = new List<Dice>();
-
     private bool isCheckingRollStatus = false;
 
     public static event Action OnAllDiceStopped;
@@ -53,19 +52,22 @@ public class DiceManager : MonoBehaviour
 
     private void SpawnDice()
     {
-        Debug.Log("DiceManager: Memunculkan 6 dadu di udara Shibuya...");
+        Debug.Log($"DiceManager: Memunculkan {numberOfDice} dadu di udara Shibuya...");
 
         for(int i = 0; i < numberOfDice; i++)
         {
-            Vector3 randomOffset = Random.insideUnitSphere * 1.5f;
-            randomOffset.y = 0;
+            Vector3 randomOffset = Random.insideUnitSphere * 2f;
+            randomOffset.y = MathF.Abs(randomOffset.y);
 
             Vector3 finalSpawnPos = spawnPoint.position + randomOffset;
 
             GameObject newDiceObj = Instantiate(dicePrefab, finalSpawnPos, Random.rotation);
-            Dice diceScript = newDiceObj.GetComponent<Dice>();
 
-            activeDice.Add(diceScript);
+            Dice diceScript = newDiceObj.GetComponent<Dice>();
+            if (diceScript != null)
+            {
+                activeDice.Add(diceScript);
+            }
         }
     }
 
@@ -83,44 +85,23 @@ public class DiceManager : MonoBehaviour
 
     private void Update()
     {
-        Vector3 interactionPosition = Vector3.zero;
-        bool isInteracting = false;
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            interactionPosition = Input.mousePosition;
-            isInteracting = true;
-        }
-        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-        {
-            interactionPosition = Input.GetTouch(0).position;
-            isInteracting = true;
-        }
-
-        if (isInteracting)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(interactionPosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                Dice clickedDice = hit.collider.GetComponent<Dice>();
-                if (clickedDice != null)
-                {
-                    clickedDice.ToggleLock();
-                }
-            }
-        }
-
         if (isCheckingRollStatus)
         {
             bool allStopped = true;
 
-            foreach (Dice dice in activeDice)
+            for (int i = activeDice.Count - 1; i >= 0; i--)
             {
+                Dice dice = activeDice[i];
+
+                if (dice == null)
+                {
+                    activeDice.RemoveAt(i);
+                    continue;
+                }
+
                 if (dice.isRolling)
                 {
                     allStopped = false;
-                    break;
                 }
             }
 
@@ -132,5 +113,10 @@ public class DiceManager : MonoBehaviour
                 OnAllDiceStopped?.Invoke();
             }
         }
+    }
+
+    public void ClearActiveDice()
+    {
+        activeDice.Clear();
     }
 }
