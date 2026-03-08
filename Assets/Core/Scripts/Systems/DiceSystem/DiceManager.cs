@@ -15,6 +15,10 @@ public class DiceManager : MonoBehaviour
     private List<Dice> activeDice = new List<Dice>();
     private List<Dice> lockedDice = new List<Dice>();
 
+    [Header("Robot Reference")]
+    public RobotStats playerStats;
+    public RobotStats enemyStats;
+
     [Header("Roll Setting")]
     public int maxRolls = 3;
     public int currentRollCount = 0;
@@ -181,26 +185,31 @@ public class DiceManager : MonoBehaviour
         if (diceCounts[DiceFace.Heal] > 0)
         {
             int count = diceCounts[DiceFace.Heal];
-            Debug.Log($"[2] HEAL: Player dipulihkan sebanyak {count} HP.");
+            Debug.Log($"[2] HEAL: Player dipulihkan sebanyak {count * 2} HP.");
+
+            if (playerStats != null) playerStats.Heal(count * 2);
         }
 
         if (diceCounts[DiceFace.Smash] > 0)
         {
             int count = diceCounts[DiceFace.Smash];
             Debug.Log($"[3] ATTACK: Menyerang musuh dengan {count} Damage!");
+
+            if (enemyStats != null) enemyStats.TakeDamage(count);
         }
 
         if (diceCounts[DiceFace.Energy] > 0)
         {
             int count = diceCounts[DiceFace.Energy];
             Debug.Log($"[4] ENERGY: Menambah {count} Ability Point ke Player.");
+
+            if (playerStats != null) playerStats.AddEnergy(count);
         }
 
         int destructCount = diceCounts[DiceFace.Destruction];
         if (destructCount > 0)
         {
             int destructPoints = 0;
-
             if (destructCount >= 3)
             {
                 destructPoints += 1;
@@ -222,15 +231,11 @@ public class DiceManager : MonoBehaviour
         if (fameCount > 0)
         {
             int famePoints = 0;
-
             if (fameCount >= 3)
             {
                 famePoints += 1;
 
-                if (fameCount % 3 > 0)
-                {
-                    famePoints += (fameCount % 3);
-                }
+                if (fameCount % 3 > 0)  famePoints += (fameCount % 3);
 
                 Debug.Log($"[6] FAME: KOMBO AKTIF! Menarik Fame Token sebanyak {famePoints} poin.");
             }

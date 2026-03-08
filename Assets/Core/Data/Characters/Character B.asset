@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f5c2beac793943d1bfd2eabaa9f6bb8, type: 3}
+  m_Name: Character B
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterID: C002
+  characterName: Character B
+  maxHealth: 14
+  startingEnergy: 0
+  activeDicePool: 6
+  lockedDicePool: 0
+  powerCardSlot: 0
+  specialSkillDescription: Add Ability Point for x Skill Point * x Ability Point
+    from Dice Roll
+  skillType: 1
