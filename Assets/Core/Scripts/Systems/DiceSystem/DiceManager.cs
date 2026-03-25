@@ -237,6 +237,8 @@ public class DiceManager : MonoBehaviour
                 }
 
                 Debug.Log($"[5] DESTRUCT: KOMBO AKTIF! Menarik Destruct Token sebanyak {destructPoints} poin.");
+
+                TugOfWarManager.Instance.MoveDestruction(destructPoints, TurnManager.Instance.CurrentPlayerIndex);
             }
             else
             {
@@ -255,6 +257,8 @@ public class DiceManager : MonoBehaviour
                 if (fameCount % 3 > 0)  famePoints += (fameCount % 3);
 
                 Debug.Log($"[6] FAME: KOMBO AKTIF! Menarik Fame Token sebanyak {famePoints} poin.");
+
+                TugOfWarManager.Instance.MoveFame(famePoints, TurnManager.Instance.CurrentPlayerIndex);
             }
             else
             {
