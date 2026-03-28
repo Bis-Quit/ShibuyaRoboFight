@@ -15,21 +15,21 @@ public class MainMenuManager : MonoBehaviour
     {
         Debug.Log("Memuat Scene Gameplay...");
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(gameplaySceneName);
+        SceneManager.LoadScene(gameplaySceneName);
     }
 
     public void Onclick_HowToPlay()
     {
         Debug.Log("Memuat Scene How To Play...");
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(howtoplaySceneName);
+        SceneManager.LoadScene(howtoplaySceneName);
     }
 
     public void Onclick_Credits()
     {
         Debug.Log("Memuat Scene Credits...");
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(creditsSceneName);
+        SceneManager.LoadScene(creditsSceneName);
     }
 
     public void Onclick_Exit()
@@ -46,20 +46,20 @@ public class MainMenuManager : MonoBehaviour
     {
         Debug.Log("Memuat Scene Materi...");
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(materiSceneName);
+        SceneManager.LoadScene(materiSceneName);
     }
 
     public void Onclick_Kuis()
     {
         Debug.Log("Memuat Scene Kuis...");
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(kuisSceneName);
+        SceneManager.LoadScene(kuisSceneName);
     }
 
     public void Onclick_MainMenu()
     {
         Debug.Log("Memuat Scebe Main Menu...");
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(mainmenuSceneName);
+        SceneManager.LoadScene(mainmenuSceneName);
     }
 }

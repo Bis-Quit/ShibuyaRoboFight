@@ -79,8 +79,16 @@ public class TugOfWarManager : MonoBehaviour
     public void CheckWinCondition(int index, int trackLength, string trackType)
     {
         if (index == 0)
-        Debug.Log($"<color=green> Player 0 menarik full jalur {trackType.ToUpper()}! </color>");
+        {
+            Debug.Log($"<color=green> Player 0 menarik full jalur {trackType.ToUpper()}! </color>");
+
+            GameOverManager.Instance.TriggerGameOver(true, "PLAYER ROBO");
+        }
         else if (index == trackLength - 1)
-        Debug.Log($"<color=green> Player 1 menarik full jalur {trackType.ToUpper()}! </color>");
+        {
+            Debug.Log($"<color=green> Player 1 menarik full jalur {trackType.ToUpper()}! </color>");
+
+            GameOverManager.Instance.TriggerGameOver(false, "ENEMY ROBO");
+        }
     }
 }
