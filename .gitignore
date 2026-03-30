@@ -73,6 +73,9 @@ mono_crash.*
 *.unitypackage.meta
 *.app
 
+# Ignore large package files
+*.tgz
+
 # Crashlytics generated file
 crashlytics-build.properties
 
