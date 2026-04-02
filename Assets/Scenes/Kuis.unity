@@ -1374,6 +1374,7 @@ MonoBehaviour:
   creditsSceneName: Credits
   materiSceneName: Materi
   kuisSceneName: Kuis
+  kuisArSatu: AR(Testing)
 --- !u!4 &335932136
 Transform:
   m_ObjectHideFlags: 0
@@ -5702,7 +5703,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1483375879}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 335932135}
+        m_TargetAssemblyTypeName: MainMenuManager, Assembly-CSharp
+        m_MethodName: Onclick_ArSatu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1483375879
 MonoBehaviour:
   m_ObjectHideFlags: 0

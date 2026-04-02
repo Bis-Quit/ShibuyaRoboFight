@@ -10,12 +10,20 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private string creditsSceneName = "Credits";
     [SerializeField] private string materiSceneName =  "Materi";
     [SerializeField] private string kuisSceneName = "Kuis";
+    [SerializeField] private string kuisArSatu = "AR(Testing)";
 
     public void Onclick_PlayGame()
     {
         Debug.Log("Memuat Scene Gameplay...");
 
         SceneManager.LoadScene(gameplaySceneName);
+    }
+
+    public void Onclick_ArSatu()
+    {
+        Debug.Log("Memuat Scene ArSatu...");
+
+        SceneManager.LoadScene(kuisArSatu);
     }
 
     public void Onclick_HowToPlay()
