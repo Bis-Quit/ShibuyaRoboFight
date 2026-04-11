@@ -10,7 +10,7 @@ public class CardData : ScriptableObject
 
     [TextArea(2, 4)]
     [SerializeField] private string description;
-    [SerializeField] private Sprite cardIllustration;
+    public Sprite cardIllustration;
 
     [Header("Attribute")]
     [SerializeField] private int abilityPointCost;
