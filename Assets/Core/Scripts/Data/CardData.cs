@@ -6,7 +6,7 @@ public class CardData : ScriptableObject
 {
     [Header("Card Idetity")]
     [SerializeField] private string cardID;
-    [SerializeField] private string cardName;
+    public string cardName;
 
     [TextArea(2, 4)]
     [SerializeField] private string description;
