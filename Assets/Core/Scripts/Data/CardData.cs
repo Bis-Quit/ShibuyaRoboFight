@@ -13,7 +13,7 @@ public class CardData : ScriptableObject
     public Sprite cardIllustration;
 
     [Header("Attribute")]
-    [SerializeField] private int abilityPointCost;
+    public int abilityPointCost;
     [SerializeField] private CardCategory cardCategory;
 
     [Header("Buzz Tile System")]

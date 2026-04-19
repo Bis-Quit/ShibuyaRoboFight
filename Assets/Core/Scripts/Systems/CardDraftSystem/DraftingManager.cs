@@ -14,6 +14,9 @@ public class DraftingManager : MonoBehaviour
     [Header("Animation Settings")]
     [SerializeField] private float slideSpeed = 8f;
 
+    [Header("Player References")]
+    public RobotStats playerStats;
+
     // State management
     private List<CardData> currentCardPool = new List<CardData>();
     private GameObject[] activeCardsOnBoard = new GameObject[3];
@@ -76,6 +79,14 @@ public class DraftingManager : MonoBehaviour
 
     IEnumerator DraftingSequence(int slotIndex, GameObject cardObject, CardData data)
     {
+        isDrafting = true;
+
+        if (!playerStats.SpendEnergy(data.abilityPointCost))
+        {
+            isDrafting = false;
+            yield break;
+        }
+
         FindFirstObjectByType<PlayerHand>().AddCard(data);
         Destroy(cardObject);
         activeCardsOnBoard[slotIndex] = null;

@@ -66,4 +66,20 @@ public class RobotStats : MonoBehaviour
     {
         Debug.Log($"[{baseData.characterName}] HANCUR BERANTAKAN!");
     }
+
+    public bool SpendEnergy(int costAmount)
+    {
+        if (currentEnergy >= costAmount)
+        {
+            Debug.Log($"[{baseData.characterName}] Berhasil beli kartu seharga {costAmount} Energy! Sisa Energy: {currentEnergy}");
+
+            OnEnergyChanged?.Invoke(currentEnergy);
+            return true;
+        }
+        else
+        {
+            Debug.Log($"[{baseData.characterName}] Transaksi Gagal! Energy {currentEnergy} tidak cukup untuk beli kartu seharga {costAmount} Energy!");
+        }
+        return false;
+    }
 }
