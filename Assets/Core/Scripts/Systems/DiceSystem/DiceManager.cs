@@ -68,6 +68,8 @@ public class DiceManager : MonoBehaviour
 
             GameObject newDiceObj = Instantiate(dicePrefab, finalSpawnPos, Random.rotation);
 
+            newDiceObj.name = "Dadu_" + (i+1);
+
             Dice diceScript = newDiceObj.GetComponent<Dice>();
             if (diceScript != null)
             {
