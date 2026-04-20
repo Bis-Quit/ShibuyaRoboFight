@@ -46,6 +46,11 @@ public class DiceUIManager : MonoBehaviour
 
         btn.onClick.AddListener(() =>
         {
+            if (TurnManager.Instance.CurrentPlayerIndex != 0)
+            {
+                return;
+            }
+
             DiceManager.Instance.UnlockDice(diceRef);
             Destroy(newDiceUI);
         });

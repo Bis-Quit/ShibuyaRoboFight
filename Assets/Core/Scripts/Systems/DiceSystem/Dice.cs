@@ -154,6 +154,12 @@ public class Dice : MonoBehaviour
     {
         if (isRolling) return;
 
+        if (TurnManager.Instance.CurrentPlayerIndex != 0)
+        {
+            Debug.Log($"<color=red>Hanya pemain utama yang bisa mengunci dadu!</color>");
+            return;
+        }
+
         DiceManager.Instance.LockDice(this);
     }
 
