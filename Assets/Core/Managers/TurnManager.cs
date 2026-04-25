@@ -9,11 +9,11 @@ public class TurnManager : MonoBehaviour
     public enum TurnPhase
     {
         TurnStart,
-        CardDrifting,
         FirstRoll,
         RerollPhase,
         Resolution,
         TugOfWarUpdate,
+        CardDrafting,
         TurnEnd
     }
 
@@ -33,14 +33,14 @@ public class TurnManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    private void OnEnable() //Start()
+    private void OnEnable()
     {
         GameManager.OnGameStateChanged += HandleGameStateChanged;
 
         DiceManager.OnAllDiceStopped += HandleAllDiceStopped;
     }
 
-    private void OnDisable() //OnDestroy()
+    private void OnDisable()
     {
         GameManager.OnGameStateChanged -= HandleGameStateChanged;
 
@@ -83,8 +83,8 @@ public class TurnManager : MonoBehaviour
             case TurnPhase.TurnStart:
                 HandleTurnStart();
                 break;
-            case TurnPhase.CardDrifting:
-                HandleCardDrifting();
+            case TurnPhase.CardDrafting:
+                HandleCardDrafting();
                 break;
             case TurnPhase.FirstRoll:
                 HandleFirstRoll();
@@ -95,26 +95,16 @@ public class TurnManager : MonoBehaviour
             case TurnPhase.Resolution:
                 HandleResolution();
                 break;
-            case TurnPhase.TugOfWarUpdate:
-                HandleTugOfWarUpdate();
-                break;
             case TurnPhase.TurnEnd:
                 HandleTurnEnd();
                 break;
         }
     }
 
-    private void  HandleTurnStart()
+    private void HandleTurnStart()
     {
         Debug.Log($"Giliran Pemain {CurrentPlayerIndex} Dimulai");
         currentRerollCount = 0;
-
-        ChangePhase(TurnPhase.CardDrifting);
-    }
-
-    private void HandleCardDrifting()
-    {
-        Debug.Log("Fase Drafting: Menunggu pemain memilih kartu dari Open Market...");
 
         ChangePhase(TurnPhase.FirstRoll);
     }
@@ -129,37 +119,28 @@ public class TurnManager : MonoBehaviour
         Debug.Log($"Fase Reroll ({currentRerollCount}/{MAX_REROLLS}): Menunggu pemain nge-lock dadu...");
     }
 
-    public void ProcessedToResolution()
+public void ProcessedToResolution()
     {
         ChangePhase(TurnPhase.Resolution);
     }
 
     private void HandleResolution()
     {
-        Debug.Log("Fase Resolution: Menghitung icon dadu...");
-
-        DiceManager.Instance.EndTurnAndResolve();
-
-        StartCoroutine(ResolutionDelayRoutine());        
+        Debug.Log("<color=cyan>Fase Resolution: ResolutionManager mengambil alih! Sutradara istirahat bentar.</color>");
     }
 
-    private IEnumerator ResolutionDelayRoutine()
+    public void ProcessedToDrafting()
     {
-        yield return new WaitForSeconds(2f);
-
-        ChangePhase(TurnPhase.TugOfWarUpdate);
+        ChangePhase(TurnPhase.CardDrafting);
     }
 
-    private void HandleTugOfWarUpdate()
+    private void HandleCardDrafting()
     {
-        Debug.Log("Fase Tug Of War: ");
-
-        StartCoroutine(TugOfWarDelayRoutine());
+        Debug.Log("Fase Card Drafting: Menunggu pemain memilih kartu dari Open Market...");
     }
 
-    private IEnumerator TugOfWarDelayRoutine()
+    public void ProcessedToTurnEnd()
     {
-        yield return new WaitForSeconds(1.5f);
         ChangePhase(TurnPhase.TurnEnd);
     }
 
@@ -173,13 +154,11 @@ public class TurnManager : MonoBehaviour
         OnPlayerTurnChanged?.Invoke(CurrentPlayerIndex);
 
         StartCoroutine(EndTurnDelayRoutine());
-
     }
 
     private IEnumerator EndTurnDelayRoutine()
     {
         yield return new WaitForSeconds(2f);
-
         ChangePhase(TurnPhase.TurnStart);
     }
 

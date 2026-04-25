@@ -11,6 +11,7 @@ public class RobotUI : MonoBehaviour
     public TextMeshProUGUI nameText;
     public Slider hpSlider;
     public TextMeshProUGUI energyText;
+    public TextMeshProUGUI skillPowerText;
 
     private void OnEnable()
     {
@@ -18,6 +19,7 @@ public class RobotUI : MonoBehaviour
         {
             targetRobot.OnHPChanged += UpdateHPBar;
             targetRobot.OnEnergyChanged += UpdateEnergyText;
+            targetRobot.OnSkillPowerChanged += UpdateSkillPowerText;
         }
     }
 
@@ -27,6 +29,7 @@ public class RobotUI : MonoBehaviour
         {
             targetRobot.OnHPChanged -= UpdateHPBar;
             targetRobot.OnEnergyChanged -= UpdateEnergyText;
+            targetRobot.OnSkillPowerChanged -= UpdateSkillPowerText;
         }
     }
 
@@ -50,5 +53,13 @@ public class RobotUI : MonoBehaviour
     private void UpdateEnergyText(int currentEnergy)
     {
         if (energyText != null) energyText.text = currentEnergy.ToString();
+    }
+
+    private void UpdateSkillPowerText(int currentSkillPower)
+    {
+        if (skillPowerText != null)
+        {
+            skillPowerText.text = currentSkillPower.ToString();
+        }
     }
 }

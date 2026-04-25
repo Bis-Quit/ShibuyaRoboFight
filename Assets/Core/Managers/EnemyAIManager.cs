@@ -34,6 +34,10 @@ public class EnemyAIManager : MonoBehaviour
             {
                 StartCoroutine(ThinkAndReRollRoutine());
             }
+            else if (phase == TurnManager.TurnPhase.CardDrafting)
+            {
+                StartCoroutine(SkipDraftingRoutine());
+            }
         }
     }
 
@@ -98,6 +102,13 @@ public class EnemyAIManager : MonoBehaviour
                 keepThinking = false;
             }
         }
+    }
+
+    private IEnumerator SkipDraftingRoutine()
+    {
+        Debug.Log("<color=magenta>EnemyAIManager: Enemy memutuskan untuk Skip beli kartu!</color>");
+        yield return new WaitForSeconds(1.5f);
+        TurnManager.Instance.ProcessedToTurnEnd();
     }
 
     private bool AllDiceStopped()

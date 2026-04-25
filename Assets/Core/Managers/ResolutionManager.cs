@@ -1,0 +1,170 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ResolutionManager : MonoBehaviour
+{
+    [Header("Robot References")]
+    public RobotStats playerStats;
+    public RobotStats enemyStats;
+
+    private void OnEnable()
+    {
+        TurnManager.OnPhaseChanged += HandlePhaseChange;
+    }
+
+    private void OnDisable ()
+    {
+        TurnManager.OnPhaseChanged -= HandlePhaseChange;
+    }
+
+    private void HandlePhaseChange(TurnManager.TurnPhase phase)
+    {
+        if (phase == TurnManager.TurnPhase.Resolution)
+        {
+            StartCoroutine(ResolveDiceRoutine());
+        }
+    }
+
+    private IEnumerator ResolveDiceRoutine()
+    {
+        yield return new WaitForSeconds(1f);
+
+        List<Dice> finalDicePool = new List<Dice>();
+        finalDicePool.AddRange(DiceManager.Instance.activeDice);
+        finalDicePool.AddRange(DiceManager.Instance.lockedDice);
+
+        if (finalDicePool.Count == 0)
+        {
+            Debug.Log("<color=yellow>ResolutionManager: Tidak ada dadu untuk di-resolve!</color>");
+            TurnManager.Instance.ProcessedToDrafting();
+            yield break;
+        }
+
+        Debug.Log($"<color=magenta>--- MEMULAI RESOLVE PHASE ({finalDicePool.Count} Dadu) ---</color>");
+
+        RobotStats currentAttacker;
+        RobotStats currentDefender;
+
+        if (TurnManager.Instance.CurrentPlayerIndex == 0)
+        {
+            currentAttacker = playerStats;
+            currentDefender = enemyStats;
+        }
+        else
+        {
+            currentAttacker = enemyStats;
+            currentDefender = playerStats;
+        }
+
+        Dictionary<DiceFace, int> diceCounts = new Dictionary<DiceFace, int>();
+        foreach (DiceFace face in Enum.GetValues(typeof(DiceFace)))
+        {
+            diceCounts[face] = 0;
+        }
+
+        foreach (Dice dice in finalDicePool)
+        {
+            if (dice != null)
+            {
+                diceCounts[dice.CurrentFace]++;
+            }
+        }
+
+        // -- SMASH --
+        if (diceCounts[DiceFace.Smash] > 0)
+        {
+            int count = diceCounts[DiceFace.Smash];
+            Debug.Log($"[3] ATTACK: Menyerang musuh dengan {count} Damage!");
+            if (currentDefender != null) currentDefender.TakeDamage(count);
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // -- HEAL --
+        if (diceCounts[DiceFace.Heal] > 0)
+        {
+            int count = diceCounts[DiceFace.Heal];
+            Debug.Log($"[2] HEAL: Player dipulihkan sebanyak {count * 2} HP.");
+            if (currentAttacker != null) currentAttacker.Heal(count * 2);
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // -- ENERGY --
+        if (diceCounts[DiceFace.Energy] > 0)
+        {
+            int count = diceCounts[DiceFace.Energy];
+            Debug.Log($"[4] ENERGY: Menambah {count} Energy!");
+            if (currentAttacker != null) currentAttacker.AddEnergy(count);
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        // -- DESTRUCTION --
+        int destructCount = diceCounts[DiceFace.Destruction];
+        if (destructCount > 0)
+        {
+            int destructPoints = 0;
+            if (destructCount >= 3)
+            {
+                destructPoints += 1;
+                if (destructCount % 3 > 0) destructPoints += (destructCount %3);
+
+                Debug.Log($"[5] DESTRUCT: KOMBO AKTIF! Menarik Destruct Token sebanyak {destructPoints} poin.");
+                TugOfWarManager.Instance.MoveDestruction(destructPoints, TurnManager.Instance.CurrentPlayerIndex);
+                yield return new WaitForSeconds(0.5f);
+            }
+            else
+            {
+                Debug.Log($"[5] DESTRUCT: Gagal kombo. (Dapat {destructCount} dadu, butuh minimal 3).");
+            }
+        }
+
+        // -- FAME --
+        int fameCount = diceCounts[DiceFace.Fame];
+        if (fameCount > 0)
+        {
+            int famePoints = 0;
+            if (fameCount >= 3)
+            {
+                famePoints += 1;
+                if (fameCount % 3 > 0) famePoints += (fameCount % 3);
+
+                Debug.Log($"[6] FAME: KOMBO AKTIF! Menarik Fame Token sebanyak {famePoints} poin.");
+                TugOfWarManager.Instance.MoveFame(famePoints, TurnManager.Instance.CurrentPlayerIndex);
+                yield return new WaitForSeconds(0.5f);
+            }
+            else
+            {
+                Debug.Log($"[6] FAME: Gagal kombo. (Dapat {fameCount} dadu, butuh minimal 3).");
+            }
+        }
+
+        // -- SPECIAL POWER --
+        int skillCount = diceCounts[DiceFace.SpecialPower];
+        int energyCount = diceCounts[DiceFace.Energy];
+
+        if (skillCount > 0)
+        {
+            currentAttacker.AddSkillPower(skillCount);
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        if (currentAttacker.currentSkillPower > 0 || energyCount > 0)
+        {
+            currentAttacker.CheckAndExecuteSkill(energyCount, currentDefender);
+            Debug.Log($"[1] SPECIAL SKILL: Cek aktivasi Ultimate Character...");
+            yield return new WaitForSeconds(1f);
+        }
+
+        // // -- SPECIAL POWER --
+        // if (diceCounts[DiceFace.SpecialPower] > 0 ||  diceCounts[DiceFace.Energy] > 0)
+        // {
+        //     int skillCount = diceCounts[DiceFace.SpecialPower];
+        //     Debug.Log($"[1] SPECIAL SKILL: Menambah {skillCount} Skill Point. Menunggu cek aktivasi...");
+        //     currentAttacker.ExecuteSpecialSkill(diceCounts[DiceFace.SpecialPower], diceCounts[DiceFace.Energy], currentDefender);
+        //     yield return new WaitForSeconds(1f);
+        // }
+
+        TurnManager.Instance.ProcessedToDrafting();
+    }
+}

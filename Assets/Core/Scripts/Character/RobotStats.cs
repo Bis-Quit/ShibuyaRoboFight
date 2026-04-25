@@ -13,6 +13,10 @@ public class RobotStats : MonoBehaviour
 
     public event Action<int, int> OnHPChanged;
     public event Action<int> OnEnergyChanged;
+    public event Action<int> OnSkillPowerChanged;
+
+    [Header("Skill System")]
+    public int currentSkillPower = 0;
 
     private void Start()
     {
@@ -20,11 +24,13 @@ public class RobotStats : MonoBehaviour
         {
             currentHP = baseData.maxHealth;
             currentEnergy = baseData.startingEnergy;
+            currentSkillPower = 0;
 
             Debug.Log($"<color=cyan>[{gameObject}] {baseData.characterName} siap bertempur! HP: {currentHP}, Energy {currentEnergy}</color>");
 
             OnHPChanged?.Invoke(currentHP, baseData.maxHealth);
             OnEnergyChanged?.Invoke(currentEnergy);
+            OnSkillPowerChanged?.Invoke(currentSkillPower);
         }
         else
         {
@@ -71,6 +77,8 @@ public class RobotStats : MonoBehaviour
     {
         if (currentEnergy >= costAmount)
         {
+            currentEnergy -= costAmount;
+
             Debug.Log($"[{baseData.characterName}] Berhasil beli kartu seharga {costAmount} Energy! Sisa Energy: {currentEnergy}");
 
             OnEnergyChanged?.Invoke(currentEnergy);
@@ -82,4 +90,107 @@ public class RobotStats : MonoBehaviour
         }
         return false;
     }
+
+    public void AddSkillPower(int amount)
+    {
+        if (amount <= 0) return;
+
+        currentSkillPower += amount;
+        Debug.Log($"[{baseData.characterName}] Mendapat {amount} Skill Point! Total Skill Power: {currentSkillPower}");
+
+        OnSkillPowerChanged?.Invoke(currentSkillPower);
+    }
+
+    public void CheckAndExecuteSkill(int energyDiceRolled, RobotStats targetRobot)
+    {
+        switch (baseData.skillType)
+        {
+            case SpecialSkillType.CharacterA_PullTokens:
+                if (currentSkillPower >= 3)
+                {
+                    TugOfWarManager.Instance.MoveFame(1, TurnManager.Instance.CurrentPlayerIndex);
+                    TugOfWarManager.Instance.MoveDestruction(1, TurnManager.Instance.CurrentPlayerIndex);
+                    Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Fame +1, Destruction +1!</color>");
+
+                    currentSkillPower -= 3;
+                    OnSkillPowerChanged?.Invoke(currentSkillPower);
+                }
+            break;
+
+            case SpecialSkillType.CharacterB_MultiplyEnergy:
+            if (currentSkillPower > 0 && energyDiceRolled > 0)
+            {
+                int bonusEnergy = currentSkillPower *energyDiceRolled;
+                AddEnergy(bonusEnergy);
+                Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Bonus Energy +{bonusEnergy}!</color>");
+
+                currentSkillPower = 0;
+                OnSkillPowerChanged?.Invoke(currentSkillPower);
+            }
+            break;
+
+            case SpecialSkillType.CharacterC_ExtraDamage:
+                if (currentSkillPower >= 2)
+                {
+                    targetRobot.TakeDamage(3);
+                    Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Serangan spesial! Target kena 3 damage!</color>");
+
+                    currentSkillPower -= 2;
+                    OnSkillPowerChanged?.Invoke(currentSkillPower);
+                }
+            break;
+
+            case SpecialSkillType.CharacterD_ExtraDice:
+                if (currentSkillPower >= 3)
+                {
+                    /*DiceManager.Instance.ExtractDice(1);*/
+                    Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Extract Dadu untuk gilingan berikutnya!</color>");
+
+                    currentSkillPower -= 3;
+                    OnSkillPowerChanged?.Invoke(currentSkillPower);
+                }
+            break;
+        }
+
+    }
+
+    // public void ExecuteSpecialSkill(int skillDiceRolled, int energyDiceRolled, RobotStats targetRobot)
+    // {
+    //     switch (baseData.skillType)
+    //     {
+    //         case SpecialSkillType.CharacterA_PullTokens:
+    //             if (skillDiceRolled >= 3)
+    //             {
+    //                 TugOfWarManager.Instance.MoveFame(1, TurnManager.Instance.CurrentPlayerIndex);
+    //                 TugOfWarManager.Instance.MoveDestruction(1, TurnManager.Instance.CurrentPlayerIndex);
+    //                 Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Fame +1, Destruction +1!</color>");
+    //             }
+    //         break;
+
+    //         case SpecialSkillType.CharacterB_MultiplyEnergy:
+    //             if (skillDiceRolled > 0 && energyDiceRolled > 0)
+    //             {
+    //                 int bonusEnergy = skillDiceRolled * energyDiceRolled;
+    //                 AddEnergy(bonusEnergy);
+    //                 Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Bonus Energy +{bonusEnergy}!</color>");
+    //             }
+    //         break;
+
+    //         case SpecialSkillType.CharacterC_ExtraDamage:
+    //             if (skillDiceRolled >= 2)
+    //             {
+    //                 targetRobot.TakeDamage(3);
+    //                 Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Serangan spesial! Target kena 3 damage!</color>");
+    //             } 
+    //         break;
+
+    //         case SpecialSkillType.CharacterD_ExtraDice:
+    //             if (skillDiceRolled >= 3)
+    //             {
+    //                 /*DiceManager.Instance.ExtractDice(1);*/
+    //                 Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Extract Dadu untuk gilingan berikutnya!</color>");
+    //             }
+    //         break;
+    //     }
+    // }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DraftingManager : MonoBehaviour
 {
@@ -9,21 +10,71 @@ public class DraftingManager : MonoBehaviour
     [SerializeField] private GameObject cardPrefab;
     [SerializeField] private List<Transform> draftSlots;
     [SerializeField] private Transform deckPosition;
-    private bool isDrafting = false;
+
+    [Header("UI Panels & Buttons")]
+    [SerializeField] private GameObject draftingUIPanel;
+    [SerializeField] private Button skipButton;
+    [SerializeField] private Button resetButton;
+    private bool isProcessing = false;
+    private List<CardData> currentCardPool = new List<CardData>();
+    private GameObject[] activeCardsOnBoard = new GameObject[3];
 
     [Header("Animation Settings")]
     [SerializeField] private float slideSpeed = 8f;
 
     [Header("Player References")]
     public RobotStats playerStats;
-
-    // State management
-    private List<CardData> currentCardPool = new List<CardData>();
-    private GameObject[] activeCardsOnBoard = new GameObject[3];
+    public PlayerHand playerHand;
 
     private void Awake()
     {
         InitializeDraftPool();
+    }
+
+    private void OnEnable()
+    {
+        TurnManager.OnPhaseChanged += HandlePhaseChanged;
+    }
+
+    private void OnDisable()
+    {
+        TurnManager.OnPhaseChanged -= HandlePhaseChanged;
+    }
+
+    private void HandlePhaseChanged(TurnManager.TurnPhase phase)
+    {
+        if (phase == TurnManager.TurnPhase.CardDrafting)
+        {
+            if (draftingUIPanel != null) draftingUIPanel.SetActive(true);
+
+            bool isPlayeTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
+
+            SetDraftingUIInteractable(isPlayeTurn);
+
+            bool isMarketEmpty = true;
+            foreach (var card in activeCardsOnBoard)
+            {
+                if (card != null) isMarketEmpty = false;
+            }
+
+            if (isMarketEmpty)
+            {
+                Debug.Log("DraftingManager: Memulai fase drafting. Menyiapkan kartu untuk Open Market...");
+                GenerateDraft();
+            }
+        }
+        else
+        {
+            if (draftingUIPanel != null) draftingUIPanel.SetActive(false);
+        }
+    }
+
+    private void SetDraftingUIInteractable(bool isPlayerTurn)
+    {
+        if (skipButton != null) skipButton.interactable = isPlayerTurn;
+        if (resetButton != null) resetButton.interactable = isPlayerTurn;
+
+        isProcessing = !isPlayerTurn;
     }
 
     public void InitializeDraftPool()
@@ -54,7 +105,7 @@ public class DraftingManager : MonoBehaviour
 
     private void SpawnCardAtSlot(int slotIndex)
     {
-        if (currentCardPool.Count == 0) return;
+        if (currentCardPool.Count == 0) InitializeDraftPool();
 
         CardData drawnCard = currentCardPool[0];
         currentCardPool.RemoveAt(0);
@@ -72,60 +123,69 @@ public class DraftingManager : MonoBehaviour
 
     public void OnCardClicked(int slotIndex, GameObject cardObject, CardData data)
     {
-        if (isDrafting) return;
+        if (isProcessing) return;
+
+        if (TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
+        if (TurnManager.Instance.CurrentPlayerIndex != 0) return;
 
         StartCoroutine(DraftingSequence(slotIndex, cardObject, data));
     }
 
     IEnumerator DraftingSequence(int slotIndex, GameObject cardObject, CardData data)
     {
-        isDrafting = true;
+        isProcessing = true;
 
-        if (!playerStats.SpendEnergy(data.abilityPointCost))
+        if (playerStats.SpendEnergy(data.abilityPointCost))
         {
-            isDrafting = false;
-            yield break;
-        }
-
-        FindFirstObjectByType<PlayerHand>().AddCard(data);
-        Destroy(cardObject);
-        activeCardsOnBoard[slotIndex] = null;
-        yield return null;
-
-        for (int i = slotIndex; i < 2; i++)
-        {
-            if (activeCardsOnBoard[i + 1] != null)
+            if (playerHand != null)
             {
-                activeCardsOnBoard[i] = activeCardsOnBoard[i + 1];
-                activeCardsOnBoard[i].GetComponent<CardDisplay>().slotIndex = i;
-
-                StartCoroutine(AnimateCardSlide(activeCardsOnBoard[i].transform, draftSlots[i]));
-                activeCardsOnBoard[i + 1] = null;
+                playerHand.AddCard(data);
+                Debug.Log($"<color=green>Berhasil beli kartu: {data.cardName}</color>");
             }
+            else
+            {
+                Debug.LogWarning($"<color=red>[{gameObject.name}] PlayerHand belum dimasukan!</color>");
+            }
+
+            Destroy(cardObject);
+            activeCardsOnBoard[slotIndex] = null;
+
+            yield return new WaitForSeconds(0.3f);
+
+            isProcessing = false;
+
+            TurnManager.Instance.ProcessedToTurnEnd();
         }
-        yield return new WaitForSeconds(0.3f);
-        SpawnCardAtSlot(2);
-        yield return new WaitForSeconds(0.5f);
-        isDrafting = false;
+        else
+        {
+            Debug.Log("<color=orange>DraftingManager: Energy tidak cukup untuk beli kartu ini!</color>");
+            isProcessing = false;
+        }
     }
 
-    private void ShiftCards(int emptySlotIndex)
+    private void SkipBuyCard()
     {
-        for (int i = emptySlotIndex; i < 2; i++)
-        {
-            if (activeCardsOnBoard[i + 1] != null)
-            {
-                activeCardsOnBoard[i] = activeCardsOnBoard[i + 1];
-                activeCardsOnBoard[i].GetComponent<CardDisplay>().slotIndex = i;
-                
-                StartCoroutine(AnimateCardSlide(activeCardsOnBoard[i].transform, draftSlots[i]));
-                
-                activeCardsOnBoard[i + 1] = null;
-            }
-        }
+        if (isProcessing || TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
 
-        SpawnCardAtSlot(2);
+        Debug.Log("DraftingManager: Player memilih untuk Skip beli kartu.");
+        TurnManager.Instance.ProcessedToTurnEnd();
     }
+
+    public void ResetPool()
+    {
+        if (isProcessing || TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
+
+        Debug.Log("Player mereset pool kartu!");
+        GenerateDraft();
+    }
+
+    private IEnumerator EnemyAutoSkip()
+    {
+        Debug.Log("DraftingManager: Enemy Memikirkan langkahnya...");
+        yield return new WaitForSeconds(1.5f);
+        Debug.Log("DraftingManager: Enemy Memilih untuk Skip beli kartu.");
+        TurnManager.Instance.ProcessedToTurnEnd();
+    } 
 
     public void ClearCurrentDraft()
     {
@@ -168,21 +228,5 @@ public class DraftingManager : MonoBehaviour
             cardTransform.position = targetSlot.position;
             cardTransform.rotation = targetSlot.rotation; 
         }
-    }
-
-    public void SkipBuyCard()
-    {
-        if (isDrafting) return;
-
-        Debug.Log("Player memilih untuk skip membeli kartu!");
-        ClearCurrentDraft();
-    }
-
-    public void ResetPool()
-    {
-        if (isDrafting) return;
-
-        Debug.Log("Player mereset pool kartu!");
-        GenerateDraft();
     }
 }

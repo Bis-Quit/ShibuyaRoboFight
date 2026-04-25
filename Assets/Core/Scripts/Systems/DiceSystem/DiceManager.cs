@@ -15,10 +15,6 @@ public class DiceManager : MonoBehaviour
     public List<Dice> activeDice = new List<Dice>();
     public List<Dice> lockedDice = new List<Dice>();
 
-    [Header("Robot Reference")]
-    public RobotStats playerStats;
-    public RobotStats enemyStats;
-
     [Header("Roll Setting")]
     public int maxRolls = 3;
     public int currentRollCount = 0;
@@ -33,12 +29,6 @@ public class DiceManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy (gameObject);
     }
-
-    /*private void Start()
-    {
-        TurnManager.OnPhaseChanged += HandleChanged; 
-    }
-    */
 
     private void OnDestroy()
     {
@@ -145,6 +135,7 @@ public class DiceManager : MonoBehaviour
         }
     }
 
+/*
     public void EndTurnAndResolve()
     {
         if (activeDice.Count > 0 && isCheckingRollStatus)
@@ -271,7 +262,7 @@ public class DiceManager : MonoBehaviour
         Debug.Log("<color=magenta>--- RESOLVE PHASE SELESAI ---</color>");
 
     }
-
+*/
     private void Update()
     {
         if (isCheckingRollStatus)
