@@ -5,34 +5,34 @@ using UnityEngine;
 public class CardData : ScriptableObject
 {
     [Header("Card Idetity")]
-    [SerializeField] private string cardID;
+    public string cardID;
     public string cardName;
 
     [TextArea(2, 4)]
-    [SerializeField] private string description;
+    public string description;
     public Sprite cardIllustration;
 
     [Header("Attribute")]
     public int abilityPointCost;
-    [SerializeField] private CardCategory cardCategory;
+    public CardCategory cardCategory;
 
     [Header("Buzz Tile System")]
-    [SerializeField] private bool produceBuzzTile;
-    [SerializeField] private string buzzTileID;
+    public bool produceBuzzTile;
+    public string buzzTileID;
 
     [Header("Player Condition")]
-    [SerializeField] private TargetSubject conditionSubject;
-    [SerializeField] private ConditionTrigger conditionType;
-    [SerializeField] private OperativeAction operativeCondition;
-    [SerializeField] private GameState conditionState;
-    [SerializeField] private Comprative comprativeCondition;
-    [SerializeField] private int conditionValue;
+    public TargetSubject conditionSubject;
+    public ConditionTrigger conditionType;
+    public OperativeAction operativeCondition;
+    public GameState conditionState;
+    public Comprative comprativeCondition;
+    public int conditionValue;
 
     [Header("Effect")]
-    [SerializeField] private TargetSubject effectTarget;
-    [SerializeField] private EffectAction effectType;
-    [SerializeField] private GameState targetState;
-    [SerializeField] private int effectValue;
+    public TargetSubject effectTarget;
+    public EffectAction effectType;
+    public GameState targetState;
+    public int effectValue;
 
     public enum CardCategory { Instant, Permanent }
     public enum TargetSubject { Self, Opponent }

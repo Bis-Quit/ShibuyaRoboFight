@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c9770bec5c6457bb9105112148d5be, type: 3}
+  m_Name: Hazzard
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardID: AC008
+  cardName: Hazzard
+  description: Pull Destruction Token 2 Tiles
+  cardIllustration: {fileID: 21300000, guid: dfe623457905147ce97266bcda0777b6, type: 3}
+  abilityPointCost: 5
+  cardCategory: 0
+  produceBuzzTile: 0
+  buzzTileID: 0
+  conditionSubject: 0
+  conditionType: 0
+  operativeCondition: 0
+  conditionState: 0
+  comprativeCondition: 0
+  conditionValue: 0
+  effectTarget: 0
+  effectType: 0
+  targetState: 4
+  effectValue: 2

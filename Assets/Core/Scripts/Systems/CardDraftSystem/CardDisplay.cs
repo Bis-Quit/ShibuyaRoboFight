@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CardDisplay : MonoBehaviour
 {
@@ -7,16 +6,16 @@ public class CardDisplay : MonoBehaviour
     public CardData cardData;
     public int slotIndex;
 
-    [Header("Component UI")]
-    [SerializeField] private Image frontImage;
-    [SerializeField] private Image backImage;
+    [Header("Component 3D")]
+    [SerializeField] private SpriteRenderer frontImage; 
+    [SerializeField] private SpriteRenderer backImage;
 
     public void SetupCard(CardData newData, int index)
     {
         cardData = newData;
         slotIndex = index;
 
-        if (cardData.cardIllustration != null)
+        if (cardData != null && cardData.cardIllustration != null && frontImage != null)
         {
             frontImage.sprite = cardData.cardIllustration;
         }
@@ -24,11 +23,9 @@ public class CardDisplay : MonoBehaviour
 
     private void OnMouseDown()
     {
-        DraftingManager draftManager = FindFirstObjectByType<DraftingManager>();
-
-        if (draftManager != null)
+        if (DraftingManager.Instance != null)
         {
-            draftManager.OnCardClicked(slotIndex, this.gameObject, cardData);
+            DraftingManager.Instance.OpenMarketUI();
         }
     }
 }

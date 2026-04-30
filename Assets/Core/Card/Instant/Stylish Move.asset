@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76c9770bec5c6457bb9105112148d5be, type: 3}
+  m_Name: Stylish Move
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardID: AC010
+  cardName: Stylish Move
+  description: Pull Fame Token 2 Tiles
+  cardIllustration: {fileID: 21300000, guid: dc73619bd53ef415288a38cf7fd85932, type: 3}
+  abilityPointCost: 7
+  cardCategory: 0
+  produceBuzzTile: 1
+  buzzTileID: BT004
+  conditionSubject: 0
+  conditionType: 0
+  operativeCondition: 0
+  conditionState: 0
+  comprativeCondition: 0
+  conditionValue: 0
+  effectTarget: 0
+  effectType: 0
+  targetState: 3
+  effectValue: 2

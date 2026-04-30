@@ -8,6 +8,7 @@ public class TurnManager : MonoBehaviour
 
     public enum TurnPhase
     {
+        None,
         TurnStart,
         FirstRoll,
         RerollPhase,
@@ -75,6 +76,7 @@ public class TurnManager : MonoBehaviour
 
     private void ChangePhase(TurnPhase newPhase)
     {
+        if (CurrentPhase == newPhase) return;
         CurrentPhase = newPhase;
         OnPhaseChanged?.Invoke(newPhase);
 
@@ -127,6 +129,14 @@ public void ProcessedToResolution()
     private void HandleResolution()
     {
         Debug.Log("<color=cyan>Fase Resolution: ResolutionManager mengambil alih! Sutradara istirahat bentar.</color>");
+
+        StartCoroutine(AutoProcessedToDrafting());
+    }
+
+    private IEnumerator AutoProcessedToDrafting()
+    {
+        yield return new WaitForSeconds(2f);
+        ProcessedToDrafting();
     }
 
     public void ProcessedToDrafting()

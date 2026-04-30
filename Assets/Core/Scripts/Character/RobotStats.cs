@@ -101,6 +101,15 @@ public class RobotStats : MonoBehaviour
         OnSkillPowerChanged?.Invoke(currentSkillPower);
     }
 
+    public void LoseEnergy(int amount)
+    {
+        currentEnergy -= amount;
+        if (currentEnergy < 0) currentEnergy = 0;
+        Debug.Log($"[{baseData.characterName}] Kehilangan {amount} Energy! Sisa Energy: {currentEnergy}");
+
+        OnEnergyChanged?.Invoke(currentEnergy); 
+    }
+
     public void CheckAndExecuteSkill(int energyDiceRolled, RobotStats targetRobot)
     {
         switch (baseData.skillType)

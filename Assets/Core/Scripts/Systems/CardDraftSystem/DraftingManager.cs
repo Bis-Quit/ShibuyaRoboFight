@@ -5,22 +5,33 @@ using UnityEngine.UI;
 
 public class DraftingManager : MonoBehaviour
 {
-    [Header("Dependencies")]
+    public static DraftingManager Instance;
+
+    [Header("Dependencies 3D")]
     [SerializeField] private List<CardData> masterCardDatabase;
-    [SerializeField] private GameObject cardPrefab;
+    [SerializeField] private GameObject card3DPrefab;
     [SerializeField] private List<Transform> draftSlots;
     [SerializeField] private Transform deckPosition;
 
-    [Header("UI Panels & Buttons")]
+    [Header("Dependencies 2D")]
+    [SerializeField] private GameObject cardUIPrefab;
+    [SerializeField] private Transform marketGridContainer;
     [SerializeField] private GameObject draftingUIPanel;
     [SerializeField] private Button skipButton;
     [SerializeField] private Button resetButton;
+
+    [Header("UI Panels")]
+    [SerializeField] private GameObject inspectPanel;
+    [SerializeField] private Image inspectImage;
+    [SerializeField] private Button buyButton;
+    [SerializeField] private Button closeInspectButton;
     private bool isProcessing = false;
     private List<CardData> currentCardPool = new List<CardData>();
-    private GameObject[] activeCardsOnBoard = new GameObject[3];
 
-    [Header("Animation Settings")]
-    [SerializeField] private float slideSpeed = 8f;
+    private CardData[] activeCardData = new CardData[3];
+    private GameObject[] activeCardsOnBoard = new GameObject[3];
+    private CardData selectedCardData;
+    private int selectedSlotIndex;
 
     [Header("Player References")]
     public RobotStats playerStats;
@@ -28,7 +39,12 @@ public class DraftingManager : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         InitializeDraftPool();
+
+        if (skipButton != null) skipButton.onClick.AddListener(SkipBuyCard);
+        if (resetButton != null) resetButton.onClick.AddListener(ResetPool);
+        if (closeInspectButton != null) closeInspectButton.onClick.AddListener(CloseInspectPanel);
     }
 
     private void OnEnable()
@@ -45,36 +61,38 @@ public class DraftingManager : MonoBehaviour
     {
         if (phase == TurnManager.TurnPhase.CardDrafting)
         {
-            if (draftingUIPanel != null) draftingUIPanel.SetActive(true);
+            if (draftingUIPanel != null) draftingUIPanel.SetActive(false);
 
             bool isPlayeTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
+            if (skipButton != null) skipButton.interactable = isPlayeTurn;
+            if (resetButton != null) resetButton.interactable = isPlayeTurn;
+            isProcessing = !isPlayeTurn;
 
-            SetDraftingUIInteractable(isPlayeTurn);
+            if (!isPlayeTurn)
+            {
+                StartCoroutine(EnemyAutoSkipDrafting());
+                Debug.Log("<color=yellow>Musuh melewati Toko Kartu...</color>");
+                return;
+            }
 
             bool isMarketEmpty = true;
-            foreach (var card in activeCardsOnBoard)
+            for (int i = 0; i < activeCardsOnBoard.Length; i++)
             {
-                if (card != null) isMarketEmpty = false;
+                if (activeCardsOnBoard[i] != null) isMarketEmpty = false;
             }
 
-            if (isMarketEmpty)
-            {
-                Debug.Log("DraftingManager: Memulai fase drafting. Menyiapkan kartu untuk Open Market...");
-                GenerateDraft();
-            }
+            if (isMarketEmpty) GenerateDraft3D();
         }
         else
         {
-            if (draftingUIPanel != null) draftingUIPanel.SetActive(false);
+            CloseAllUI();
         }
     }
 
-    private void SetDraftingUIInteractable(bool isPlayerTurn)
+    private IEnumerator EnemyAutoSkipDrafting()
     {
-        if (skipButton != null) skipButton.interactable = isPlayerTurn;
-        if (resetButton != null) resetButton.interactable = isPlayerTurn;
-
-        isProcessing = !isPlayerTurn;
+        yield return new WaitForSeconds(1.5f);
+        TurnManager.Instance.ProcessedToTurnEnd();
     }
 
     public void InitializeDraftPool()
@@ -94,105 +112,35 @@ public class DraftingManager : MonoBehaviour
         }
     }
 
-    public void GenerateDraft()
+    public void GenerateDraft3D()
     {
-        ClearCurrentDraft();
-        for (int i = 0; i < 3; i++)
+        ClearCurrentDraft3D();
+        for (int i = 0; i < draftSlots.Count; i++)
         {
-            SpawnCardAtSlot(i);
+            if (currentCardPool.Count == 0) InitializeDraftPool();
+
+            CardData drawnCard = currentCardPool[0];
+            currentCardPool.RemoveAt(0);
+
+            activeCardData[i] = drawnCard;
+
+            GameObject newCard3D = Instantiate(card3DPrefab, deckPosition.position, deckPosition.rotation);
+            activeCardsOnBoard[i] = newCard3D;
+
+            CardDisplay display = newCard3D.GetComponent<CardDisplay>();
+            if (display != null) display.SetupCard(drawnCard, i);
+
+            StartCoroutine(AnimateCardSlide(newCard3D.transform, draftSlots[i]));
         }
     }
 
-    private void SpawnCardAtSlot(int slotIndex)
-    {
-        if (currentCardPool.Count == 0) InitializeDraftPool();
-
-        CardData drawnCard = currentCardPool[0];
-        currentCardPool.RemoveAt(0);
-
-        GameObject newCard = Instantiate(cardPrefab, deckPosition.position, deckPosition.rotation);
-        activeCardsOnBoard[slotIndex] = newCard;
-
-        if (newCard.TryGetComponent(out CardDisplay cardDisplay))
-        {
-            cardDisplay.SetupCard(drawnCard, slotIndex);
-        }
-
-        StartCoroutine(AnimateCardSlide(newCard.transform, draftSlots[slotIndex]));
-    }
-
-    public void OnCardClicked(int slotIndex, GameObject cardObject, CardData data)
-    {
-        if (isProcessing) return;
-
-        if (TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
-        if (TurnManager.Instance.CurrentPlayerIndex != 0) return;
-
-        StartCoroutine(DraftingSequence(slotIndex, cardObject, data));
-    }
-
-    IEnumerator DraftingSequence(int slotIndex, GameObject cardObject, CardData data)
-    {
-        isProcessing = true;
-
-        if (playerStats.SpendEnergy(data.abilityPointCost))
-        {
-            if (playerHand != null)
-            {
-                playerHand.AddCard(data);
-                Debug.Log($"<color=green>Berhasil beli kartu: {data.cardName}</color>");
-            }
-            else
-            {
-                Debug.LogWarning($"<color=red>[{gameObject.name}] PlayerHand belum dimasukan!</color>");
-            }
-
-            Destroy(cardObject);
-            activeCardsOnBoard[slotIndex] = null;
-
-            yield return new WaitForSeconds(0.3f);
-
-            isProcessing = false;
-
-            TurnManager.Instance.ProcessedToTurnEnd();
-        }
-        else
-        {
-            Debug.Log("<color=orange>DraftingManager: Energy tidak cukup untuk beli kartu ini!</color>");
-            isProcessing = false;
-        }
-    }
-
-    private void SkipBuyCard()
-    {
-        if (isProcessing || TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
-
-        Debug.Log("DraftingManager: Player memilih untuk Skip beli kartu.");
-        TurnManager.Instance.ProcessedToTurnEnd();
-    }
-
-    public void ResetPool()
-    {
-        if (isProcessing || TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
-
-        Debug.Log("Player mereset pool kartu!");
-        GenerateDraft();
-    }
-
-    private IEnumerator EnemyAutoSkip()
-    {
-        Debug.Log("DraftingManager: Enemy Memikirkan langkahnya...");
-        yield return new WaitForSeconds(1.5f);
-        Debug.Log("DraftingManager: Enemy Memilih untuk Skip beli kartu.");
-        TurnManager.Instance.ProcessedToTurnEnd();
-    } 
-
-    public void ClearCurrentDraft()
+    public void ClearCurrentDraft3D()
     {
         for (int i = 0; i < activeCardsOnBoard.Length; i++)
         {
             if (activeCardsOnBoard[i] != null) Destroy(activeCardsOnBoard[i]);
             activeCardsOnBoard[i] = null;
+            activeCardData[i] = null;
         }
     }
 
@@ -213,7 +161,6 @@ public class DraftingManager : MonoBehaviour
             float easeT = t * (2f - t); 
             
             Vector3 currentPos = Vector3.Lerp(startPos, targetSlot.position, easeT);
-            
             currentPos.y += Mathf.Sin(t * Mathf.PI) * hopHeight;
             
             cardTransform.position = currentPos;
@@ -228,5 +175,133 @@ public class DraftingManager : MonoBehaviour
             cardTransform.position = targetSlot.position;
             cardTransform.rotation = targetSlot.rotation; 
         }
+    }
+
+    public void OpenMarketUI()
+    {
+        if (TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
+        if (TurnManager.Instance.CurrentPlayerIndex != 0) return;
+
+        if (draftingUIPanel != null) draftingUIPanel.SetActive(true);
+        PopulateMarketUI();
+    }
+
+    private void PopulateMarketUI()
+    {
+        foreach (Transform child in marketGridContainer) Destroy(child.gameObject);
+        
+        for (int i = 0; i < activeCardData.Length; i++)
+        {
+            if (activeCardData[i] == null) continue;
+
+            CardData data = activeCardData[i];
+            int slotIndex = i;
+
+            GameObject newUICard = Instantiate(cardUIPrefab, marketGridContainer);
+
+            // 1. SETUP GAMBAR
+            HandCardDisplay display = newUICard.GetComponent<HandCardDisplay>();
+            if (display != null)
+            {
+                display.Setup(data); 
+                Destroy(display); 
+            }
+            else
+            {
+                Image cardImg = newUICard.GetComponent<Image>();
+                if (cardImg != null && data.cardIllustration != null) 
+                {
+                    cardImg.sprite = data.cardIllustration;
+                }
+            }
+
+            Button cardBtn = newUICard.GetComponent<Button>();
+            if (cardBtn != null) 
+            {
+                cardBtn.onClick.RemoveAllListeners(); 
+
+                cardBtn.onClick.AddListener(() => OpenInspectPanel(data, slotIndex));
+            }
+        }
+    }
+
+    public void OpenInspectPanel(CardData data, int slotIndex)
+    {
+        if (isProcessing) return;
+
+        selectedCardData = data;
+        selectedSlotIndex = slotIndex;
+        if (inspectPanel != null) inspectPanel.SetActive(true);
+
+        if (inspectImage != null) inspectImage.sprite = data.cardIllustration;
+
+        buyButton.onClick.RemoveAllListeners();
+        buyButton.onClick.AddListener(ConfirmPurchase);
+    }
+
+    private void CloseInspectPanel()
+    {
+        if (inspectPanel != null)inspectPanel.SetActive(false);
+        selectedCardData = null;
+    }
+
+    private void ConfirmPurchase()
+    {
+        if (isProcessing || selectedCardData == null) return;
+        StartCoroutine(DraftingSequence());
+    }
+
+    IEnumerator DraftingSequence()
+    {
+        isProcessing = true;
+
+        if (playerStats == null)
+        {
+            Debug.LogError("<color=red>DraftingManager: PlayerStats Kosong!</color>");
+            isProcessing = false;
+            yield break;
+        }
+
+        if (playerStats.SpendEnergy(selectedCardData.abilityPointCost))
+        {
+            if (playerHand != null) playerHand.AddCard(selectedCardData);
+
+            if (activeCardsOnBoard[selectedSlotIndex] != null)
+            {
+                Destroy(activeCardsOnBoard[selectedSlotIndex]);
+                activeCardsOnBoard[selectedSlotIndex] = null;
+                activeCardData[selectedSlotIndex] = null;
+            }
+            yield return new WaitForSeconds(0.3f);
+
+            isProcessing = false;
+            CloseAllUI();
+            TurnManager.Instance.ProcessedToTurnEnd();
+        }
+        else
+        {
+            Debug.Log("<color=orange>Energy tidak cukup!</color>");
+            isProcessing = false;
+        }
+    }
+
+    private void SkipBuyCard()
+    {
+        if (isProcessing || TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
+        CloseAllUI();
+        TurnManager.Instance.ProcessedToTurnEnd();
+    }
+
+    private void ResetPool()
+    {
+        if (isProcessing || TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
+        GenerateDraft3D();
+        PopulateMarketUI();
+    }
+
+    public void CloseAllUI()
+    {
+        if (draftingUIPanel != null) draftingUIPanel.SetActive(false);
+        if (inspectPanel != null) inspectPanel.SetActive(false);
     }
 }

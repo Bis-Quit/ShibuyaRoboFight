@@ -1,30 +1,33 @@
-using UnityEngine;
-using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerHand : MonoBehaviour
 {
-    [Header("Card in Player Hand")]
-    public List<CardData> myCard = new List<CardData>();
+    [Header("UI Settings")]
+    [SerializeField] private GameObject handCardPrefab; // Prefab kartu kecil
+    [SerializeField] private Transform handContainer;   // Objek Player_Hand_Container
 
-    [Header("UI Setup")]
-    public Transform handPanel;
-    public GameObject cardUIPrefab;
+    [Header("Data Hand")]
+    // INI DIA VARIABEL YANG DICARI SAMA UNITY (cardsInHand)
+    public List<CardData> cardsInHand = new List<CardData>();
 
-    public void AddCard(CardData selectedCard)
+    // INI DIA FUNGSI YANG DICARI SAMA DRAFTING MANAGER (AddCard)
+    public void AddCard(CardData newCard)
     {
-        myCard.Add(selectedCard);
+        // 1. Masukin datanya ke list tangan kita
+        cardsInHand.Add(newCard);
 
-        GameObject newUICard = Instantiate(cardUIPrefab, handPanel);
+        // 2. Spawn UI visualnya ke layar
+        GameObject cardObj = Instantiate(handCardPrefab, handContainer);
         
-        newUICard.transform.localScale = Vector3.one; 
-
-        Image cardImage = newUICard.GetComponent<Image>();
-        if (cardImage != null && selectedCard.cardIllustration != null)
+        // 3. Setup gambar dan tombolnya
+        HandCardDisplay display = cardObj.GetComponent<HandCardDisplay>();
+        if (display != null)
         {
-            cardImage.sprite = selectedCard.cardIllustration;
+            display.Setup(newCard);
         }
 
-        Debug.Log(" Visual kartu berhasil dipajang di layar: " + selectedCard.cardName);
+        Debug.Log($"<color=green>Hand: Berhasil masukin kartu {newCard.cardName} ke tangan!</color>");
     }
 }
