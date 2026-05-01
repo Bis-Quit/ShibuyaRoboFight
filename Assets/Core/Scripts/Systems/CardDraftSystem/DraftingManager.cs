@@ -12,24 +12,28 @@ public class DraftingManager : MonoBehaviour
     [SerializeField] private GameObject card3DPrefab;
     [SerializeField] private List<Transform> draftSlots;
     [SerializeField] private Transform deckPosition;
-
+    
     [Header("Dependencies 2D")]
     [SerializeField] private GameObject cardUIPrefab;
     [SerializeField] private Transform marketGridContainer;
     [SerializeField] private GameObject draftingUIPanel;
     [SerializeField] private Button skipButton;
     [SerializeField] private Button resetButton;
+    [SerializeField] private RectTransform handTargetUI; // Tadi lu nulisnya ReactTransform
 
     [Header("UI Panels")]
     [SerializeField] private GameObject inspectPanel;
     [SerializeField] private Image inspectImage;
     [SerializeField] private Button buyButton;
     [SerializeField] private Button closeInspectButton;
+    
     private bool isProcessing = false;
     private List<CardData> currentCardPool = new List<CardData>();
 
     private CardData[] activeCardData = new CardData[3];
     private GameObject[] activeCardsOnBoard = new GameObject[3];
+    private List<GameObject> activeUICards = new List<GameObject>();
+
     private CardData selectedCardData;
     private int selectedSlotIndex;
 
@@ -182,14 +186,23 @@ public class DraftingManager : MonoBehaviour
         if (TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
         if (TurnManager.Instance.CurrentPlayerIndex != 0) return;
 
+        if (draftingUIPanel != null && draftingUIPanel.activeSelf) return;
+        if (isProcessing) return; 
+
         if (draftingUIPanel != null) draftingUIPanel.SetActive(true);
-        PopulateMarketUI();
+        StartCoroutine(PopulateMarketWithAnimation());
     }
 
-    private void PopulateMarketUI()
+    private IEnumerator PopulateMarketWithAnimation()
     {
-        foreach (Transform child in marketGridContainer) Destroy(child.gameObject);
+        isProcessing = true;
         
+        foreach (Transform child in marketGridContainer)
+        {
+            Destroy(child.gameObject);
+        }
+        activeUICards.Clear();
+
         for (int i = 0; i < activeCardData.Length; i++)
         {
             if (activeCardData[i] == null) continue;
@@ -198,13 +211,12 @@ public class DraftingManager : MonoBehaviour
             int slotIndex = i;
 
             GameObject newUICard = Instantiate(cardUIPrefab, marketGridContainer);
+            activeUICards.Add(newUICard);
 
-            // 1. SETUP GAMBAR
             HandCardDisplay display = newUICard.GetComponent<HandCardDisplay>();
             if (display != null)
             {
                 display.Setup(data); 
-                Destroy(display); 
             }
             else
             {
@@ -219,10 +231,103 @@ public class DraftingManager : MonoBehaviour
             if (cardBtn != null) 
             {
                 cardBtn.onClick.RemoveAllListeners(); 
-
                 cardBtn.onClick.AddListener(() => OpenInspectPanel(data, slotIndex));
             }
+
+            StartCoroutine(AnimateCardEntrance(newUICard));
+            yield return new WaitForSeconds(0.1f); 
         }
+
+        isProcessing = false;
+    }
+
+    private IEnumerator AnimateCardEntrance(GameObject card)
+    {
+        if (card == null) yield break; 
+
+        CanvasGroup group = card.GetComponent<CanvasGroup>();
+        if (group == null) group = card.AddComponent<CanvasGroup>();
+
+        RectTransform rect = card.GetComponent<RectTransform>();
+        
+        rect.localScale = Vector3.zero; 
+        group.alpha = 0;
+
+        float elapsed = 0;
+        float duration = 0.3f; 
+        
+        while (elapsed < duration)
+        {
+            if (card == null || rect == null) yield break; 
+
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            
+            float c1 = 1.70158f;
+            float c3 = c1 + 1f;
+            float easeOutBack = 1f + c3 * Mathf.Pow(t - 1f, 3f) + c1 * Mathf.Pow(t - 1f, 2f);
+
+            rect.localScale = Vector3.LerpUnclamped(Vector3.zero, Vector3.one, easeOutBack);
+            group.alpha = Mathf.Lerp(0, 1, t);
+            yield return null;
+        }
+        
+        if (card != null && rect != null) 
+        {
+            rect.localScale = Vector3.one;
+            group.alpha = 1;
+        }
+    }
+
+    private void ResetPool()
+    {
+        if (isProcessing || TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
+        StartCoroutine(AnimateResetAndRefresh());
+    }
+
+    private IEnumerator AnimateResetAndRefresh()
+    {
+        isProcessing = true;
+
+        List<GameObject> cardsToDestroy = new List<GameObject>(activeUICards);
+        
+        activeUICards.Clear(); 
+
+        foreach (GameObject uiCard in cardsToDestroy)
+        {
+            if (uiCard != null) StartCoroutine(AnimateCardExit(uiCard));
+        }
+
+        yield return new WaitForSeconds(0.3f);
+        
+        GenerateDraft3D(); 
+        yield return StartCoroutine(PopulateMarketWithAnimation());
+        isProcessing = false;
+    }
+
+    private IEnumerator AnimateCardExit(GameObject card)
+    {
+        if (card == null) yield break;
+        CanvasGroup group = card.GetComponent<CanvasGroup>();
+        if (group == null) group = card.AddComponent<CanvasGroup>();
+
+        RectTransform rect = card.GetComponent<RectTransform>();
+        
+        card.transform.SetParent(draftingUIPanel.transform); 
+
+        float elapsed = 0;
+        float duration = 0.3f;
+        while (elapsed < duration)
+        {
+            if (card == null) yield break;
+
+            elapsed += Time.deltaTime;
+            rect.localPosition += new Vector3(1500 * Time.deltaTime, 0, 0); 
+            group.alpha -= Time.deltaTime * 3;
+            yield return null;
+        }
+        
+        if (card != null) Destroy(card);
     }
 
     public void OpenInspectPanel(CardData data, int slotIndex)
@@ -264,6 +369,13 @@ public class DraftingManager : MonoBehaviour
 
         if (playerStats.SpendEnergy(selectedCardData.abilityPointCost))
         {
+            if(inspectPanel != null) inspectPanel.SetActive(false);
+
+            if (activeUICards.Count > selectedSlotIndex && activeUICards[selectedSlotIndex] != null)
+            {
+                yield return StartCoroutine(AnimatePurchaseFly(activeUICards[selectedSlotIndex]));
+            }
+
             if (playerHand != null) playerHand.AddCard(selectedCardData);
 
             if (activeCardsOnBoard[selectedSlotIndex] != null)
@@ -272,7 +384,6 @@ public class DraftingManager : MonoBehaviour
                 activeCardsOnBoard[selectedSlotIndex] = null;
                 activeCardData[selectedSlotIndex] = null;
             }
-            yield return new WaitForSeconds(0.3f);
 
             isProcessing = false;
             CloseAllUI();
@@ -281,7 +392,42 @@ public class DraftingManager : MonoBehaviour
         else
         {
             Debug.Log("<color=orange>Energy tidak cukup!</color>");
+            StartCoroutine(ShakeUI(inspectPanel.transform));
             isProcessing = false;
+        }
+    }
+
+    private IEnumerator AnimatePurchaseFly(GameObject cardToFly)
+    {
+        cardToFly.transform.SetParent(draftingUIPanel.transform); 
+        
+        RectTransform rect = cardToFly.GetComponent<RectTransform>();
+        Vector3 startPos = rect.position;
+        Vector3 targetPos = handTargetUI != null ? handTargetUI.position : startPos;
+
+        float elapsed = 0;
+        float duration = 0.5f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            rect.position = Vector3.Lerp(startPos, targetPos, t);
+            rect.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.4f, t);
+            yield return null;
+        }
+        
+        Destroy(cardToFly);
+    }
+
+    private IEnumerator ShakeUI(Transform ui)
+    {
+        Vector3 originalPos = ui.localPosition;
+        for (int i = 0; i < 5; i++)
+        {
+            ui.localPosition += new Vector3(Random.Range(-15, 15), 0, 0);
+            yield return new WaitForSeconds(0.04f);
+            ui.localPosition = originalPos;
         }
     }
 
@@ -290,13 +436,6 @@ public class DraftingManager : MonoBehaviour
         if (isProcessing || TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
         CloseAllUI();
         TurnManager.Instance.ProcessedToTurnEnd();
-    }
-
-    private void ResetPool()
-    {
-        if (isProcessing || TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
-        GenerateDraft3D();
-        PopulateMarketUI();
     }
 
     public void CloseAllUI()

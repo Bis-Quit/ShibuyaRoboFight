@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-
 public class TugOfWarManager : MonoBehaviour
 {
     public static TugOfWarManager Instance { get; private set; }
@@ -33,9 +32,11 @@ public class TugOfWarManager : MonoBehaviour
 
         if (fameTiles.Length > 0 && fameToken != null)
             fameToken.position = fameTiles[currentFameIndex].position + new Vector3(0, yOffset, 0);
+            fameToken.rotation = fameTiles[currentFameIndex].rotation;
 
         if (destructTiles.Length > 0 && destructToken != null)
             destructToken.position = destructTiles[currentDestructionIndex].position + new Vector3(0, yOffset, 0);
+            destructToken.rotation = destructTiles[currentFameIndex].rotation;
     }
 
     public void MoveFame(int points, int playerIndex)
@@ -64,16 +65,22 @@ public class TugOfWarManager : MonoBehaviour
     {
         Vector3 startPos = token.position;
         Vector3 targetPos = track[targetIndex].position + new Vector3(0, yOffset, 0);
+
+        Quaternion startRot = token.rotation;
+        Quaternion targetRot = track[targetIndex].rotation;
+
         float elapsedTime = 0f;
 
         while (elapsedTime < moveDuration)
         {
             token.position = Vector3.Lerp(startPos, targetPos, elapsedTime / moveDuration);
+            token.rotation = Quaternion.Lerp(startRot, targetRot, elapsedTime / moveDuration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         token.position = targetPos;
+        token.rotation = targetRot;
     }
 
     public void CheckWinCondition(int index, int trackLength, string trackType)

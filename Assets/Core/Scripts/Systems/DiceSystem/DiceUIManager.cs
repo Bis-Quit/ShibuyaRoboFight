@@ -13,10 +13,10 @@ public class DiceUIManager : MonoBehaviour
     [Tooltip("Masukkan Prefab UI Dice Item ke sini...")]
     [SerializeField] private GameObject uiDicePrefab;
     
-    /*[Header("Katalog Ikon Dadu")]
+    [Header("Katalog Ikon Dadu")]
     [Tooltip("Masukkan gambar icon 2D dadu ke sini...")]
     [SerializeField] private Sprite[] diceFaceIcon;
-        */
+        
 
     [Header("Katalog Placeholder (Testing)")]
     [SerializeField] private Color[] diceFaceColors;
@@ -34,6 +34,12 @@ public class DiceUIManager : MonoBehaviour
         Image diceImage = newDiceUI.GetComponent<Image>();
         TextMeshProUGUI textLabel = newDiceUI.GetComponentInChildren<TextMeshProUGUI>();
         int faceIndex = (int)diceRef.CurrentFace;
+
+        if (diceImage != null && faceIndex >= 0 && faceIndex < diceFaceIcon.Length)
+        {
+            diceImage.sprite = diceFaceIcon[faceIndex];
+            diceImage.color = Color.white;
+        }
 
         if (diceImage != null && faceIndex >= 0 && faceIndex < diceFaceColors.Length)
             diceImage.color = diceFaceColors[faceIndex];

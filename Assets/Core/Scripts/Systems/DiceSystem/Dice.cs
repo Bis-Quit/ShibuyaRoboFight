@@ -30,6 +30,10 @@ public class Dice : MonoBehaviour
     private int nudgeCount = 0;
     private float rollCooldown = 0f;
 
+    [Header("Visual Dadu & Lock")]
+    public SpriteRenderer lockIconRenderer;
+    public Sprite[] faceSprites;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -161,6 +165,18 @@ public class Dice : MonoBehaviour
         }
 
         DiceManager.Instance.LockDice(this);
+
+        if (lockIconRenderer != null && faceSprites.Length > 0)
+        {
+            int faceIndex = (int)CurrentFace;
+
+            if (faceIndex >= 0 && faceIndex < faceSprites.Length)
+            {
+                lockIconRenderer.sprite = faceSprites[faceIndex];
+            }
+
+            lockIconRenderer.gameObject.SetActive(this.isLocked);
+        }
     }
 
     private void DetermineTopFace()
@@ -177,12 +193,12 @@ public class Dice : MonoBehaviour
 
         DiceFace[] faceValues = new DiceFace[]
         {
+            DiceFace.SpecialPower,
+            DiceFace.Energy,
             DiceFace.Smash,
             DiceFace.Heal,
-            DiceFace.Energy,
             DiceFace.Fame,
-            DiceFace.Destruction,
-            DiceFace.SpecialPower
+            DiceFace.Destruction
         };
 
         float maxDotProduct = -Mathf.Infinity;
