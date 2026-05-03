@@ -129,14 +129,6 @@ public void ProcessedToResolution()
     private void HandleResolution()
     {
         Debug.Log("<color=cyan>Fase Resolution: ResolutionManager mengambil alih! Sutradara istirahat bentar.</color>");
-
-        StartCoroutine(AutoProcessedToDrafting());
-    }
-
-    private IEnumerator AutoProcessedToDrafting()
-    {
-        yield return new WaitForSeconds(2f);
-        ProcessedToDrafting();
     }
 
     public void ProcessedToDrafting()

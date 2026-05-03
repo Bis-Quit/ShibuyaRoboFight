@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6158480892236758482}
-  - component: {fileID: 4859128295896369790}
+  - component: {fileID: 1375928023122958910}
   m_Layer: 0
   m_Name: '[GameOver Manager]'
   m_TagString: Untagged
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4859128295896369790
+--- !u!114 &1375928023122958910
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,14 +45,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameOverManager
   gameOverCanvas: {fileID: 0}
-  robotNameText: {fileID: 0}
   battleUICanvas: {fileID: 0}
-  statusImage: {fileID: 0}
-  victoryTextSprite: {fileID: 0}
-  defeatTextSprite: {fileID: 0}
-  iconImage: {fileID: 0}
-  victoryIconSprite: {fileID: 0}
-  defeatIconSprite: {fileID: 0}
+  iconTopImage: {fileID: 0}
+  robotNameText: {fileID: 0}
+  statusTextImage: {fileID: 0}
+  crownSprite: {fileID: 21300000, guid: 0f701d10ea87b4cb2ba8972fe6919b35, type: 3}
+  skullSprite: {fileID: 21300000, guid: 0f701d10ea87b4cb2ba8972fe6919b35, type: 3}
+  victorySprite: {fileID: 21300000, guid: 53f0c18c76087469b88375f5d627fe1d, type: 3}
+  defeatSprite: {fileID: 21300000, guid: 53f0c18c76087469b88375f5d627fe1d, type: 3}
   selectCharButton: {fileID: 0}
   mainMenuButton: {fileID: 0}
   vcamVictoryPlayer: {fileID: 0}

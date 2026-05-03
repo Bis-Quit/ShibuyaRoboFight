@@ -8,35 +8,41 @@ public class GameOverManager : MonoBehaviour
 {
     public static GameOverManager Instance;
 
-    [Header("UI Canvas")]
+    [Header("UI Canvas (Pastikan Sejajar)")]
     [SerializeField] private GameObject gameOverCanvas;
-    [SerializeField] private TMP_Text robotNameText;
     [SerializeField] private GameObject battleUICanvas;
 
-    [Header("UI Images")]
-    [SerializeField] private Image statusImage;
-    [SerializeField] private Sprite victoryTextSprite;
-    [SerializeField] private Sprite defeatTextSprite;
+    [Header("Elemen UI")]
+    [Tooltip("Masukin komponen Image buat Mahkota/Tengkorak")]
+    [SerializeField] private Image iconTopImage; 
+    
+    [Tooltip("TextMeshPro buat Nama Robot")]
+    [SerializeField] private TMP_Text robotNameText; 
+    
+    [Tooltip("Masukin komponen Image buat tulisan VICTORY/DEFEAT")]
+    [SerializeField] private Image statusTextImage; 
 
-    [SerializeField] private Image iconImage;
-    [SerializeField] private Sprite victoryIconSprite;
-    [SerializeField] private Sprite defeatIconSprite;
+    [Header("Katalog Gambar")]
+    [SerializeField] private Sprite crownSprite;
+    [SerializeField] private Sprite skullSprite;
+    [SerializeField] private Sprite victorySprite;
+    [SerializeField] private Sprite defeatSprite;
 
     [Header("Buttons")]
     [SerializeField] private Button selectCharButton;
     [SerializeField] private Button mainMenuButton;
 
-    [Header("Cinemachine Camera")]
+    [Header("Kamera Selebrasi")]
     [SerializeField] private CinemachineCamera vcamVictoryPlayer;
     [SerializeField] private CinemachineCamera vcamVictoryEnemy;
 
-    /*[Header("Robot Animators")]
-    [SerializeField] private Animator playerRobotAnimator;
-    [SerializeField] private Animator enemyRobotAnimator; */
-
-    [Header("Scene Settings")]
+    [Header("Scene")]
     [SerializeField] private string selectCharacterSceneName = "CharacterSelect";
     [SerializeField] private string mainMenuSceneName = "MainMenu";
+
+    [Header("Robot Reference")]
+    [SerializeField] private RobotStats playerRobot;
+    [SerializeField] private RobotStats enemyRobot;
 
     private void Awake()
     {
@@ -45,32 +51,42 @@ public class GameOverManager : MonoBehaviour
 
         if (gameOverCanvas != null) gameOverCanvas.SetActive(false);
 
-        selectCharButton.onClick.AddListener(LoadSelectCharacter);
-        mainMenuButton.onClick.AddListener(LoadMainMenu);
+        if (selectCharButton != null) selectCharButton.onClick.AddListener(LoadSelectCharacter);
+        if (mainMenuButton != null) mainMenuButton.onClick.AddListener(LoadMainMenu);
     }
 
-    public void TriggerGameOver(bool isPlayerWin, string winningRobotName)
+    public void TriggerGameOver(bool isPlayerWin)
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
+        }
+
         if (battleUICanvas != null) battleUICanvas.SetActive(false);
-        robotNameText.text = winningRobotName;
+
+        string winningRobotName = "UNKNOWN ROBOT";
+        if (isPlayerWin && playerRobot != null && playerRobot.baseData != null)
+        {
+            winningRobotName = playerRobot.baseData.characterName;
+        }
+        else if (!isPlayerWin && enemyRobot != null && enemyRobot.baseData != null)
+        {
+            winningRobotName = enemyRobot.baseData.characterName;
+        }
+
+        if (robotNameText != null) robotNameText.text = winningRobotName.ToUpper();
 
         if (isPlayerWin)
         {
-            statusImage.sprite = victoryTextSprite;
-            if (iconImage != null) iconImage.sprite = victoryIconSprite;
-
-            vcamVictoryPlayer.Priority = 20;
-            /*playerRobotAnimator.SetTrigger("PlayerVictory");
-            enemyRobotAnimator.SetTrigger("EnemyDefeat"); */
+            if (iconTopImage != null) iconTopImage.sprite = crownSprite;
+            if (statusTextImage != null) statusTextImage.sprite = victorySprite;
+            if (vcamVictoryPlayer != null) vcamVictoryPlayer.Priority = 20;
         }
         else
         {
-            statusImage.sprite = defeatTextSprite;
-            if (iconImage != null) iconImage.sprite = defeatIconSprite;
-
-            vcamVictoryEnemy.Priority = 20;
-            /*enemyRobotAnimator.SetTrigger("EnemyVictory");
-            playerRobotAnimator.SetTrigger("PlayerDefeat"); */
+            if (iconTopImage != null) iconTopImage.sprite = skullSprite;
+            if (statusTextImage != null) statusTextImage.sprite = defeatSprite;
+            if (vcamVictoryEnemy != null) vcamVictoryEnemy.Priority = 20;
         }
 
         Invoke("ShowGameOverUI", 2f);
@@ -78,7 +94,7 @@ public class GameOverManager : MonoBehaviour
 
     private void ShowGameOverUI()
     {
-        gameOverCanvas.SetActive(true);
+        if (gameOverCanvas != null) gameOverCanvas.SetActive(true);
     }
 
     public void LoadSelectCharacter()
@@ -93,14 +109,7 @@ public class GameOverManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            TriggerGameOver(true, "PLAYER ROBO (CHEAT)");
-        }
-
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            TriggerGameOver(false, "ENEMY ROBO (CHEAT)");
-        }
+        if (Input.GetKeyDown(KeyCode.Y)) TriggerGameOver(true);
+        if (Input.GetKeyDown(KeyCode.U)) TriggerGameOver(false);
     }
 }

@@ -41,9 +41,6 @@ public class DiceUIManager : MonoBehaviour
             diceImage.color = Color.white;
         }
 
-        if (diceImage != null && faceIndex >= 0 && faceIndex < diceFaceColors.Length)
-            diceImage.color = diceFaceColors[faceIndex];
-
         if (textLabel != null)
             textLabel.text = diceRef.CurrentFace.ToString();
 

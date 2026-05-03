@@ -34,6 +34,9 @@ public class Dice : MonoBehaviour
     public SpriteRenderer lockIconRenderer;
     public Sprite[] faceSprites;
 
+    private float maxRollTime = 5f;
+    private float currentRollTime = 0f;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -49,6 +52,7 @@ public class Dice : MonoBehaviour
         isRolling = true;
         isSettling = false;
         rollCooldown = 0.5f;
+        currentRollTime = 0f;
 
         rb.useGravity = true;
         rb.isKinematic = false;
@@ -65,6 +69,17 @@ public class Dice : MonoBehaviour
     {
         if (isRolling && !isSettling)
         {
+
+            currentRollTime += Time.deltaTime;
+            if (currentRollTime > maxRollTime)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                isRolling = false;
+                DetermineTopFace();
+                return;
+            }
+
             if (rollCooldown > 0)
             {
                 rollCooldown -= Time.deltaTime;
@@ -73,7 +88,7 @@ public class Dice : MonoBehaviour
 
             if (rb.linearVelocity.sqrMagnitude < 0.01f && rb.angularVelocity.sqrMagnitude < 0.01f)
             {
-                isSettling = false;
+                isSettling = true;
                 StartCoroutine(CheckAndSettleDice());
             }
         }

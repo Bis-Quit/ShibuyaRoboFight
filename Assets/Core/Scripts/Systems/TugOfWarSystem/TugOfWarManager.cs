@@ -89,13 +89,13 @@ public class TugOfWarManager : MonoBehaviour
         {
             Debug.Log($"<color=green> Player 0 menarik full jalur {trackType.ToUpper()}! </color>");
 
-            GameOverManager.Instance.TriggerGameOver(true, "PLAYER ROBO");
+            GameOverManager.Instance.TriggerGameOver(true);
         }
         else if (index == trackLength - 1)
         {
             Debug.Log($"<color=green> Player 1 menarik full jalur {trackType.ToUpper()}! </color>");
 
-            GameOverManager.Instance.TriggerGameOver(false, "ENEMY ROBO");
+            GameOverManager.Instance.TriggerGameOver(false);
         }
     }
 }
