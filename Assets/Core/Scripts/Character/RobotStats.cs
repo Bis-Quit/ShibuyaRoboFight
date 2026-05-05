@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using UnityEngine;
 
 public class RobotStats : MonoBehaviour
@@ -15,8 +16,16 @@ public class RobotStats : MonoBehaviour
     public event Action<int> OnEnergyChanged;
     public event Action<int> OnSkillPowerChanged;
 
+    public static event Action<RobotStats, int> OnAnyRobotHealed;
+    public static event Action<RobotStats, int> OnAnyRobotDamaged;
+    public static event Action<RobotStats, int> OnAnyRobotEnergyAdded;
+    public static event Action<RobotStats, int> OnAnyRobotEnergyLost;
+
     [Header("Skill System")]
     public int currentSkillPower = 0;
+
+    [Header("Buff Status")]
+    public int bonusDice = 0;
 
     private void Start()
     {
@@ -43,6 +52,8 @@ public class RobotStats : MonoBehaviour
         currentHP -= amount;
         if (currentHP < 0) currentHP = 0;
 
+        OnAnyRobotDamaged?.Invoke(this, amount);
+
         Debug.Log($"[{baseData.characterName}] Kena {amount} Damage! Sisa HP: {currentHP}/{baseData.maxHealth}");
 
         OnHPChanged?.Invoke(currentHP, baseData.maxHealth);
@@ -58,6 +69,8 @@ public class RobotStats : MonoBehaviour
         Debug.Log($"[{baseData.characterName}] Di-heal {amount}! HP Sekarang: {currentHP}/{baseData.maxHealth}");
 
         OnHPChanged?.Invoke(currentHP, baseData.maxHealth);
+        OnAnyRobotHealed?.Invoke(this, amount);
+
     }
 
     public void AddEnergy(int amount)
@@ -65,6 +78,7 @@ public class RobotStats : MonoBehaviour
         currentEnergy += amount;
         Debug.Log($"[{baseData.characterName}] Nambah {amount} Energy! Total Energy: {currentEnergy}");
 
+        OnAnyRobotEnergyAdded?.Invoke(this, amount);
         OnEnergyChanged?.Invoke(currentEnergy);
     }
 
@@ -107,6 +121,7 @@ public class RobotStats : MonoBehaviour
         if (currentEnergy < 0) currentEnergy = 0;
         Debug.Log($"[{baseData.characterName}] Kehilangan {amount} Energy! Sisa Energy: {currentEnergy}");
 
+        OnAnyRobotEnergyLost?.Invoke(this, amount);
         OnEnergyChanged?.Invoke(currentEnergy); 
     }
 
@@ -163,43 +178,9 @@ public class RobotStats : MonoBehaviour
 
     }
 
-    // public void ExecuteSpecialSkill(int skillDiceRolled, int energyDiceRolled, RobotStats targetRobot)
-    // {
-    //     switch (baseData.skillType)
-    //     {
-    //         case SpecialSkillType.CharacterA_PullTokens:
-    //             if (skillDiceRolled >= 3)
-    //             {
-    //                 TugOfWarManager.Instance.MoveFame(1, TurnManager.Instance.CurrentPlayerIndex);
-    //                 TugOfWarManager.Instance.MoveDestruction(1, TurnManager.Instance.CurrentPlayerIndex);
-    //                 Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Fame +1, Destruction +1!</color>");
-    //             }
-    //         break;
-
-    //         case SpecialSkillType.CharacterB_MultiplyEnergy:
-    //             if (skillDiceRolled > 0 && energyDiceRolled > 0)
-    //             {
-    //                 int bonusEnergy = skillDiceRolled * energyDiceRolled;
-    //                 AddEnergy(bonusEnergy);
-    //                 Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Bonus Energy +{bonusEnergy}!</color>");
-    //             }
-    //         break;
-
-    //         case SpecialSkillType.CharacterC_ExtraDamage:
-    //             if (skillDiceRolled >= 2)
-    //             {
-    //                 targetRobot.TakeDamage(3);
-    //                 Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Serangan spesial! Target kena 3 damage!</color>");
-    //             } 
-    //         break;
-
-    //         case SpecialSkillType.CharacterD_ExtraDice:
-    //             if (skillDiceRolled >= 3)
-    //             {
-    //                 /*DiceManager.Instance.ExtractDice(1);*/
-    //                 Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Extract Dadu untuk gilingan berikutnya!</color>");
-    //             }
-    //         break;
-    //     }
-    // }
+    public void AddbonusDice(int amount)
+    {
+        bonusDice += amount;
+        Debug.Log($"<color=cyan> [{baseData.characterName}] dapat tabungan {amount} dadu tambahan! Total : {bonusDice}</color>");
+    }
 }

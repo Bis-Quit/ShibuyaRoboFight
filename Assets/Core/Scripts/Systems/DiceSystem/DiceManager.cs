@@ -12,6 +12,10 @@ public class DiceManager : MonoBehaviour
     public Transform spawnPoint;
     public int numberOfDice = 6;
 
+    [Header("Player Reference")]
+    public RobotStats playerStats;
+    public RobotStats enemyStats;
+
     public List<Dice> activeDice = new List<Dice>();
     public List<Dice> lockedDice = new List<Dice>();
 
@@ -47,9 +51,20 @@ public class DiceManager : MonoBehaviour
 
     private void SpawnDice()
     {
+        RobotStats currentPlayer = (TurnManager.Instance.CurrentPlayerIndex == 0) ? playerStats : enemyStats;
+
+        int totalDiceToSpawn = numberOfDice;
+
+        if (currentPlayer != null && currentPlayer.bonusDice > 0)
+        {
+            totalDiceToSpawn += currentPlayer.bonusDice;
+            Debug.Log($"<color=yellow>MENGELUARKAN {currentPlayer.bonusDice} DADU TAMBAHAN DARI KARTU!</color>");
+
+            currentPlayer.bonusDice = 0;
+        }
         Debug.Log($"DiceManager: Memunculkan {numberOfDice} dadu di udara Shibuya...");
 
-        for(int i = 0; i < numberOfDice; i++)
+        for(int i = 0; i < totalDiceToSpawn; i++)
         {
             Vector3 randomOffset = Random.insideUnitSphere * 2f;
             randomOffset.y = MathF.Abs(randomOffset.y);
