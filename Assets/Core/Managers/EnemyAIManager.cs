@@ -6,6 +6,10 @@ public class EnemyAIManager : MonoBehaviour
 {
     private int aiDifficultyLevel; 
 
+    [Header("AI Context (Wajib Isi)")]
+    public RobotStats aiStats;
+    public RobotStats playerStats;
+
     private void Start() 
     {
         aiDifficultyLevel = PlayerPrefs.GetInt("EnemyDifficulty", 3);
@@ -36,7 +40,7 @@ public class EnemyAIManager : MonoBehaviour
             }
             else if (phase == TurnManager.TurnPhase.CardDrafting)
             {
-                StartCoroutine(SkipDraftingRoutine());
+                StartCoroutine(EnemyDraftingRoutine());
             }
         }
     }
@@ -54,26 +58,54 @@ public class EnemyAIManager : MonoBehaviour
 
         while (keepThinking)
         {
-            Debug.Log($"<color=magenta>EnemyAIManager: Enemy is thinking... (Difficulty Level: {aiDifficultyLevel})</color>");
+            Debug.Log($"<color=magenta>EnemyAIManager: Enemy is thinking... (Diff: {aiDifficultyLevel})</color>");
             yield return new WaitForSeconds(2f);
 
             List<Dice> diceOnTray = new List<Dice>(DiceManager.Instance.activeDice);
+
+            // BACA KONTEKS PERTARUNGAN (Context-Aware)
+            float aiHpPercent = 1f;
+            float playerHpPercent = 1f;
+
+            if (aiStats != null && aiStats.baseData != null)
+                aiHpPercent = (float)aiStats.currentHP / aiStats.baseData.maxHealth;
+            
+            if (playerStats != null && playerStats.baseData != null)
+                playerHpPercent = (float)playerStats.currentHP / playerStats.baseData.maxHealth;
 
             foreach (Dice dice in diceOnTray)
             {
                 bool shouldLock = false;
 
-                if (aiDifficultyLevel == 0)
+                if (aiDifficultyLevel == 0) 
                 {
-                    if (dice.CurrentFace == DiceFace.Energy) shouldLock = true;
+                    if (Random.Range(0, 100) < 50) 
+                    {
+                        shouldLock = Random.value > 0.5f;
+                    }
+                    else 
+                    {
+                        if (dice.CurrentFace == DiceFace.Energy || dice.CurrentFace == DiceFace.Heal) 
+                        {
+                            shouldLock = true;
+                        }
+                    }
                 }
-                else if (aiDifficultyLevel == 1)
+                else
                 {
-                    if (dice.CurrentFace == DiceFace.Smash || dice.CurrentFace == DiceFace.Heal) shouldLock = true;
-                }
-                else if (aiDifficultyLevel >= 2)
-                {
-                    if (dice.CurrentFace == DiceFace.Smash || dice.CurrentFace == DiceFace.Destruction)
+                    if (aiHpPercent <= 0.3f && dice.CurrentFace == DiceFace.Heal)
+                    {
+                        shouldLock = true;
+                    }
+                    else if (playerHpPercent <= 0.3f && dice.CurrentFace == DiceFace.Smash)
+                    {
+                        shouldLock = true;
+                    }
+                    else if (aiStats != null && aiStats.currentEnergy < 2 && dice.CurrentFace == DiceFace.Energy)
+                    {
+                        shouldLock = true;
+                    }
+                    else if (dice.CurrentFace == DiceFace.Smash || dice.CurrentFace == DiceFace.Destruction)
                     {
                         shouldLock = true;
                     }
@@ -89,24 +121,44 @@ public class EnemyAIManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
             if (DiceManager.Instance.activeDice.Count > 0 && DiceManager.Instance.currentRollCount < DiceManager.Instance.maxRolls)
             {
-                Debug.Log("<color=magenta>EnemyAIManager: Enemy memutuskan untuk re-roll beberapa dadu!</color>");
+                Debug.Log("<color=magenta>EnemyAIManager: Enemy memutuskan untuk re-roll!</color>");
                 DiceManager.Instance.ReRollActiveDice();
-
                 yield return new WaitUntil(() => AllDiceStopped());
             }
             else
             {
-                Debug.Log("<color=magenta>EnemyAIManager: Enemy memutuskan untuk Resolve...</color>");
+                Debug.Log("<color=magenta>EnemyAIManager: Enemy selesai mikir -> Resolve!</color>");
                 TurnManager.Instance.ProcessedToResolution();
-
                 keepThinking = false;
             }
         }
     }
 
-    private IEnumerator SkipDraftingRoutine()
+    private IEnumerator EnemyDraftingRoutine()
     {
-        Debug.Log("<color=magenta>EnemyAIManager: Enemy memutuskan untuk Skip beli kartu!</color>");
+        Debug.Log("<color=magenta>EnemyAIManager: Enemy masuk ke Market...</color>");
+        yield return new WaitForSeconds(1.5f);
+
+        if (DraftingManager.Instance != null && aiStats != null)
+        {
+            // Coba beli kartu termahal
+            bool isBuying = DraftingManager.Instance.EnemyTryBuyCard(aiStats);
+            
+            if (isBuying)
+            {
+                yield break; 
+            }
+            else 
+            {
+                if (aiStats.currentEnergy > 0) 
+                {
+                    DraftingManager.Instance.StartCoroutine(DraftingManager.Instance.EnemyTryResetAndBuy(aiStats));
+                    yield break; 
+                }
+            }
+        }
+
+        Debug.Log("<color=magenta>EnemyAIManager: Uang benar-benar habis. Skip belanja.</color>");
         yield return new WaitForSeconds(1.5f);
         TurnManager.Instance.ProcessedToTurnEnd();
     }
@@ -115,12 +167,8 @@ public class EnemyAIManager : MonoBehaviour
     {
         foreach (Dice dice in DiceManager.Instance.activeDice)
         {
-            if (dice != null && dice.isRolling)
-            {
-                return false;
-            }
+            if (dice != null && dice.isRolling) return false;
         }
         return true;
     }
 }
-

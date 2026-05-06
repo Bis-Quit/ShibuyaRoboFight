@@ -19,7 +19,7 @@ public class DraftingManager : MonoBehaviour
     [SerializeField] private GameObject draftingUIPanel;
     [SerializeField] private Button skipButton;
     [SerializeField] private Button resetButton;
-    [SerializeField] private RectTransform handTargetUI; // Tadi lu nulisnya ReactTransform
+    [SerializeField] private RectTransform handTargetUI;
 
     [Header("UI Panels")]
     [SerializeField] private GameObject inspectPanel;
@@ -72,12 +72,7 @@ public class DraftingManager : MonoBehaviour
             if (resetButton != null) resetButton.interactable = isPlayeTurn;
             isProcessing = !isPlayeTurn;
 
-            if (!isPlayeTurn)
-            {
-                StartCoroutine(EnemyAutoSkipDrafting());
-                Debug.Log("<color=yellow>Musuh melewati Toko Kartu...</color>");
-                return;
-            }
+            if (!isPlayeTurn) return;
 
             bool isMarketEmpty = true;
             for (int i = 0; i < activeCardsOnBoard.Length; i++)
@@ -213,10 +208,12 @@ public class DraftingManager : MonoBehaviour
             GameObject newUICard = Instantiate(cardUIPrefab, marketGridContainer);
             activeUICards.Add(newUICard);
 
-            HandCardDisplay display = newUICard.GetComponent<HandCardDisplay>();
+            HandCardUI display = newUICard.GetComponent<HandCardUI>();
             if (display != null)
             {
-                display.Setup(data); 
+                display.Setup(data);
+                display.isHand = false;
+                display.marketSlotIndex = i;
             }
             else
             {
@@ -331,18 +328,29 @@ public class DraftingManager : MonoBehaviour
     }
 
     public void OpenInspectPanel(CardData data, int slotIndex)
+{
+    // Jangan sampai isProcessing ngeblokir inspect!
+    if (isProcessing) isProcessing = false; 
+
+    selectedCardData = data;
+    selectedSlotIndex = slotIndex;
+
+    // 1. Pastikan panelnya aktif secara objek
+    if (inspectPanel != null) inspectPanel.SetActive(true);
+
+    // 2. Update gambarnya di DraftingManager (biar tetep sinkron)
+    if (inspectImage != null) inspectImage.sprite = data.cardIllustration;
+
+    // 3. INI KUNCINYA: Panggil animasi Juicy dari InspectManager![cite: 1]
+    if (InspectManager.Instance != null)
     {
-        if (isProcessing) return;
-
-        selectedCardData = data;
-        selectedSlotIndex = slotIndex;
-        if (inspectPanel != null) inspectPanel.SetActive(true);
-
-        if (inspectImage != null) inspectImage.sprite = data.cardIllustration;
-
-        buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(ConfirmPurchase);
+        InspectManager.Instance.ShowCardPopup(data);
     }
+
+    // 4. Setup tombol beli
+    buyButton.onClick.RemoveAllListeners();
+    buyButton.onClick.AddListener(ConfirmPurchase);
+}
 
     private void CloseInspectPanel()
     {
@@ -360,6 +368,13 @@ public class DraftingManager : MonoBehaviour
     {
         isProcessing = true;
 
+        if (selectedSlotIndex < 0 || selectedSlotIndex >= activeCardData.Length)
+        {
+            Debug.LogError("Slot index tidak valid!");
+            isProcessing = false;
+            yield break;
+        }
+
         if (playerStats == null)
         {
             Debug.LogError("<color=red>DraftingManager: PlayerStats Kosong!</color>");
@@ -376,14 +391,84 @@ public class DraftingManager : MonoBehaviour
                 yield return StartCoroutine(AnimatePurchaseFly(activeUICards[selectedSlotIndex]));
             }
 
+            if (selectedCardData.cardCategory == CardData.CardCategory.Permanent)
+            {
+                if (PassiveCardManager.Instance != null)
+                    PassiveCardManager.Instance.RegisterPassiveCard(selectedCardData);
+            }
+
             if (playerHand != null) playerHand.AddCard(selectedCardData);
 
             if (activeCardsOnBoard[selectedSlotIndex] != null)
             {
                 Destroy(activeCardsOnBoard[selectedSlotIndex]);
                 activeCardsOnBoard[selectedSlotIndex] = null;
-                activeCardData[selectedSlotIndex] = null;
             }
+
+            activeUICards.RemoveAt(selectedSlotIndex);
+
+            for (int i = selectedSlotIndex; i > 0; i--)
+            {
+                activeCardData[i] = activeCardData[i - 1];
+                activeCardsOnBoard[i] = activeCardsOnBoard[i - 1];
+
+                if (activeCardsOnBoard[i] != null)
+                {
+                    CardDisplay display3D = activeCardsOnBoard[i].GetComponent<CardDisplay>();
+                    if (display3D != null) display3D.slotIndex = i;
+
+                    StartCoroutine(AnimateCardSlide(activeCardsOnBoard[i].transform, draftSlots[i]));
+                }
+            }
+
+            activeCardData[0] = null;
+            activeCardsOnBoard[0] = null;
+
+            if (currentCardPool.Count == 0) InitializeDraftPool();
+            CardData newDrawnCard = currentCardPool[0];
+            currentCardPool.RemoveAt(0);
+
+            activeCardData[0] = newDrawnCard;
+
+            GameObject newCard3D = Instantiate(card3DPrefab, deckPosition.position, deckPosition.rotation);
+            activeCardsOnBoard[0] = newCard3D;
+            CardDisplay newDisplay3D = newCard3D.GetComponent<CardDisplay>();
+            if (newDisplay3D != null) newDisplay3D.SetupCard(newDrawnCard, 0);
+
+            StartCoroutine(AnimateCardSlide(newCard3D.transform, draftSlots[0]));
+
+            GameObject newUICard = Instantiate(cardUIPrefab, marketGridContainer);
+            
+            newUICard.transform.SetAsFirstSibling();
+            
+            activeUICards.Insert(0, newUICard);
+
+            HandCardUI displayUI = newUICard.GetComponent<HandCardUI>();
+            if (displayUI != null)
+            {
+                displayUI.Setup(newDrawnCard);
+                displayUI.isHand = false;
+            }
+            StartCoroutine(AnimateCardEntrance(newUICard));
+
+            for (int i = 0; i < activeUICards.Count; i++)
+            {
+                int updateIndex = i;
+                HandCardUI uiScript = activeUICards[i].GetComponent<HandCardUI>();
+                if (uiScript != null)
+                {
+                    uiScript.marketSlotIndex = updateIndex;
+                }
+                
+                Button btn = activeUICards[i].GetComponent<Button>();
+                if (btn != null)
+                {
+                    btn.onClick.RemoveAllListeners();
+                    btn.onClick.AddListener(() => OpenInspectPanel(activeCardData[updateIndex], updateIndex));
+                }
+            }
+
+            yield return new WaitForSeconds(0.5f);
 
             isProcessing = false;
             CloseAllUI();
@@ -442,5 +527,127 @@ public class DraftingManager : MonoBehaviour
     {
         if (draftingUIPanel != null) draftingUIPanel.SetActive(false);
         if (inspectPanel != null) inspectPanel.SetActive(false);
+    }
+
+    public bool EnemyTryBuyCard(RobotStats enemyStats)
+    {
+        if (isProcessing) return false;
+
+        int bestSlot = -1;
+        int highestCost = -1;
+
+        // Cari kartu paling MAHAL yang musuh mampu beli
+        for (int i = 0; i < activeCardData.Length; i++)
+        {
+            if (activeCardData[i] != null && enemyStats.currentEnergy >= activeCardData[i].abilityPointCost)
+            {
+                if (activeCardData[i].abilityPointCost > highestCost)
+                {
+                    highestCost = activeCardData[i].abilityPointCost;
+                    bestSlot = i;
+                }
+            }
+        }
+
+        if (bestSlot != -1)
+        {
+            // Ada yang bisa dibeli! Mulai eksekusi beli!
+            StartCoroutine(EnemyDraftingSequence(enemyStats, bestSlot));
+            return true;
+        }
+
+        return false;
+    }
+
+    private IEnumerator EnemyDraftingSequence(RobotStats enemyStats, int slotIndex)
+    {
+        isProcessing = true;
+        CardData cardToBuy = activeCardData[slotIndex];
+
+        if (enemyStats.SpendEnergy(cardToBuy.abilityPointCost))
+        {
+            Debug.Log($"<color=magenta>Musuh memborong kartu: {cardToBuy.cardName}!</color>");
+
+            // 1. Hancurkan kartu 3D di arena
+            if (activeCardsOnBoard[slotIndex] != null)
+            {
+                Destroy(activeCardsOnBoard[slotIndex]);
+                activeCardsOnBoard[slotIndex] = null;
+            }
+
+            // 2. Conveyor Belt FIFO (Sama persis kayak punya lu!)
+            for (int i = slotIndex; i > 0; i--)
+            {
+                activeCardData[i] = activeCardData[i - 1];
+                activeCardsOnBoard[i] = activeCardsOnBoard[i - 1];
+
+                if (activeCardsOnBoard[i] != null)
+                {
+                    CardDisplay display3D = activeCardsOnBoard[i].GetComponent<CardDisplay>();
+                    if (display3D != null) display3D.slotIndex = i;
+                    StartCoroutine(AnimateCardSlide(activeCardsOnBoard[i].transform, draftSlots[i]));
+                }
+            }
+
+            activeCardData[0] = null;
+            activeCardsOnBoard[0] = null;
+
+            // 3. Tarik kartu baru buat ngisi slot paling kiri
+            if (currentCardPool.Count == 0) InitializeDraftPool();
+            CardData newDrawnCard = currentCardPool[0];
+            currentCardPool.RemoveAt(0);
+
+            activeCardData[0] = newDrawnCard;
+
+            GameObject newCard3D = Instantiate(card3DPrefab, deckPosition.position, deckPosition.rotation);
+            activeCardsOnBoard[0] = newCard3D;
+            CardDisplay newDisplay3D = newCard3D.GetComponent<CardDisplay>();
+            if (newDisplay3D != null) newDisplay3D.SetupCard(newDrawnCard, 0);
+
+            StartCoroutine(AnimateCardSlide(newCard3D.transform, draftSlots[0]));
+
+            // Catatan: Gak perlu spawn UI Card baru, karena musuh belanja saat UI layarnya ditutup.
+            // Pas giliran player ntar, fungsi OpenMarketUI() bakal nge-rebuild UI dari awal pake data yang udah fresh!
+
+            yield return new WaitForSeconds(1.5f); // Kasih pemain waktu buat ngeliat kartunya dicolong!
+            
+            isProcessing = false;
+            TurnManager.Instance.ProcessedToTurnEnd();
+        }
+        else
+        {
+            isProcessing = false;
+            TurnManager.Instance.ProcessedToTurnEnd();
+        }
+    }
+
+    public IEnumerator EnemyTryResetAndBuy(RobotStats enemyStats)
+    {
+        isProcessing = true;
+        Debug.Log("<color=magenta>Musuh tidak menemukan kartu yang cocok! Me-reset Market...</color>");
+
+        // 1. Bersihkan arena 3D seketika
+        ClearCurrentDraft3D();
+        
+        yield return new WaitForSeconds(0.3f);
+
+        // 2. Tarik 3 kartu baru dari Deck ke meja (Animasi otomatis jalan dari GenerateDraft3D)
+        GenerateDraft3D();
+
+        // Tunggu animasi kartu baru mendarat di slot
+        yield return new WaitForSeconds(0.8f);
+
+        isProcessing = false;
+
+        // 3. Coba borong kartu lagi dengan stok Market yang baru!
+        bool isBuying = EnemyTryBuyCard(enemyStats);
+
+        // Kalau abis reset tetep nggak dapet kartu yang mampu dibeli:
+        if (!isBuying)
+        {
+            Debug.Log("<color=magenta>Musuh tetap miskin / tidak bisa beli setelah reset. Skip belanja!</color>");
+            yield return new WaitForSeconds(1.5f);
+            TurnManager.Instance.ProcessedToTurnEnd();
+        }
     }
 }

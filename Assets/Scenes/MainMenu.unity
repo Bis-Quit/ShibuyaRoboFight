@@ -1569,7 +1569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9adf6e4dd30e84628af78e19f1839ebf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuManager
-  gameplaySceneName: Arena
+  gameplaySceneName: ChallengeMode
   mainmenuSceneName: MainMenu
   howtoplaySceneName: HowToPlay
   creditsSceneName: Credits
