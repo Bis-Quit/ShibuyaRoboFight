@@ -22,6 +22,12 @@ public class CharacterSelectionManager : MonoBehaviour
     [Header("UI Setting")]
     public List<CharacterButton> allButtons;
 
+    [Header("Background Setup")]
+    public List<GameObject> backgroundList;
+
+    [Header("Background Name Setup")]
+    public List<GameObject> backgroundNameList;
+
     private int selectedIndex = 0;
 
     private void Start()
@@ -39,6 +45,18 @@ public class CharacterSelectionManager : MonoBehaviour
         descriptionText.text = data.specialSkillDescription;
         hpText.text = data.maxHealth.ToString();
 
+        for (int i = 0; i < backgroundList.Count; i++)
+        {
+            if (backgroundList[i] != null)
+            {
+                backgroundList[i].SetActive(i == index);
+            }
+        }
+        for (int i = 0; i < backgroundNameList.Count; i++)
+        {
+            if (backgroundNameList[i] != null)
+                backgroundNameList[i].SetActive(i == index);
+        }
         if (currentDisplayedModel != null)
         {
             Destroy(currentDisplayedModel);
