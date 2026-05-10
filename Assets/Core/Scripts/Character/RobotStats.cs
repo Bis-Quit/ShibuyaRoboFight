@@ -1,11 +1,9 @@
 using System;
-using System.Drawing;
 using UnityEngine;
 
 public class RobotStats : MonoBehaviour
 {
     [Header("Data Character")]
-    [Tooltip("Tarik ScriptableObject dari Folder Data")]
     public CharacterData baseData;
 
     [Header("Current State")]
@@ -27,23 +25,24 @@ public class RobotStats : MonoBehaviour
     [Header("Buff Status")]
     public int bonusDice = 0;
 
-    private void Start()
+    private void Awake()
     {
         if (baseData != null)
         {
             currentHP = baseData.maxHealth;
             currentEnergy = baseData.startingEnergy;
             currentSkillPower = 0;
+            Debug.Log($"<color=cyan>[{gameObject.name}] {baseData.characterName} siap bertempur! HP: {currentHP}, Energy {currentEnergy}</color>");
+        }
+    }
 
-            Debug.Log($"<color=cyan>[{gameObject}] {baseData.characterName} siap bertempur! HP: {currentHP}, Energy {currentEnergy}</color>");
-
+    private void Start()
+    {
+        if (baseData != null)
+        {
             OnHPChanged?.Invoke(currentHP, baseData.maxHealth);
             OnEnergyChanged?.Invoke(currentEnergy);
             OnSkillPowerChanged?.Invoke(currentSkillPower);
-        }
-        else
-        {
-            Debug.LogWarning($"<color=red>[{gameObject.name}] CharacerData belum dimasukan!</color>");
         }
     }
 
@@ -53,9 +52,7 @@ public class RobotStats : MonoBehaviour
         if (currentHP < 0) currentHP = 0;
 
         OnAnyRobotDamaged?.Invoke(this, amount);
-
         Debug.Log($"[{baseData.characterName}] Kena {amount} Damage! Sisa HP: {currentHP}/{baseData.maxHealth}");
-
         OnHPChanged?.Invoke(currentHP, baseData.maxHealth);
 
         if (currentHP <= 0) Die();
@@ -67,17 +64,14 @@ public class RobotStats : MonoBehaviour
         if (currentHP > baseData.maxHealth) currentHP = baseData.maxHealth;
 
         Debug.Log($"[{baseData.characterName}] Di-heal {amount}! HP Sekarang: {currentHP}/{baseData.maxHealth}");
-
         OnHPChanged?.Invoke(currentHP, baseData.maxHealth);
         OnAnyRobotHealed?.Invoke(this, amount);
-
     }
 
     public void AddEnergy(int amount)
     {
         currentEnergy += amount;
         Debug.Log($"[{baseData.characterName}] Nambah {amount} Energy! Total Energy: {currentEnergy}");
-
         OnAnyRobotEnergyAdded?.Invoke(this, amount);
         OnEnergyChanged?.Invoke(currentEnergy);
     }
@@ -92,15 +86,13 @@ public class RobotStats : MonoBehaviour
         if (currentEnergy >= costAmount)
         {
             currentEnergy -= costAmount;
-
             Debug.Log($"[{baseData.characterName}] Berhasil beli kartu seharga {costAmount} Energy! Sisa Energy: {currentEnergy}");
-
             OnEnergyChanged?.Invoke(currentEnergy);
             return true;
         }
         else
         {
-            Debug.Log($"[{baseData.characterName}] Transaksi Gagal! Energy {currentEnergy} tidak cukup untuk beli kartu seharga {costAmount} Energy!");
+            Debug.Log($"[{baseData.characterName}] Transaksi Gagal! Energy {currentEnergy} tidak cukup!");
         }
         return false;
     }
@@ -108,10 +100,8 @@ public class RobotStats : MonoBehaviour
     public void AddSkillPower(int amount)
     {
         if (amount <= 0) return;
-
         currentSkillPower += amount;
         Debug.Log($"[{baseData.characterName}] Mendapat {amount} Skill Point! Total Skill Power: {currentSkillPower}");
-
         OnSkillPowerChanged?.Invoke(currentSkillPower);
     }
 
@@ -120,7 +110,6 @@ public class RobotStats : MonoBehaviour
         currentEnergy -= amount;
         if (currentEnergy < 0) currentEnergy = 0;
         Debug.Log($"[{baseData.characterName}] Kehilangan {amount} Energy! Sisa Energy: {currentEnergy}");
-
         OnAnyRobotEnergyLost?.Invoke(this, amount);
         OnEnergyChanged?.Invoke(currentEnergy); 
     }
@@ -135,7 +124,6 @@ public class RobotStats : MonoBehaviour
                     TugOfWarManager.Instance.MoveFame(1, TurnManager.Instance.CurrentPlayerIndex);
                     TugOfWarManager.Instance.MoveDestruction(1, TurnManager.Instance.CurrentPlayerIndex);
                     Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Fame +1, Destruction +1!</color>");
-
                     currentSkillPower -= 3;
                     OnSkillPowerChanged?.Invoke(currentSkillPower);
                 }
@@ -147,7 +135,6 @@ public class RobotStats : MonoBehaviour
                 int bonusEnergy = currentSkillPower *energyDiceRolled;
                 AddEnergy(bonusEnergy);
                 Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Bonus Energy +{bonusEnergy}!</color>");
-
                 currentSkillPower = 0;
                 OnSkillPowerChanged?.Invoke(currentSkillPower);
             }
@@ -158,7 +145,6 @@ public class RobotStats : MonoBehaviour
                 {
                     targetRobot.TakeDamage(3);
                     Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Serangan spesial! Target kena 3 damage!</color>");
-
                     currentSkillPower -= 2;
                     OnSkillPowerChanged?.Invoke(currentSkillPower);
                 }
@@ -167,15 +153,12 @@ public class RobotStats : MonoBehaviour
             case SpecialSkillType.CharacterD_ExtraDice:
                 if (currentSkillPower >= 3)
                 {
-                    /*DiceManager.Instance.ExtractDice(1);*/
                     Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Extract Dadu untuk gilingan berikutnya!</color>");
-
                     currentSkillPower -= 3;
                     OnSkillPowerChanged?.Invoke(currentSkillPower);
                 }
             break;
         }
-
     }
 
     public void AddbonusDice(int amount)

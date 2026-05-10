@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2180765083086003475}
+  - component: {fileID: 4883086385343919697}
   m_Layer: 0
   m_Name: Char A
   m_TagString: Untagged
@@ -32,6 +33,23 @@ Transform:
   - {fileID: 7698954777682057741}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4883086385343919697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7054620863673753145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d6c07b8cac5345548532fee8d434b42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RobotStats
+  baseData: {fileID: 11400000, guid: bfa28c3c046c44e18b05a0b41a0e643b, type: 2}
+  currentHP: 15
+  currentEnergy: 0
+  currentSkillPower: 0
+  bonusDice: 0
 --- !u!1001 &7877525725865344486
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -99,7 +117,7 @@ PrefabInstance:
     - target: {fileID: -1526964690268444965, guid: 397baa7ec06334486bcca5e816e178f8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 0016d32d106ce40f78b48f38a6a1c140, type: 2}
+      objectReference: {fileID: 2100000, guid: 0250c584f335a4d668420aa32289b1a0, type: 2}
     - target: {fileID: 919132149155446097, guid: 397baa7ec06334486bcca5e816e178f8, type: 3}
       propertyPath: m_Name
       value: karakter robot ikan

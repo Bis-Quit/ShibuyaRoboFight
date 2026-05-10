@@ -63,7 +63,6 @@ public class EnemyAIManager : MonoBehaviour
 
             List<Dice> diceOnTray = new List<Dice>(DiceManager.Instance.activeDice);
 
-            // BACA KONTEKS PERTARUNGAN (Context-Aware)
             float aiHpPercent = 1f;
             float playerHpPercent = 1f;
 
@@ -141,7 +140,6 @@ public class EnemyAIManager : MonoBehaviour
 
         if (DraftingManager.Instance != null && aiStats != null)
         {
-            // Coba beli kartu termahal
             bool isBuying = DraftingManager.Instance.EnemyTryBuyCard(aiStats);
             
             if (isBuying)
