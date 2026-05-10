@@ -16,6 +16,9 @@ public class CharacterData : ScriptableObject
     public int lockedDicePool = 0;
     public int powerCardSlot = 0;
 
+    [Header("Visual")]
+    public GameObject visualPrefab;
+
     [Header("Special Skill Mechanics")]
     [TextArea(2,4)]
     public string specialSkillDescription;
