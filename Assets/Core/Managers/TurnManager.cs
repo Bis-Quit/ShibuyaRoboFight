@@ -1,6 +1,8 @@
+using Unity.Cinemachine;
 using System;
 using System.Collections;
 using UnityEngine;
+using System.Runtime.CompilerServices;
 
 public class TurnManager : MonoBehaviour
 {
@@ -27,11 +29,32 @@ public class TurnManager : MonoBehaviour
 
     public static event Action<TurnPhase> OnPhaseChanged;
     public static event Action<int> OnPlayerTurnChanged;
+    public CinemachineCamera vcamArena;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        if (vcamArena != null)
+        {
+            vcamArena.gameObject.SetActive(false);
+            vcamArena.gameObject.SetActive(true);
+            vcamArena.Priority = 15;
+        }
+
+        if (Camera.main != null)
+        {
+            var brain = Camera.main.GetComponent<Unity.Cinemachine.CinemachineBrain>();
+            if (brain != null)
+            {
+                brain.enabled = false;
+                brain.enabled = true;
+            }
+        }
     }
 
     private void OnEnable()

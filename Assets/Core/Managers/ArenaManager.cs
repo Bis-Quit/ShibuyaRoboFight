@@ -59,6 +59,12 @@ public class ArenaManager : MonoBehaviour
                 {
                     aiManager.playerStats = statsCharacter;
                 }
+
+                GameOverManager gameOverManager = FindFirstObjectByType<GameOverManager>();
+                if (gameOverManager != null && statsCharacter != null)
+                {
+                    gameOverManager.playerRobot = statsCharacter;
+                }
             }
         }
         else
@@ -69,7 +75,17 @@ public class ArenaManager : MonoBehaviour
 
     public void SpawnEnemy()
     {
+        int playerID = PlayerPrefs.GetInt("SelectedPlayerID", 0);
         int randomEnemyID = Random.Range(0, characterDatabase.Length);
+
+        if (characterDatabase.Length > 1)
+        {
+            while (randomEnemyID == playerID)
+            {
+                randomEnemyID = Random.Range(0, characterDatabase.Length);
+            }
+        }
+
         CharacterData enemyData = characterDatabase[randomEnemyID];
 
         if (enemyData.visualPrefab != null)
@@ -98,6 +114,12 @@ public class ArenaManager : MonoBehaviour
             if (aiManager != null && statsEnemy != null)
             {
                 aiManager.aiStats = statsEnemy;
+            }
+
+            GameOverManager gameOverManager = FindFirstObjectByType<GameOverManager>();
+            if (gameOverManager != null && statsEnemy != null)
+            {
+                gameOverManager.enemyRobot = statsEnemy;
             }
         }
         else

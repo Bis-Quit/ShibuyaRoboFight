@@ -36,17 +36,15 @@ public class HUDManager : MonoBehaviour
 
     private void HandlePhaseChanged(TurnManager.TurnPhase phase)
     {
-        if (phase == TurnManager.TurnPhase.FirstRoll || phase == TurnManager.TurnPhase.RerollPhase)
+        if (phase == TurnManager.TurnPhase.FirstRoll ||
+            phase == TurnManager.TurnPhase.RerollPhase)
         {
             hudCanvasGroup.DOFade(1f, animDuration);
             SwitchToActionUI();
         }
-        else if (phase == TurnManager.TurnPhase.CardDrafting)
-        {
-            hudCanvasGroup.DOFade(0.2f, animDuration);
-            SwitchToArenaUI();
-        }
-        else if (phase == TurnManager.TurnPhase.TurnStart || phase == TurnManager.TurnPhase.Resolution || 
+        else if ( phase == TurnManager.TurnPhase.CardDrafting ||
+                phase == TurnManager.TurnPhase.TurnStart ||
+                phase == TurnManager.TurnPhase.Resolution || 
                 phase == TurnManager.TurnPhase.TurnEnd)
         {
             Debug.Log($"<color=cyan>HUDManager: Fase {phase}, HUD balik ke atas!</color>");

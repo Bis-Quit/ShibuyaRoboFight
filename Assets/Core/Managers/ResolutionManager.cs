@@ -156,15 +156,6 @@ public class ResolutionManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
 
-        // // -- SPECIAL POWER --
-        // if (diceCounts[DiceFace.SpecialPower] > 0 ||  diceCounts[DiceFace.Energy] > 0)
-        // {
-        //     int skillCount = diceCounts[DiceFace.SpecialPower];
-        //     Debug.Log($"[1] SPECIAL SKILL: Menambah {skillCount} Skill Point. Menunggu cek aktivasi...");
-        //     currentAttacker.ExecuteSpecialSkill(diceCounts[DiceFace.SpecialPower], diceCounts[DiceFace.Energy], currentDefender);
-        //     yield return new WaitForSeconds(1f);
-        // }
-
         TurnManager.Instance.ProcessedToDrafting();
     }
 }

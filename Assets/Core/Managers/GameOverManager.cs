@@ -41,8 +41,8 @@ public class GameOverManager : MonoBehaviour
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 
     [Header("Robot Reference")]
-    [SerializeField] private RobotStats playerRobot;
-    [SerializeField] private RobotStats enemyRobot;
+    public RobotStats playerRobot;
+    public RobotStats enemyRobot;
 
     private void Awake()
     {
