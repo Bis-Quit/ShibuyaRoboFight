@@ -16,6 +16,7 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     private Canvas canvas;
     private RectTransform rectTransform;
+    private PlayerHand parentHand;
     public bool isHand = false;
     public int marketSlotIndex = -1;
 
@@ -23,15 +24,20 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         canvas = GetComponent<Canvas>();
         rectTransform = GetComponent<RectTransform>();
+        parentHand = GetComponentInParent<PlayerHand>();
     }
 
     public void Setup(CardData data)
     {
+        if (data == null) return;
         cardData = data;
         if (cardImage != null) cardImage.sprite = data.cardIllustration;
     }
+
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (cardData == null) return;
+
         OnPointerExit(null); 
 
         if (!isHand) 
@@ -43,6 +49,21 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 DraftingManager.Instance.OpenInspectPanel(cardData, marketSlotIndex); 
             }
             return;
+        }
+
+        if (isHand)
+        {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                if (parentHand != null)
+                {
+                    parentHand.SelectedCardFromChild(rectTransform);
+                }
+            }
+            else if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                InspectManager.Instance.ShowCardPopup(cardData);
+            }
         }
 
         if (eventData.button == PointerEventData.InputButton.Right)
@@ -57,38 +78,40 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!isHand) return; 
+        if (!isHand || parentHand == null) return; 
+
+        if (parentHand == null) parentHand = GetComponentInParent<PlayerHand>();
+        if (parentHand == null) return;
 
         canvas.overrideSorting = true;
         canvas.sortingOrder = 100;
-        rectTransform.DOScale(hoverScale, animDuration).SetEase(Ease.OutBack);
+
+        int myIndex = parentHand.cardsInHand.IndexOf(rectTransform);
+        parentHand.RearrangeHand(myIndex);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!isHand) return;
-
-        canvas.overrideSorting = false;
-        canvas.sortingOrder = 0;
-        rectTransform.DOScale(1f, animDuration).SetEase(Ease.InBack);
+        if (!isHand || parentHand == null) return;
+        parentHand.RearrangeHand(-1);
     }
 
     private void PlayCard()
     {
         if (!isHand) return;
-
         if (TurnManager.Instance.CurrentPlayerIndex != 0) return;
-
         if (cardData.cardCategory != CardData.CardCategory.Instant) return;
-
         if (CardEffectManager.Instance != null)
         {
             CardEffectManager.Instance.ApplyCardEffect(cardData);
         }
 
         PlayerHand hand = GetComponentInParent<PlayerHand>();
-        if (hand != null) hand.cardsInHand.Remove(cardData);
-
+        if (hand != null)
+        {
+            hand.cardsInHand.Remove(rectTransform);
+            hand.RearrangeHand();
+        }
         Destroy(this.gameObject);
     }
 }

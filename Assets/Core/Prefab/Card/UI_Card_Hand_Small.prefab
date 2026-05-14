@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2327851538733995176}
   - component: {fileID: 604885355834856045}
   - component: {fileID: 2590106819586970989}
+  - component: {fileID: 8034146890868420991}
   m_Layer: 5
   m_Name: UI_Card_Hand_Small
   m_TagString: Untagged
@@ -35,11 +36,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -1200, y: -610}
   m_SizeDelta: {x: 100, y: 140}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &1588003730523932727
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -137,3 +138,15 @@ MonoBehaviour:
   hoverOffset: {x: 0, y: 0}
   isHand: 0
   marketSlotIndex: -1
+--- !u!225 &8034146890868420991
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5167255001264781725}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

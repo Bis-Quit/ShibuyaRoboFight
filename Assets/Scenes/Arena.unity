@@ -428,7 +428,6 @@ GameObject:
   - component: {fileID: 194039440}
   - component: {fileID: 194039439}
   - component: {fileID: 194039441}
-  - component: {fileID: 194039442}
   m_Layer: 5
   m_Name: Hand Panel
   m_TagString: Untagged
@@ -450,11 +449,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1254675536}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 160, y: 0}
-  m_SizeDelta: {x: 250, y: 800}
-  m_Pivot: {x: 0, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 781}
+  m_SizeDelta: {x: 800, y: 250}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &194039439
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -507,33 +506,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHand
   handCardPrefab: {fileID: 5167255001264781725, guid: 800b9fde0d0f7419d94c0ef8e5ee3b68, type: 3}
   handContainer: {fileID: 194039437}
+  spacing: 120
+  fanArc: 8
+  heightCurve: 15
+  animDuration: 0.7
+  hoveredScale: 1.15
+  hoveredFocusOffset: 40
+  hoveredYOffset: 30
+  selectedYOffset: 150
+  selectedScale: 1.3
+  selectedIndex: -1
   cardsInHand: []
---- !u!114 &194039442
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 194039436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
-  m_Padding:
-    m_Left: 20
-    m_Right: 0
-    m_Top: 20
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: -90
-  m_ChildForceExpandWidth: 0
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!1 &231592897
 GameObject:
   m_ObjectHideFlags: 0
@@ -2329,7 +2312,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -978, y: 414}
+  m_AnchoredPosition: {x: -814, y: 414}
   m_SizeDelta: {x: 89, y: 87}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &768824736
@@ -3204,11 +3187,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HUDManager
   playerHPBar: {fileID: 1165596243}
   enemyHPBar: {fileID: 1563337354}
-  trackerTile: {fileID: 0}
-  playerHPArenaPos: {x: -7710.995, y: 590.8567}
+  playerHPArenaPos: {x: -7616, y: 590.8567}
   enemyHPArenaPos: {x: -6592.959, y: 590.8567}
   trackerArenaPos: {x: 0, y: 0}
-  playerHPActionPos: {x: -7710.995, y: -120}
+  playerHPActionPos: {x: -7616, y: -120}
   enemyHPActionPos: {x: -6592.959, y: -120}
   trackerActionPos: {x: 0, y: 0}
   animDuration: 1
@@ -3684,7 +3666,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -7780, y: 590.8567}
+  m_AnchoredPosition: {x: -7616, y: 590.8567}
   m_SizeDelta: {x: 263.3, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1165596244

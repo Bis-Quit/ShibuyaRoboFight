@@ -6,7 +6,7 @@ public class HUDManager : MonoBehaviour
     [Header("HUD Elements")]
     public RectTransform playerHPBar;
     public RectTransform enemyHPBar;
-    public RectTransform trackerTile;
+    // public RectTransform trackerTile;
 
     [Header("Arena Mode (VCam Arena)")]
     public Vector2 playerHPArenaPos;
@@ -57,13 +57,13 @@ public class HUDManager : MonoBehaviour
     {
         playerHPBar.DOAnchorPos(playerHPArenaPos, animDuration).SetEase(Ease.InOutQuad);
         enemyHPBar.DOAnchorPos(enemyHPArenaPos,animDuration).SetEase(Ease.InOutQuad);
-        trackerTile.DOAnchorPos(trackerArenaPos, animDuration).SetEase(Ease.InBack);
+        // trackerTile.DOAnchorPos(trackerArenaPos, animDuration).SetEase(Ease.InBack);
     }
 
     public void SwitchToActionUI()
     {
         playerHPBar.DOAnchorPos(playerHPActionPos, animDuration).SetEase(Ease.OutBack);
         enemyHPBar.DOAnchorPos(enemyHPActionPos, animDuration).SetEase(Ease.OutBack);
-        trackerTile.DOAnchorPos(trackerActionPos, animDuration).SetEase(Ease.OutBack);
+        // trackerTile.DOAnchorPos(trackerActionPos, animDuration).SetEase(Ease.OutBack);
     }
 }
