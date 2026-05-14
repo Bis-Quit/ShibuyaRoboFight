@@ -237,16 +237,14 @@ public class DraftingManager : MonoBehaviour
 
         if (playerStats.SpendEnergy(selectedCardData.abilityPointCost))
         {
-            CloseInspectPanel();
+            if (inspectPanel != null) inspectPanel.SetActive(false);
 
             if (activeUICards.Count > selectedSlotIndex && activeUICards[selectedSlotIndex] != null)
             {
                 GameObject boughtUICard = activeUICards[selectedSlotIndex];
                 boughtUICard.transform.SetParent(draftingUIPanel.transform, true); 
-                StartCoroutine(AnimatePurchaseFly(boughtUICard));
+                StartCoroutine(AnimatePurchaseFly(boughtUICard, selectedCardData));
             }
-
-            if (playerHand != null) playerHand.AddCard(selectedCardData);
 
             if (activeCardsOnBoard[selectedSlotIndex] != null) 
                 Destroy(activeCardsOnBoard[selectedSlotIndex]);
@@ -323,20 +321,43 @@ public class DraftingManager : MonoBehaviour
         }
     }
 
-    private IEnumerator AnimatePurchaseFly(GameObject card)
+    private IEnumerator AnimatePurchaseFly(GameObject card, CardData dataToAdd)
     {
-        RectTransform rect = card.GetComponent<RectTransform>();
-        Vector3 start = rect.position;
-        Vector3 target = handTargetUI != null ? handTargetUI.position : start;
+        RectTransform rect = null;
+        Vector3 start = Vector3.zero;
+        Vector3 target = handTargetUI != null ? handTargetUI.position : Vector3.zero;
+
+        if (card != null)
+        {
+            rect = card.GetComponent<RectTransform>();
+            start = rect.position;
+        }
+
         float elapsed = 0, duration = 0.5f;
+
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            rect.position = Vector3.Lerp(start, target, elapsed / duration);
-            rect.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.4f, elapsed / duration);
+
+            if (card != null && rect != null)
+            {
+                rect.position = Vector3.Lerp(start, target, elapsed / duration);
+                rect.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.4f, elapsed / duration);
+            }
+
             yield return null;
         }
-        Destroy(card);
+
+        if (playerHand != null && dataToAdd != null) 
+        {
+            Debug.Log($"<color=cyan>Sukses mendarat! Menambahkan {dataToAdd.cardName} ke tangan.</color>");
+            playerHand.AddCard(dataToAdd);
+        }
+        else
+        {
+            Debug.LogError("Gagal nambah kartu! PlayerHand atau dataToAdd kosong!");
+        }
+        if (card != null) Destroy(card); 
     }
 
     private IEnumerator ShakeUI(Transform ui)

@@ -65,6 +65,12 @@ public class ArenaManager : MonoBehaviour
                 {
                     gameOverManager.playerRobot = statsCharacter;
                 }
+
+                CardEffectManager cardEffectManager = FindFirstObjectByType<CardEffectManager>();
+                if (cardEffectManager != null && statsCharacter != null)
+                {
+                    cardEffectManager.playerStats = statsCharacter;
+                }
             }
         }
         else
@@ -120,6 +126,12 @@ public class ArenaManager : MonoBehaviour
             if (gameOverManager != null && statsEnemy != null)
             {
                 gameOverManager.enemyRobot = statsEnemy;
+            }
+
+            CardEffectManager cardEffectManager = FindFirstObjectByType<CardEffectManager>();
+            if (cardEffectManager != null && statsEnemy != null)
+            {
+                cardEffectManager.enemyStats = statsEnemy;
             }
         }
         else

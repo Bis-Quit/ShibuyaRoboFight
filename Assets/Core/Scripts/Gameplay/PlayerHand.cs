@@ -27,16 +27,21 @@ public class PlayerHand : MonoBehaviour
 
     public List<RectTransform> cardsInHand = new List<RectTransform>();
 
-    public void AddCard(CardData data)
+    public void AddCard(CardData newCardData)
     {
         GameObject newCardObj = Instantiate(handCardPrefab, handContainer);
-        RectTransform cardRT = newCardObj.GetComponent<RectTransform>();
-        HandCardUI cardUI = newCardObj.GetComponent<HandCardUI>();
-        if (cardUI != null)
+        
+        HandCardUI uiScript = newCardObj.GetComponent<HandCardUI>();
+        if (uiScript != null)
         {
-            cardUI.Setup(data);
+            uiScript.Setup(newCardData);
+            uiScript.isHand = true; 
         }
 
+        RectTransform cardRT = newCardObj.GetComponent<RectTransform>();
+
+        cardRT.localPosition = Vector3.zero; 
+        cardRT.localScale = Vector3.one * 0.5f; 
         cardsInHand.Add(cardRT);
         RearrangeHand();
     }
