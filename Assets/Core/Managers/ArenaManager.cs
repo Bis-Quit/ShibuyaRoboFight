@@ -82,17 +82,31 @@ public class ArenaManager : MonoBehaviour
     public void SpawnEnemy()
     {
         int playerID = PlayerPrefs.GetInt("SelectedPlayerID", 0);
-        int randomEnemyID = Random.Range(0, characterDatabase.Length);
+        int finalEnemyID;
 
-        if (characterDatabase.Length > 1)
+        if (PlayerPrefs.HasKey("CurrentEnemyID"))
         {
-            while (randomEnemyID == playerID)
+            finalEnemyID = PlayerPrefs.GetInt("CurrentEnemyID");
+            Debug.Log($"<color=green>Retry Aktif! Musuh menggunakan ID: {finalEnemyID}</color>");
+        }
+        else
+        {
+            finalEnemyID = Random.Range(0, characterDatabase.Length);
+
+            if (characterDatabase.Length > 1)
             {
-                randomEnemyID = Random.Range(0, characterDatabase.Length);
+                while (finalEnemyID == playerID)
+                {
+                    finalEnemyID = Random.Range(0, characterDatabase.Length);
+                }
             }
+
+            PlayerPrefs.SetInt("CurrentEnemyID", finalEnemyID);
+            PlayerPrefs.Save();
+            Debug.Log($"<color=yellow>Memilih Enemy dengan random: ID {finalEnemyID}</color>");
         }
 
-        CharacterData enemyData = characterDatabase[randomEnemyID];
+        CharacterData enemyData = characterDatabase[finalEnemyID];
 
         if (enemyData.visualPrefab != null)
         {

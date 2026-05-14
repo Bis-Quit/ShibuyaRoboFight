@@ -84,6 +84,8 @@ public class CharacterSelectionManager : MonoBehaviour
     {
         Debug.Log("Karakter Terpilih: " + characterDatabase[selectedIndex].characterName);
 
+        PlayerPrefs.DeleteKey("CurrentEnemyID");
+
         PlayerPrefs.SetInt("SelectedPlayerID", selectedIndex);
         PlayerPrefs.Save();
 

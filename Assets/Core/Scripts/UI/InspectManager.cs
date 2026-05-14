@@ -6,13 +6,13 @@ public class InspectManager : MonoBehaviour
     public static InspectManager Instance;
 
     [Header("UI References")]
-    public CanvasGroup popupCanvasGroup; // Tarik 'Panel Inspect Card' (Root) ke sini
-    public RectTransform popupPanel;     // Tarik 'CardContentContainer' ke sini
+    public CanvasGroup popupCanvasGroup;
+    public RectTransform popupPanel;
 
     private void Awake()
     {
         Instance = this;
-        
+
         popupCanvasGroup.alpha = 0;
         popupCanvasGroup.blocksRaycasts = false;
         popupPanel.localScale = Vector3.zero;
@@ -20,7 +20,6 @@ public class InspectManager : MonoBehaviour
 
     public void ShowCardPopup(CardData data)
     {
-        // Matiin animasi sebelumnya kalau masih jalan
         DOTween.Kill(popupCanvasGroup);
         DOTween.Kill(popupPanel);
 
@@ -39,8 +38,7 @@ public class InspectManager : MonoBehaviour
 
         popupCanvasGroup.blocksRaycasts = false;
         popupCanvasGroup.DOFade(0, 0.2f);
-        
-        // Diganti ke 0f biar ngecil sampai hilang
+
         popupPanel.DOScale(0f, 0.2f).SetEase(Ease.InBack).OnComplete(() => 
         {
             if (DraftingManager.Instance != null)
