@@ -125,4 +125,15 @@ public class PlayerHand : MonoBehaviour
 
         RearrangeHand();
     }
+
+    public void RemoveCardFromHand(GameObject cardObj)
+    {
+        RectTransform rt = cardObj.GetComponent<RectTransform>();
+
+        if (cardsInHand.Remove(rt))
+        {
+            cardsInHand.Remove(rt);
+            RearrangeHand();
+        }
+    }
 }

@@ -55,24 +55,15 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
-                if (parentHand != null)
+                if (HandInspectManager.Instance != null)
                 {
-                    parentHand.SelectedCardFromChild(rectTransform);
+                    HandInspectManager.Instance.OpenInspect(cardData, this.gameObject);
                 }
             }
             else if (eventData.button == PointerEventData.InputButton.Right)
             {
                 InspectManager.Instance.ShowCardPopup(cardData);
             }
-        }
-
-        if (eventData.button == PointerEventData.InputButton.Right)
-        {
-            InspectManager.Instance.ShowCardPopup(cardData);
-        }
-        else if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            PlayCard();
         }
     }
 
