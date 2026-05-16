@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class BattleUIManager : MonoBehaviour
 {
@@ -18,9 +19,13 @@ public class BattleUIManager : MonoBehaviour
     public GameObject actionButtons;
 
     [Header("Cinemachine Cameras")]
-    public GameObject VCamArena;
-    public GameObject VCamPlayer;
-    public GameObject VCamEnemy;
+    public CinemachineCamera VCamArena;
+    public CinemachineCamera VCamPlayer;
+    public CinemachineCamera VCamEnemy;
+
+    [Header("Priority Settings")]
+    [SerializeField] private int activePriority = 15;
+    [SerializeField] private int inactivePriority = 10;
 
     private void Awake()
     {
@@ -65,9 +70,7 @@ public class BattleUIManager : MonoBehaviour
         if (panelMainBattle != null) panelMainBattle.SetActive(true);
         if (panelDiceScreen != null) panelDiceScreen.SetActive(false);
 
-        if (VCamArena != null) VCamArena.SetActive(true);
-        if (VCamPlayer != null) VCamPlayer.SetActive(false);
-        if (VCamEnemy != null) VCamEnemy.SetActive(false);
+        SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
 
         Debug.Log("<color=cyan>UIManager: Pindah ke Layar Main Battle!</color>");
     }
@@ -75,32 +78,33 @@ public class BattleUIManager : MonoBehaviour
     private void ShowDiceScreen(bool isPlayerTurn)
     {
         if (panelMainBattle != null) panelMainBattle.SetActive(false);
-        if (panelDiceScreen != null) panelDiceScreen.SetActive(false);
         if (btnTapToRoll != null) btnTapToRoll.SetActive(isPlayerTurn);
         if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
 
-        if (VCamArena != null) VCamArena.SetActive(false);
+        Debug.Log("<color=cyan>UIManager: Pindah ke Layar Lempar Dadu!</color>");
 
         if (isPlayerTurn)
         {
-            if (VCamPlayer != null) VCamPlayer.SetActive(true);
-            if (VCamEnemy != null) VCamEnemy.SetActive(false);
+            SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
         }
         else
         {
-            if (VCamPlayer != null) VCamPlayer.SetActive(false);
-            if (VCamEnemy != null) VCamEnemy.SetActive(true);
+            SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
         }
 
-        Debug.Log("<color=cyan>UIManager: Pindah ke Layar Lempar Dadu!</color>");
-
         StartCoroutine(DelayDiceUI(2f));
+    }
+
+    private void SetCameraPriority(CinemachineCamera targetActive, CinemachineCamera low1, CinemachineCamera low2)
+    {
+        if (targetActive != null) targetActive.Priority = activePriority;
+        if (low1 != null) low1.Priority = inactivePriority;
+        if (low2 != null) low2.Priority = inactivePriority;
     }
 
     private IEnumerator DelayDiceUI(float delay)
     {
         yield return new WaitForSeconds(delay);
-
         if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
     }
 }
