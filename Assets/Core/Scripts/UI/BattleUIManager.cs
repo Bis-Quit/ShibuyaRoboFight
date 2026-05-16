@@ -5,6 +5,8 @@ using Unity.Cinemachine;
 
 public class BattleUIManager : MonoBehaviour
 {
+    public static BattleUIManager Instance;
+
     [Header("UI Panels")]
     [Tooltip("Tarik Panel Main Battle dari Hierarchy ke sini!")]
     public GameObject panelMainBattle;
@@ -29,6 +31,7 @@ public class BattleUIManager : MonoBehaviour
 
     private void Awake()
     {
+        Instance = this;
         ShowMainBattleScreen();
     }
 
@@ -106,5 +109,47 @@ public class BattleUIManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
+    }
+
+    private CinemachineCamera previousCam;
+    public void FocusCamera (bool isPlayer)
+    {
+        if (VCamPlayer != null && VCamPlayer.Priority >= VCamArena.Priority && VCamPlayer.Priority >= VCamEnemy.Priority)
+        {
+            previousCam = VCamPlayer;
+        }
+        else if (VCamEnemy != null && VCamEnemy.Priority >= VCamArena.Priority && VCamEnemy.Priority >= VCamPlayer.Priority)
+        {
+            previousCam = VCamEnemy;
+        }
+        else
+        {
+            previousCam = VCamArena;
+        }
+
+        if (isPlayer)
+        {
+            SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
+        }
+        else
+        {
+            SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
+        }
+    }
+
+    public void ResetCamera()
+    {
+        if (previousCam == VCamPlayer)
+        {
+            SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
+        }
+        else if (previousCam == VCamEnemy)
+        {
+            SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
+        }
+        else
+        {
+            SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
+        }
     }
 }

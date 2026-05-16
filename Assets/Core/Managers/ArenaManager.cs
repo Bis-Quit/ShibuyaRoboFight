@@ -70,6 +70,7 @@ public class ArenaManager : MonoBehaviour
                 if (cardEffectManager != null && statsCharacter != null)
                 {
                     cardEffectManager.playerStats = statsCharacter;
+                    cardEffectManager.playerAnim = characterObject.GetComponentInChildren<CharacterAnimator>();
                 }
             }
         }
@@ -146,6 +147,7 @@ public class ArenaManager : MonoBehaviour
             if (cardEffectManager != null && statsEnemy != null)
             {
                 cardEffectManager.enemyStats = statsEnemy;
+                cardEffectManager.enemyAnim = enemyObject.GetComponentInChildren<CharacterAnimator>();
             }
         }
         else

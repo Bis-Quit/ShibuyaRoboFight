@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Collections;
 
 public class HandInspectManager : MonoBehaviour
 {
@@ -12,6 +13,12 @@ public class HandInspectManager : MonoBehaviour
     public Button useButton;
     public Button cancelButton;
 
+    [Header("Cinematic Skill UI")]
+    public CanvasGroup cinematicContainer;
+    public RectTransform cinematicCardPosition;
+    public HandCardUI cinematicCardUI;
+    public Text cinematicSkillText;
+
     private CardData currentCardData;
     private GameObject originalCardObject;
 
@@ -22,6 +29,7 @@ public class HandInspectManager : MonoBehaviour
         useButton.onClick.AddListener(ConfirmUseCard);
 
         if (inspectPanel != null) inspectPanel.SetActive(false);
+        if (cinematicContainer != null) cinematicContainer.gameObject.SetActive(false);
     }
 
     public void OpenInspect(CardData data, GameObject originalObj)
@@ -43,7 +51,6 @@ public class HandInspectManager : MonoBehaviour
         useButton.interactable = (isMyTurn && isInstant);
 
         inspectPanel.SetActive(true);
-        // originalCardObject.SetActive(false);
     }
 
     public void CloseInspect()
@@ -58,9 +65,49 @@ public class HandInspectManager : MonoBehaviour
 
     private void ConfirmUseCard()
     {
+        inspectPanel.SetActive(false);
+        StartCoroutine(CinematicCutInRoutine());
+    }
+
+    private IEnumerator CinematicCutInRoutine()
+    {
+        // --- CAMERA ZOOM ---
+        if (BattleUIManager.Instance != null)
+            BattleUIManager.Instance.FocusCamera(true);
+
+        // --- CARD SUMMON ---
+        if (cinematicContainer != null && cinematicCardUI != null)
+        {
+            cinematicCardUI.Setup(currentCardData);
+            cinematicCardUI.isHand = false;
+            if (cinematicSkillText != null) cinematicSkillText.text = currentCardData.cardName;
+
+            cinematicCardPosition.localScale = Vector3.zero;
+            cinematicCardPosition.localRotation = Quaternion.Euler(0, 0, -45f); 
+            cinematicContainer.alpha = 0;
+            cinematicContainer.gameObject.SetActive(true);
+
+            cinematicContainer.DOFade(1, 0.2f);
+            
+            cinematicCardPosition.DOScale(0.8f, 0.4f).SetEase(Ease.OutBack);
+            
+            cinematicCardPosition.DOLocalRotate(Vector3.zero, 0.4f).SetEase(Ease.OutBack);
+            cinematicCardPosition.DOShakeAnchorPos(0.2f, 15f);
+
+            yield return new WaitForSeconds(1.5f);
+
+            cinematicCardPosition.DOScale(0f, 0.3f).SetEase(Ease.InBack);
+            cinematicContainer.DOFade(0, 0.3f);
+            
+            yield return new WaitForSeconds(0.4f); 
+            
+            cinematicContainer.gameObject.SetActive(false);
+        }
+
+        // --- CARD EFFECT ---
         if (CardEffectManager.Instance != null)
         {
-            CardEffectManager.Instance.ApplyCardEffect(currentCardData);
+            yield return StartCoroutine(CardEffectManager.Instance.ApplyCardEffect(currentCardData));
         }
 
         if (originalCardObject != null)
@@ -72,6 +119,11 @@ public class HandInspectManager : MonoBehaviour
             }
             Destroy(originalCardObject);
         }
-        inspectPanel.SetActive(false);
+
+        yield return new WaitForSeconds(1f);
+
+        // --- CAMERA BACK TO NORMAL ---
+        if (BattleUIManager.Instance != null)
+            BattleUIManager.Instance.ResetCamera();
     }
 }
