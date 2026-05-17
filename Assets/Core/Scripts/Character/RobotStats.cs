@@ -154,6 +154,7 @@ public class RobotStats : MonoBehaviour
                 if (currentSkillPower >= 3)
                 {
                     Debug.Log($"<color=yellow>{baseData.characterName} ULTIMATE: Extract Dadu untuk gilingan berikutnya!</color>");
+                    AddbonusDice(1);
                     currentSkillPower -= 3;
                     OnSkillPowerChanged?.Invoke(currentSkillPower);
                 }

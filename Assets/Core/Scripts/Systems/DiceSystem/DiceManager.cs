@@ -51,18 +51,37 @@ public class DiceManager : MonoBehaviour
 
     private void SpawnDice()
     {
-        RobotStats currentPlayer = (TurnManager.Instance.CurrentPlayerIndex == 0) ? playerStats : enemyStats;
+        bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
+        RobotStats currentPlayer = isPlayerTurn ? playerStats : enemyStats;
 
-        int totalDiceToSpawn = numberOfDice;
+        if (currentPlayer == null || currentPlayer.gameObject.scene.name == null)
+        {
+            Debug.LogWarning(" DiceManager kehilangan jejak robot! Memaksa sinkronisasi dengan CardEffectManager...");
+            
+            if (CardEffectManager.Instance != null)
+            {
+                currentPlayer = isPlayerTurn ? CardEffectManager.Instance.playerStats : CardEffectManager.Instance.enemyStats;
+                
+                if (isPlayerTurn) playerStats = currentPlayer;
+                else enemyStats = currentPlayer;
+            }
+        }
+
+        int totalDiceToSpawn = 6;
+        if (currentPlayer != null && currentPlayer.baseData != null)
+        {
+            totalDiceToSpawn = currentPlayer.baseData.activeDicePool;
+        }
 
         if (currentPlayer != null && currentPlayer.bonusDice > 0)
         {
+            Debug.Log($"<color=yellow>MENGELUARKAN {currentPlayer.bonusDice} DADU TAMBAHAN DARI TABUNGAN!</color>");
             totalDiceToSpawn += currentPlayer.bonusDice;
-            Debug.Log($"<color=yellow>MENGELUARKAN {currentPlayer.bonusDice} DADU TAMBAHAN DARI KARTU!</color>");
-
-            currentPlayer.bonusDice = 0;
+            
+            currentPlayer.bonusDice = 0; 
         }
-        Debug.Log($"DiceManager: Memunculkan {numberOfDice} dadu di udara Shibuya...");
+
+        Debug.Log($"DiceManager: Memunculkan {totalDiceToSpawn} dadu di udara Shibuya...");
 
         for(int i = 0; i < totalDiceToSpawn; i++)
         {
@@ -72,7 +91,6 @@ public class DiceManager : MonoBehaviour
             Vector3 finalSpawnPos = spawnPoint.position + randomOffset;
 
             GameObject newDiceObj = Instantiate(dicePrefab, finalSpawnPos, Random.rotation);
-
             newDiceObj.name = "Dadu_" + (i+1);
 
             Dice diceScript = newDiceObj.GetComponent<Dice>();
@@ -150,134 +168,6 @@ public class DiceManager : MonoBehaviour
         }
     }
 
-/*
-    public void EndTurnAndResolve()
-    {
-        if (activeDice.Count > 0 && isCheckingRollStatus)
-        {
-            Debug.Log("<color=yellow>Tunggu dadu berhenti dahulu!</color>");
-            return;
-        }
-
-        List<Dice> finalDicePool = new List<Dice>();
-        finalDicePool.AddRange(lockedDice);
-        finalDicePool.AddRange(activeDice);
-
-        if (finalDicePool.Count == 0)
-        {
-            Debug.Log("<color=red>DiceManager: Tidak ada dadu untuk di-Resolve!</color>");
-            return;
-        }
-
-        Debug.Log($"<color=magenta>--- MEMULAI RESOLVE PHASE ({finalDicePool.Count} Dadu) ---</color>");
-
-        RobotStats currentAttacker;
-        RobotStats currentDefender;
-
-        if (TurnManager.Instance.CurrentPlayerIndex == 0)
-        {
-            currentAttacker = playerStats;
-            currentDefender = enemyStats;
-            Debug.Log("DiceManager: Player menyerang Enemy dengan hasil dadu berikut:");
-        }
-        else
-        {
-            currentAttacker = enemyStats;
-            currentDefender = playerStats;
-            Debug.Log("DiceManager: Enemy menyerang Player dengan hasil dadu berikut:");
-        }
-
-        Dictionary<DiceFace, int> diceCounts = new Dictionary<DiceFace, int>();
-        foreach (DiceFace face in Enum.GetValues(typeof(DiceFace)))
-        {
-            diceCounts[face] = 0;
-        }
-
-        foreach (Dice dice in finalDicePool)
-        {
-            if (dice != null)
-            {
-                diceCounts[dice.CurrentFace]++;
-            }
-        }
-
-        if (diceCounts[DiceFace.SpecialPower] > 0)
-        {
-            int count = diceCounts[DiceFace.SpecialPower];
-            Debug.Log($"[1] SPECIAL SKILL: Menambah {count} Skill Point. Menunggu cek aktivasi...");
-        }
-
-        if (diceCounts[DiceFace.Heal] > 0)
-        {
-            int count = diceCounts[DiceFace.Heal];
-            Debug.Log($"[2] HEAL: Player dipulihkan sebanyak {count * 2} HP.");
-
-            if (currentAttacker != null) currentAttacker.Heal(count * 2);
-        }
-
-        if (diceCounts[DiceFace.Smash] > 0)
-        {
-            int count = diceCounts[DiceFace.Smash];
-            Debug.Log($"[3] ATTACK: Menyerang musuh dengan {count} Damage!");
-
-            if (currentDefender != null) currentDefender.TakeDamage(count);
-        }
-
-        if (diceCounts[DiceFace.Energy] > 0)
-        {
-            int count = diceCounts[DiceFace.Energy];
-            Debug.Log($"[4] ENERGY: Menambah {count} Ability Point ke Player.");
-
-            if (currentAttacker != null) currentAttacker.AddEnergy(count);
-        }
-
-        int destructCount = diceCounts[DiceFace.Destruction];
-        if (destructCount > 0)
-        {
-            int destructPoints = 0;
-            if (destructCount >= 3)
-            {
-                destructPoints += 1;
-
-                if (destructCount % 3 > 0)
-                {
-                    destructPoints += (destructCount % 3);
-                }
-
-                Debug.Log($"[5] DESTRUCT: KOMBO AKTIF! Menarik Destruct Token sebanyak {destructPoints} poin.");
-
-                TugOfWarManager.Instance.MoveDestruction(destructPoints, TurnManager.Instance.CurrentPlayerIndex);
-            }
-            else
-            {
-                Debug.Log($"[5] DESTRUCT: Gagal kombo. (Dapat {destructCount} dadu, butuh minimal 3).");
-            }
-        }
-
-        int fameCount = diceCounts[DiceFace.Fame];
-        if (fameCount > 0)
-        {
-            int famePoints = 0;
-            if (fameCount >= 3)
-            {
-                famePoints += 1;
-
-                if (fameCount % 3 > 0)  famePoints += (fameCount % 3);
-
-                Debug.Log($"[6] FAME: KOMBO AKTIF! Menarik Fame Token sebanyak {famePoints} poin.");
-
-                TugOfWarManager.Instance.MoveFame(famePoints, TurnManager.Instance.CurrentPlayerIndex);
-            }
-            else
-            {
-                Debug.Log($"[6] FAME: Gagal kombo. (Dapat {fameCount} dadu, butuh minimal 3).");
-            }
-        }
-
-        Debug.Log("<color=magenta>--- RESOLVE PHASE SELESAI ---</color>");
-
-    }
-*/
     private void Update()
     {
         if (isCheckingRollStatus)

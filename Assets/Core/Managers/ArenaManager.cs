@@ -34,6 +34,15 @@ public class ArenaManager : MonoBehaviour
                 characterObject.transform.localScale = playerSpawnPoint.localScale; 
 
                 RobotStats statsCharacter = characterObject.GetComponent<RobotStats>();
+                if (statsCharacter != null)
+                {
+                    statsCharacter.baseData = selectedData;
+                }
+
+                if (DiceManager.Instance != null)
+                {
+                    DiceManager.Instance.playerStats = statsCharacter;
+                }
 
                 if (playerUI != null && statsCharacter != null)
                 {
@@ -115,6 +124,15 @@ public class ArenaManager : MonoBehaviour
             enemyObject.transform.localScale = enemySpawnPoint.localScale; 
 
             RobotStats statsEnemy = enemyObject.GetComponent<RobotStats>();
+            if (statsEnemy != null)
+            {
+                statsEnemy.baseData = enemyData;
+            }
+
+            if (DiceManager.Instance != null)
+            {
+                DiceManager.Instance.enemyStats = statsEnemy;
+            }
 
             if (enemyUI != null && statsEnemy != null)
             {

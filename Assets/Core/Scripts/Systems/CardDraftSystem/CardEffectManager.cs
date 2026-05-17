@@ -22,7 +22,7 @@ public class CardEffectManager : MonoBehaviour
 
     public IEnumerator ApplyCardEffect(CardData card)
     {
-        Debug.Log($"<color=cyan>🔥 MENGAKTIFKAN JURUS: {card.cardName} 🔥</color>");
+        Debug.Log($"<color=cyan>MENGAKTIFKAN JURUS: {card.cardName}</color>");
 
         RobotStats caster = playerStats; 
         CharacterAnimator casterAnim = playerAnim;
@@ -95,8 +95,8 @@ public class CardEffectManager : MonoBehaviour
                     int targetIndex = (target == playerStats) ? 0 : 1;
                     TugOfWarManager.Instance.MoveFame(finalValue, targetIndex);
                     
-                    casterAnim.PlayAnim("Bragging"); // 🔥 Animasi pamer / nge-taunt
-                    Debug.Log($"✨ Tarik token FAME sejauh {finalValue} langkah!");
+                    casterAnim.PlayAnim("Bragging");
+                    Debug.Log($"Tarik token FAME sejauh {finalValue} langkah!");
                 }
                 break;
 
@@ -111,7 +111,7 @@ public class CardEffectManager : MonoBehaviour
                     if (targetAnim != casterAnim) 
                         targetAnim.PlayAnim("GetDestructed");
                     
-                    Debug.Log($"☠️ Tarik token DESTRUCTION sejauh {finalValue} langkah!");
+                    Debug.Log($"Tarik token DESTRUCTION sejauh {finalValue} langkah!");
                 }
                 break;
 
@@ -121,7 +121,7 @@ public class CardEffectManager : MonoBehaviour
                     target.AddbonusDice(finalValue);
                     
                     casterAnim.PlayAnim("Bragging");
-                    Debug.Log($"🎲 (WIP) Dapet {finalValue} dadu tambahan buat nge-roll berikutnya!");
+                    Debug.Log($"Dapet {finalValue} dadu tambahan buat nge-roll berikutnya!");
                 }
                 break;
 

@@ -1225,7 +1225,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: Aqua Striker
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b444156e4852e4fce86d7c39035815d7, type: 2}
   m_sharedMaterial: {fileID: -7456436184993058521, guid: b444156e4852e4fce86d7c39035815d7, type: 2}
@@ -1766,7 +1766,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: Reptor
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b444156e4852e4fce86d7c39035815d7, type: 2}
   m_sharedMaterial: {fileID: -7456436184993058521, guid: b444156e4852e4fce86d7c39035815d7, type: 2}
@@ -2544,7 +2544,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: Sunairu
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b444156e4852e4fce86d7c39035815d7, type: 2}
   m_sharedMaterial: {fileID: -7456436184993058521, guid: b444156e4852e4fce86d7c39035815d7, type: 2}

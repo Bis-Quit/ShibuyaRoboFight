@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d6c07b8cac5345548532fee8d434b42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RobotStats
-  baseData: {fileID: 11400000, guid: 77bf11aaf041d4e4e9e5c45e1ab538bd, type: 2}
+  baseData: {fileID: 11400000, guid: d6b09fcedc4b84d119ca66c891b1561d, type: 2}
   currentHP: 12
   currentEnergy: 0
   currentSkillPower: 0
