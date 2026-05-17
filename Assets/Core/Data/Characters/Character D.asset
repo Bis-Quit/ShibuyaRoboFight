@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Character D
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   characterID: C004
-  characterName: Character D
+  characterName: SUNAIRU
   maxHealth: 12
   startingEnergy: 0
   activeDicePool: 6
   lockedDicePool: 0
   powerCardSlot: 0
+  visualPrefab: {fileID: 3380078904896855110, guid: fde4b63ae630c4492b95eef6303f02ec, type: 3}
   specialSkillDescription: 3 Skill Point = Add 1 Dice for Next Turn
   skillType: 3
