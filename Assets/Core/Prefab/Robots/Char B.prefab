@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3fd1b54e79d142eea6e4cb9fd60869e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterAnimator
+  anim: {fileID: 4909914943477868684}
 --- !u!4 &6875315263435489185 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5453093553e914d67ac34c8d88044034, type: 3}

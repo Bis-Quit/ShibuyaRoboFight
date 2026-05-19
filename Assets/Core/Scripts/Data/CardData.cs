@@ -34,6 +34,9 @@ public class CardData : ScriptableObject
     public GameState targetState;
     public int effectValue;
 
+    [Tooltip("Nama animasi yang mau di-play (misal: attack, healing, destruct)")]
+    public string animationClipName;
+
     public enum CardCategory { Instant, Permanent }
     public enum TargetSubject { Self, Opponent }
     public enum ConditionTrigger { Immediately, ForEach, If }

@@ -34,6 +34,7 @@ public class ArenaManager : MonoBehaviour
                 characterObject.transform.localScale = playerSpawnPoint.localScale; 
 
                 RobotStats statsCharacter = characterObject.GetComponent<RobotStats>();
+                
                 if (statsCharacter != null)
                 {
                     statsCharacter.baseData = selectedData;
@@ -42,6 +43,11 @@ public class ArenaManager : MonoBehaviour
                 if (DiceManager.Instance != null)
                 {
                     DiceManager.Instance.playerStats = statsCharacter;
+                }
+
+                if (GameOverManager.Instance != null)
+                {
+                    GameOverManager.Instance.playerRobot = statsCharacter;
                 }
 
                 if (playerUI != null && statsCharacter != null)
@@ -67,12 +73,6 @@ public class ArenaManager : MonoBehaviour
                 if (aiManager != null && statsCharacter != null)
                 {
                     aiManager.playerStats = statsCharacter;
-                }
-
-                GameOverManager gameOverManager = FindFirstObjectByType<GameOverManager>();
-                if (gameOverManager != null && statsCharacter != null)
-                {
-                    gameOverManager.playerRobot = statsCharacter;
                 }
 
                 CardEffectManager cardEffectManager = FindFirstObjectByType<CardEffectManager>();
@@ -124,6 +124,7 @@ public class ArenaManager : MonoBehaviour
             enemyObject.transform.localScale = enemySpawnPoint.localScale; 
 
             RobotStats statsEnemy = enemyObject.GetComponent<RobotStats>();
+            
             if (statsEnemy != null)
             {
                 statsEnemy.baseData = enemyData;
@@ -132,6 +133,11 @@ public class ArenaManager : MonoBehaviour
             if (DiceManager.Instance != null)
             {
                 DiceManager.Instance.enemyStats = statsEnemy;
+            }
+
+            if (GameOverManager.Instance != null)
+            {
+                GameOverManager.Instance.enemyRobot = statsEnemy;
             }
 
             if (enemyUI != null && statsEnemy != null)
@@ -153,12 +159,6 @@ public class ArenaManager : MonoBehaviour
             if (aiManager != null && statsEnemy != null)
             {
                 aiManager.aiStats = statsEnemy;
-            }
-
-            GameOverManager gameOverManager = FindFirstObjectByType<GameOverManager>();
-            if (gameOverManager != null && statsEnemy != null)
-            {
-                gameOverManager.enemyRobot = statsEnemy;
             }
 
             CardEffectManager cardEffectManager = FindFirstObjectByType<CardEffectManager>();

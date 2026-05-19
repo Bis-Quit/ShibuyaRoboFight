@@ -30,3 +30,4 @@ MonoBehaviour:
   effectType: 0
   targetState: 3
   effectValue: 2
+  animationClipName: Bragging

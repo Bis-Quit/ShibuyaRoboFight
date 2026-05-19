@@ -8,26 +8,36 @@ public class BattleUIManager : MonoBehaviour
     public static BattleUIManager Instance;
 
     [Header("UI Panels")]
-    [Tooltip("Tarik Panel Main Battle dari Hierarchy ke sini!")]
     public GameObject panelMainBattle;
-
-    [Tooltip("Tarik Panel Dice Screen dari Hierarchy ke sini!")]
     public GameObject panelDiceScreen;
-
-    [Tooltip("Tarik btnTapToRoll dari Hierarchy ke sini!")]
     public GameObject btnTapToRoll;
-
-    [Tooltip("Masukin object 'Action Buttons' dari Hierarchy ke sini!")]
     public GameObject actionButtons;
 
-    [Header("Cinemachine Cameras")]
+    [Header("Main Cameras")]
     public CinemachineCamera VCamArena;
     public CinemachineCamera VCamPlayer;
     public CinemachineCamera VCamEnemy;
 
+    [Header("🎬 Cinematic Cams - Player POV")]
+    public CinemachineCamera vCamPlayerAttack; 
+    public CinemachineCamera vCamPlayerBuff;   
+    public CinemachineCamera vCamPlayerHit;    
+
+    [Header("🎬 Cinematic Cams - Enemy POV")]
+    public CinemachineCamera vCamEnemyAttack;
+    public CinemachineCamera vCamEnemyBuff;
+    public CinemachineCamera vCamEnemyHit;
+
     [Header("Priority Settings")]
     [SerializeField] private int activePriority = 15;
     [SerializeField] private int inactivePriority = 10;
+    [SerializeField] private int cinematicPriority = 30;
+
+    private bool wasDiceScreenActive;
+    private bool wasMainBattleActive;
+    private CinemachineCamera previousCam;
+
+    [HideInInspector] public bool isCinematicActive = false;
 
     private void Awake()
     {
@@ -35,47 +45,61 @@ public class BattleUIManager : MonoBehaviour
         ShowMainBattleScreen();
     }
 
-    private void OnEnable()
+    public void SwitchCinematicPOV(bool isPlayerTurn, string actionPhase)
     {
-        TurnManager.OnPhaseChanged += HandlePhaseChange;
+        if(vCamPlayerAttack != null) vCamPlayerAttack.Priority = inactivePriority;
+        if(vCamPlayerBuff != null) vCamPlayerBuff.Priority = inactivePriority;
+        if(vCamPlayerHit != null) vCamPlayerHit.Priority = inactivePriority;
+        if(vCamEnemyAttack != null) vCamEnemyAttack.Priority = inactivePriority;
+        if(vCamEnemyBuff != null) vCamEnemyBuff.Priority = inactivePriority;
+        if(vCamEnemyHit != null) vCamEnemyHit.Priority = inactivePriority;
+
+        if (actionPhase == "AttackAction") 
+        {
+            if (isPlayerTurn && vCamPlayerAttack != null) vCamPlayerAttack.Priority = cinematicPriority;
+            else if (!isPlayerTurn && vCamEnemyAttack != null) vCamEnemyAttack.Priority = cinematicPriority;
+        }
+        else if (actionPhase == "BuffAction") 
+        {
+            if (isPlayerTurn && vCamPlayerBuff != null) vCamPlayerBuff.Priority = cinematicPriority;
+            else if (!isPlayerTurn && vCamEnemyBuff != null) vCamEnemyBuff.Priority = cinematicPriority;
+        }
+        else if (actionPhase == "Reaction") 
+        {
+            if (isPlayerTurn && vCamEnemyHit != null) vCamEnemyHit.Priority = cinematicPriority;
+            else if (!isPlayerTurn && vCamPlayerHit != null) vCamPlayerHit.Priority = cinematicPriority;
+        }
     }
 
-    private void OnDisable()
+    public void ResetCamera()
     {
-        TurnManager.OnPhaseChanged -= HandlePhaseChange;    
+        SwitchCinematicPOV(true, "Reset"); 
+
+        if (previousCam == VCamPlayer) SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
+        else if (previousCam == VCamEnemy) SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
+        else SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
     }
+
+    private void OnEnable() { TurnManager.OnPhaseChanged += HandlePhaseChange; }
+    private void OnDisable() { TurnManager.OnPhaseChanged -= HandlePhaseChange; }
 
     private void HandlePhaseChange(TurnManager.TurnPhase phase)
     {
+        if (isCinematicActive) return;
+
         bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
-
-        switch(phase)
-        {
-            case TurnManager.TurnPhase.FirstRoll:
-                ShowDiceScreen(isPlayerTurn);
-                break;
-
-            case TurnManager.TurnPhase.RerollPhase:
-                if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
-                Debug.Log("<color=cyan>UIManager: Reroll Phase - Tampilkan UI Reroll!</color>");
-
-                if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
-                break;
-
-            default:
-                ShowMainBattleScreen();
-                break;
-        }
+        if (phase == TurnManager.TurnPhase.FirstRoll) ShowDiceScreen(isPlayerTurn);
+        else if (phase == TurnManager.TurnPhase.RerollPhase) {
+            if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
+            if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
+        } else ShowMainBattleScreen();
     }
 
     private void ShowMainBattleScreen()
     {
         if (panelMainBattle != null) panelMainBattle.SetActive(true);
         if (panelDiceScreen != null) panelDiceScreen.SetActive(false);
-
         SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
-
-        Debug.Log("<color=cyan>UIManager: Pindah ke Layar Main Battle!</color>");
     }
 
     private void ShowDiceScreen(bool isPlayerTurn)
@@ -83,18 +107,8 @@ public class BattleUIManager : MonoBehaviour
         if (panelMainBattle != null) panelMainBattle.SetActive(false);
         if (btnTapToRoll != null) btnTapToRoll.SetActive(isPlayerTurn);
         if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
-
-        Debug.Log("<color=cyan>UIManager: Pindah ke Layar Lempar Dadu!</color>");
-
-        if (isPlayerTurn)
-        {
-            SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
-        }
-        else
-        {
-            SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
-        }
-
+        if (isPlayerTurn) SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
+        else SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
         StartCoroutine(DelayDiceUI(2f));
     }
 
@@ -111,45 +125,29 @@ public class BattleUIManager : MonoBehaviour
         if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
     }
 
-    private CinemachineCamera previousCam;
-    public void FocusCamera (bool isPlayer)
+    public void HideUIForCinematic()
     {
-        if (VCamPlayer != null && VCamPlayer.Priority >= VCamArena.Priority && VCamPlayer.Priority >= VCamEnemy.Priority)
-        {
-            previousCam = VCamPlayer;
-        }
-        else if (VCamEnemy != null && VCamEnemy.Priority >= VCamArena.Priority && VCamEnemy.Priority >= VCamPlayer.Priority)
-        {
-            previousCam = VCamEnemy;
-        }
-        else
-        {
-            previousCam = VCamArena;
-        }
+        isCinematicActive = true;
 
-        if (isPlayer)
-        {
-            SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
-        }
-        else
-        {
-            SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
-        }
+        wasDiceScreenActive = panelDiceScreen != null && panelDiceScreen.activeSelf;
+        wasMainBattleActive = panelMainBattle != null && panelMainBattle.activeSelf;
+        if (panelDiceScreen != null) panelDiceScreen.SetActive(false);
+        if (panelMainBattle != null) panelMainBattle.SetActive(false);
+        if (actionButtons != null) actionButtons.SetActive(false);
+        if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(false);
     }
 
-    public void ResetCamera()
+    public void RestoreUIAfterCinematic()
     {
-        if (previousCam == VCamPlayer)
+        isCinematicActive = false;
+
+        if (panelDiceScreen != null) panelDiceScreen.SetActive(wasDiceScreenActive);
+        if (panelMainBattle != null) panelMainBattle.SetActive(wasMainBattleActive);
+        if (TurnManager.Instance != null && wasDiceScreenActive)
         {
-            SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
+            bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
+            if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
         }
-        else if (previousCam == VCamEnemy)
-        {
-            SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
-        }
-        else
-        {
-            SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
-        }
+        if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(true);
     }
 }

@@ -66,14 +66,15 @@ public class HandInspectManager : MonoBehaviour
     private void ConfirmUseCard()
     {
         inspectPanel.SetActive(false);
-        StartCoroutine(CinematicCutInRoutine());
+        StartCoroutine(CinematicCutInRoutine(currentCardData, originalCardObject));
     }
 
-    private IEnumerator CinematicCutInRoutine()
+    private IEnumerator CinematicCutInRoutine(CardData currentCardData, GameObject originalCardObject)
     {
-        // --- CAMERA ZOOM ---
         if (BattleUIManager.Instance != null)
-            BattleUIManager.Instance.FocusCamera(true);
+            BattleUIManager.Instance.HideUIForCinematic();
+
+        yield return new WaitForSeconds(0.2f);
 
         // --- CARD SUMMON ---
         if (cinematicContainer != null && cinematicCardUI != null)
@@ -88,9 +89,9 @@ public class HandInspectManager : MonoBehaviour
             cinematicContainer.gameObject.SetActive(true);
 
             cinematicContainer.DOFade(1, 0.2f);
-            
+
             cinematicCardPosition.DOScale(0.8f, 0.4f).SetEase(Ease.OutBack);
-            
+
             cinematicCardPosition.DOLocalRotate(Vector3.zero, 0.4f).SetEase(Ease.OutBack);
             cinematicCardPosition.DOShakeAnchorPos(0.2f, 15f);
 
@@ -98,11 +99,13 @@ public class HandInspectManager : MonoBehaviour
 
             cinematicCardPosition.DOScale(0f, 0.3f).SetEase(Ease.InBack);
             cinematicContainer.DOFade(0, 0.3f);
-            
+
             yield return new WaitForSeconds(0.4f); 
-            
+
             cinematicContainer.gameObject.SetActive(false);
         }
+
+        yield return new WaitForSeconds(1f);
 
         // --- CARD EFFECT ---
         if (CardEffectManager.Instance != null)
@@ -112,18 +115,14 @@ public class HandInspectManager : MonoBehaviour
 
         if (originalCardObject != null)
         {
-            PlayerHand hand = originalCardObject.GetComponentInParent<PlayerHand>();
-            if (hand != null)
-            {
-                hand.RemoveCardFromHand(originalCardObject);
-            }
             Destroy(originalCardObject);
         }
-
-        yield return new WaitForSeconds(1f);
 
         // --- CAMERA BACK TO NORMAL ---
         if (BattleUIManager.Instance != null)
             BattleUIManager.Instance.ResetCamera();
+
+        if (BattleUIManager.Instance != null)
+            BattleUIManager.Instance.RestoreUIAfterCinematic();
     }
 }

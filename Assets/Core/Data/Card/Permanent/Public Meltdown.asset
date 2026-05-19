@@ -30,3 +30,4 @@ MonoBehaviour:
   effectType: 0
   targetState: 4
   effectValue: 1
+  animationClipName: destruct

@@ -79,6 +79,18 @@ public class RobotStats : MonoBehaviour
     public void Die()
     {
         Debug.Log($"[{baseData.characterName}] HANCUR BERANTAKAN!");
+
+        CharacterAnimator anim = GetComponent<CharacterAnimator>();
+        if (anim != null)
+        {
+            anim.PlayAnim("defeat");
+        }
+
+        if (GameOverManager.Instance != null)
+        {
+            bool isPlayerWin = (this != GameOverManager.Instance.playerRobot);
+            GameOverManager.Instance.TriggerGameOver(isPlayerWin);
+        }
     }
 
     public bool SpendEnergy(int costAmount)

@@ -157,3 +157,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3fd1b54e79d142eea6e4cb9fd60869e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterAnimator
+  anim: {fileID: 8725261552725985975}

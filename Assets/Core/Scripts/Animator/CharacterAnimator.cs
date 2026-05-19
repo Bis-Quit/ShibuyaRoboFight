@@ -2,33 +2,22 @@ using UnityEngine;
 
 public class CharacterAnimator : MonoBehaviour
 {
-    private Animator anim;
+    public Animator anim;
 
-    private void Awake()
+    public void PlayAnim(string animName)
     {
-        anim = GetComponent<Animator>();
+        if (anim != null) anim.Play(animName);
     }
 
-    public void PlayAnim(string triggerName)
-    {
-        if (anim != null)
-        {
-            anim.SetTrigger(triggerName);
-            Debug.Log($"<color=orange>Play {triggerName} Animation!</color>");
-        }
-    }
-
-    public float GetAnimDuration()
+    public float GetAnimDuration(string animName)
     {
         if (anim == null) return 1f;
 
-        if (anim.IsInTransition(0))
+        RuntimeAnimatorController ac = anim.runtimeAnimatorController;
+        foreach (AnimationClip clip in ac.animationClips)
         {
-            return anim.GetNextAnimatorStateInfo(0).length;
+            if (clip.name == animName) return clip.length;
         }
-        else
-        {
-            return anim.GetCurrentAnimatorStateInfo(0).length;
-        }
+        return 1f;
     }
 }

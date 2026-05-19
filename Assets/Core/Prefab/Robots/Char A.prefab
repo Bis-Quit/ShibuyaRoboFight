@@ -576,6 +576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3fd1b54e79d142eea6e4cb9fd60869e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterAnimator
+  anim: {fileID: 5523625869282017021}
 --- !u!1 &5967756528947170139 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7036213049465896255, guid: 9f410b7d28fa14a11a255294823a6b4f, type: 3}

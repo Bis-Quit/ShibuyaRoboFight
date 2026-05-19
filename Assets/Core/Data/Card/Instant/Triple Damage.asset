@@ -32,3 +32,4 @@ MonoBehaviour:
   effectType: 1
   targetState: 2
   effectValue: 1
+  animationClipName: Attack

@@ -33,3 +33,4 @@ MonoBehaviour:
   effectType: 1
   targetState: 1
   effectValue: 2
+  animationClipName: Signaling

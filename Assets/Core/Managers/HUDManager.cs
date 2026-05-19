@@ -3,10 +3,11 @@ using DG.Tweening;
 
 public class HUDManager : MonoBehaviour
 {
+    public static HUDManager Instance { get; private set; }
+
     [Header("HUD Elements")]
     public RectTransform playerHPBar;
     public RectTransform enemyHPBar;
-    // public RectTransform trackerTile;
 
     [Header("Arena Mode (VCam Arena)")]
     public Vector2 playerHPArenaPos;
@@ -24,6 +25,25 @@ public class HUDManager : MonoBehaviour
     [Header("Transparency")]
     public CanvasGroup hudCanvasGroup;
 
+    [HideInInspector] public bool isCinematicActive = false;
+
+    public void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+    }
+
+    public void ToggleHUD(bool isVisible)
+    {
+        isCinematicActive = !isVisible;
+
+        if (hudCanvasGroup != null)
+        {
+            float targetAlpha = isVisible ? 1f : 0f;
+            DOTween.To(() => hudCanvasGroup.alpha, x => hudCanvasGroup.alpha = x, targetAlpha, 0.3f);
+        }
+    }
+
     private void OnEnable()
     {
         TurnManager.OnPhaseChanged += HandlePhaseChanged;
@@ -36,6 +56,8 @@ public class HUDManager : MonoBehaviour
 
     private void HandlePhaseChanged(TurnManager.TurnPhase phase)
     {
+        if (isCinematicActive) return;
+
         if (phase == TurnManager.TurnPhase.FirstRoll ||
             phase == TurnManager.TurnPhase.RerollPhase)
         {
@@ -55,15 +77,13 @@ public class HUDManager : MonoBehaviour
 
     public void SwitchToArenaUI()
     {
-        playerHPBar.DOAnchorPos(playerHPArenaPos, animDuration).SetEase(Ease.InOutQuad);
-        enemyHPBar.DOAnchorPos(enemyHPArenaPos,animDuration).SetEase(Ease.InOutQuad);
-        // trackerTile.DOAnchorPos(trackerArenaPos, animDuration).SetEase(Ease.InBack);
+        if (playerHPBar != null) playerHPBar.DOAnchorPos(playerHPArenaPos, animDuration).SetEase(Ease.InOutQuad);
+        if (enemyHPBar != null) enemyHPBar.DOAnchorPos(enemyHPArenaPos,animDuration).SetEase(Ease.InOutQuad);
     }
 
     public void SwitchToActionUI()
     {
-        playerHPBar.DOAnchorPos(playerHPActionPos, animDuration).SetEase(Ease.OutBack);
-        enemyHPBar.DOAnchorPos(enemyHPActionPos, animDuration).SetEase(Ease.OutBack);
-        // trackerTile.DOAnchorPos(trackerActionPos, animDuration).SetEase(Ease.OutBack);
+        if (playerHPBar != null) playerHPBar.DOAnchorPos(playerHPActionPos, animDuration).SetEase(Ease.OutBack);
+        if (enemyHPBar != null) enemyHPBar.DOAnchorPos(enemyHPActionPos, animDuration).SetEase(Ease.OutBack);
     }
 }
