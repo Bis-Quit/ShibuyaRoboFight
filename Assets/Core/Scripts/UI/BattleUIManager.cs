@@ -36,8 +36,10 @@ public class BattleUIManager : MonoBehaviour
     private bool wasDiceScreenActive;
     private bool wasMainBattleActive;
     private CinemachineCamera previousCam;
-
+    
     [HideInInspector] public bool isCinematicActive = false;
+
+    private TurnManager.TurnPhase currentPhaseMemory;
 
     private void Awake()
     {
@@ -75,9 +77,17 @@ public class BattleUIManager : MonoBehaviour
     {
         SwitchCinematicPOV(true, "Reset"); 
 
-        if (previousCam == VCamPlayer) SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
-        else if (previousCam == VCamEnemy) SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
-        else SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
+        bool isPlayerTurn = TurnManager.Instance != null && TurnManager.Instance.CurrentPlayerIndex == 0;
+
+        if (currentPhaseMemory == TurnManager.TurnPhase.FirstRoll || currentPhaseMemory == TurnManager.TurnPhase.RerollPhase)
+        {
+            if (isPlayerTurn) SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
+            else SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
+        }
+        else
+        {
+            SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
+        }
     }
 
     private void OnEnable() { TurnManager.OnPhaseChanged += HandlePhaseChange; }
@@ -86,6 +96,8 @@ public class BattleUIManager : MonoBehaviour
     private void HandlePhaseChange(TurnManager.TurnPhase phase)
     {
         if (isCinematicActive) return;
+
+        currentPhaseMemory = phase;
 
         bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
         if (phase == TurnManager.TurnPhase.FirstRoll) ShowDiceScreen(isPlayerTurn);
@@ -125,14 +137,28 @@ public class BattleUIManager : MonoBehaviour
         if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
     }
 
+    private void SetPanelVisible(GameObject panel, bool isVisible)
+    {
+        if (panel == null) return;
+        
+        CanvasGroup cg = panel.GetComponent<CanvasGroup>();
+        if (cg == null) cg = panel.AddComponent<CanvasGroup>();
+
+        cg.alpha = isVisible ? 1f : 0f;
+        cg.interactable = isVisible;
+        cg.blocksRaycasts = isVisible;
+    }
+
     public void HideUIForCinematic()
     {
         isCinematicActive = true;
 
         wasDiceScreenActive = panelDiceScreen != null && panelDiceScreen.activeSelf;
         wasMainBattleActive = panelMainBattle != null && panelMainBattle.activeSelf;
-        if (panelDiceScreen != null) panelDiceScreen.SetActive(false);
-        if (panelMainBattle != null) panelMainBattle.SetActive(false);
+
+        if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, false);
+        if (wasMainBattleActive) SetPanelVisible(panelMainBattle, false);
+
         if (actionButtons != null) actionButtons.SetActive(false);
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(false);
     }
@@ -141,8 +167,9 @@ public class BattleUIManager : MonoBehaviour
     {
         isCinematicActive = false;
 
-        if (panelDiceScreen != null) panelDiceScreen.SetActive(wasDiceScreenActive);
-        if (panelMainBattle != null) panelMainBattle.SetActive(wasMainBattleActive);
+        if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, true);
+        if (wasMainBattleActive) SetPanelVisible(panelMainBattle, true);
+
         if (TurnManager.Instance != null && wasDiceScreenActive)
         {
             bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
