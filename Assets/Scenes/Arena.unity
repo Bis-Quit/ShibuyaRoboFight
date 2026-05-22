@@ -187,6 +187,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MAP SHIBUYA ROBO FIGHT (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0c6fa66e1520f4de2b03ab536bfeb176, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -587,7 +591,7 @@ Transform:
   - {fileID: 1779881632}
   - {fileID: 1392735845}
   - {fileID: 1373373920}
-  - {fileID: 1910809841}
+  - {fileID: 1736583429}
   - {fileID: 2021503098}
   - {fileID: 1707011202}
   - {fileID: 2112500983}
@@ -1368,9 +1372,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
-  field of view: 60.000004
+  field of view: 45
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -1396,8 +1400,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 411419518}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.81915206, z: 0, w: 0.57357645}
-  m_LocalPosition: {x: 12, y: 5, z: -7}
+  m_LocalRotation: {x: -0.008551285, y: -0.9838812, z: 0.17177214, w: -0.04898027}
+  m_LocalPosition: {x: 0.06, y: 13.42, z: 27.68}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1980,7 +1984,7 @@ Transform:
   m_GameObject: {fileID: 587761427}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.46831533, z: -0, w: 0.88356143}
-  m_LocalPosition: {x: -31.8, y: -0.9299998, z: 34.2}
+  m_LocalPosition: {x: -26.8, y: -0.9299998, z: 31.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7060,7 +7064,7 @@ PrefabInstance:
     - target: {fileID: 1375928023122958910, guid: 5fc0a6ef3a0fe46e6ae87d96b4f32e3f, type: 3}
       propertyPath: vcamVictoryPlayer
       value: 
-      objectReference: {fileID: 1910809842}
+      objectReference: {fileID: 1736583430}
     - target: {fileID: 6158480892236758482, guid: 5fc0a6ef3a0fe46e6ae87d96b4f32e3f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 667
@@ -7651,7 +7655,7 @@ Transform:
   m_GameObject: {fileID: 1716069910}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.81915206, z: -0, w: 0.57357645}
-  m_LocalPosition: {x: -13.799999, y: -0.9299998, z: 37.7}
+  m_LocalPosition: {x: -18.8, y: -0.9299998, z: 40.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7736,6 +7740,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1595005722}
   m_LocalEulerAnglesHint: {x: 0, y: -7.677, z: 0}
+--- !u!1 &1736583428
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1736583429}
+  - component: {fileID: 1736583430}
+  m_Layer: 0
+  m_Name: VCam Player Victory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1736583429
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736583428}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0.6225145, z: -0, w: -0.78260833}
+  m_LocalPosition: {x: 6.908, y: 5, z: -6.781}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 155027645}
+  m_LocalEulerAnglesHint: {x: 0, y: 257, z: 0}
+--- !u!114 &1736583430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736583428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
+  Priority:
+    Enabled: 0
+    m_Value: 0
+  OutputChannel: 1
+  StandbyUpdate: 2
+  m_StreamingVersion: 20241001
+  m_LegacyPriority: 0
+  Target:
+    TrackingTarget: {fileID: 0}
+    LookAtTarget: {fileID: 0}
+    CustomLookAtTarget: 0
+  Lens:
+    FieldOfView: 35.4
+    OrthographicSize: 5
+    NearClipPlane: 0.3
+    FarClipPlane: 1000
+    Dutch: 0
+    ModeOverride: 0
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
+  BlendHint: 0
 --- !u!4 &1738431297 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2222748779586885431, guid: 3eb94d997a3474799af464ae4a652f45, type: 3}
@@ -8229,111 +8308,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
---- !u!1 &1910809840
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1910809841}
-  - component: {fileID: 1910809842}
-  - component: {fileID: 1910809843}
-  m_Layer: 0
-  m_Name: VCam Player Victory
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1910809841
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1910809840}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.013058707, y: 0.95069313, z: 0.040411305, w: -0.30721164}
-  m_LocalPosition: {x: -5.53, y: 1.75, z: -4.41}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 155027645}
-  m_LocalEulerAnglesHint: {x: 0.752, y: 84.774, z: 0}
---- !u!114 &1910809842
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1910809840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
-  Priority:
-    Enabled: 0
-    m_Value: 0
-  OutputChannel: 1
-  StandbyUpdate: 2
-  m_StreamingVersion: 20241001
-  m_LegacyPriority: 0
-  Target:
-    TrackingTarget: {fileID: 0}
-    LookAtTarget: {fileID: 0}
-    CustomLookAtTarget: 0
-  Lens:
-    FieldOfView: 35.4
-    OrthographicSize: 5
-    NearClipPlane: 0.3
-    FarClipPlane: 1000
-    Dutch: 0
-    ModeOverride: 0
-    PhysicalProperties:
-      GateFit: 2
-      SensorSize: {x: 21.946, y: 16.002}
-      LensShift: {x: 0, y: 0}
-      FocusDistance: 10
-      Iso: 200
-      ShutterSpeed: 0.005
-      Aperture: 16
-      BladeCount: 5
-      Curvature: {x: 2, y: 11}
-      BarrelClipping: 0.25
-      Anamorphism: 0
-  BlendHint: 0
---- !u!114 &1910809843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1910809840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRotationComposer
-  Composition:
-    ScreenPosition: {x: 0.15, y: 0.1}
-    DeadZone:
-      Enabled: 0
-      Size: {x: 0.2, y: 0.2}
-    HardLimits:
-      Enabled: 0
-      Size: {x: 0.8, y: 0.8}
-      Offset: {x: 0, y: 0}
-  CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 0.5, y: 0.5}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
 --- !u!1 &1913808818
 GameObject:
   m_ObjectHideFlags: 0
@@ -8455,7 +8429,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2021503098}
   - component: {fileID: 2021503100}
-  - component: {fileID: 2021503099}
   m_Layer: 0
   m_Name: VCam Player Defeat
   m_TagString: Untagged
@@ -8471,42 +8444,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2021503097}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.013058707, y: 0.95069313, z: 0.040411305, w: -0.30721167}
-  m_LocalPosition: {x: -5.53, y: 1.75, z: -4.41}
+  m_LocalRotation: {x: 0, y: 0.78260833, z: -0, w: -0.6225145}
+  m_LocalPosition: {x: 0.25, y: 5, z: -9.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 155027645}
-  m_LocalEulerAnglesHint: {x: 0.752, y: 84.774, z: 0}
---- !u!114 &2021503099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2021503097}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRotationComposer
-  Composition:
-    ScreenPosition: {x: 0.15, y: 0.1}
-    DeadZone:
-      Enabled: 0
-      Size: {x: 0.2, y: 0.2}
-    HardLimits:
-      Enabled: 0
-      Size: {x: 0.8, y: 0.8}
-      Offset: {x: 0, y: 0}
-  CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 0.5, y: 0.5}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 257, z: 0}
 --- !u!114 &2021503100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9048,7 +8992,7 @@ Transform:
   m_GameObject: {fileID: 2103542931}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.81915206, z: -0, w: 0.57357645}
-  m_LocalPosition: {x: -13.799999, y: -0.9299998, z: 37.7}
+  m_LocalPosition: {x: -18.8, y: -0.9299998, z: 40.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10616,6 +10560,7 @@ SceneRoots:
   - {fileID: 155027645}
   - {fileID: 498654067}
   - {fileID: 1082354502}
+  - {fileID: 6826039}
   - {fileID: 679398283}
   - {fileID: 562734962}
   - {fileID: 1436727352}
@@ -10627,4 +10572,3 @@ SceneRoots:
   - {fileID: 1665996032}
   - {fileID: 1595005722}
   - {fileID: 231592898}
-  - {fileID: 6826039}

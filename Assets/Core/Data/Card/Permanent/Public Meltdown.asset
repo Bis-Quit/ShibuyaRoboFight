@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC020
   cardName: Public Meltdown
   description: If Opponent Pull Fame Token, Self Pull Destruction Token for 1 Tile
-  cardIllustration: {fileID: 21300000, guid: bfb66f0928218420facdda3af84d05d1, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 9728e1da45f7b4b26a43b513e1d3d82a, type: 3}
   abilityPointCost: 9
   cardCategory: 1
   produceBuzzTile: 0

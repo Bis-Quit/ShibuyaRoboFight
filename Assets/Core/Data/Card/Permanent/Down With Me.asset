@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC021
   cardName: Down With Me
   description: If Self Lose Any Ability Point, Deal 2 Damage to Opponent
-  cardIllustration: {fileID: 21300000, guid: 0c73434f366a14493becd35649cc580e, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 793b23c8030de4f47aba99bf8b44fce8, type: 3}
   abilityPointCost: 9
   cardCategory: 1
   produceBuzzTile: 1

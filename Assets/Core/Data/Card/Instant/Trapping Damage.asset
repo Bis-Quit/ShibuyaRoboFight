@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC012
   cardName: Trapping Damage
   description: Deal 2 Damage to Opponent
-  cardIllustration: {fileID: 21300000, guid: d17cd76cf343942e2b78ad1f705a66e0, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 4f2ea7859e31d47aa857cc1d118aa3ef, type: 3}
   abilityPointCost: 9
   cardCategory: 0
   produceBuzzTile: 1

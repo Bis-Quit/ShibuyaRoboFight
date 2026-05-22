@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC008
   cardName: Hazzard
   description: Pull Destruction Token 2 Tiles
-  cardIllustration: {fileID: 21300000, guid: dfe623457905147ce97266bcda0777b6, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 77137ace855a24e499c88c7e93c2390f, type: 3}
   abilityPointCost: 5
   cardCategory: 0
   produceBuzzTile: 0

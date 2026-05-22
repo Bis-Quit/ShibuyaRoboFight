@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC016
   cardName: Power Over Fame
   description: If Opponent Pull Fame Token, Add 3 Ability Point to Self
-  cardIllustration: {fileID: 21300000, guid: 111b2fc28929c43d89c06ebed315778d, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 80d3cc599f2f645c39386da53a09dc78, type: 3}
   abilityPointCost: 7
   cardCategory: 1
   produceBuzzTile: 0

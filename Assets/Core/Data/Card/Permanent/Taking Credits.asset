@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Taking Credits
   description: If Opponent Pull Destruction Token for More Than 1 Tile, Self Pull
     Fame Token for 1 Tile
-  cardIllustration: {fileID: 21300000, guid: 0712adea7c87c4527b614bbeed21f62c, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 2e710d312f17e4835a2db9b0638e7fb6, type: 3}
   abilityPointCost: 5
   cardCategory: 1
   produceBuzzTile: 0

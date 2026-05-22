@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC005
   cardName: Repair
   description: For Each Ability Point That Self Has, Add 2 Health Point
-  cardIllustration: {fileID: 21300000, guid: b2725af2dcf4d4fe8b81532b497517d5, type: 3}
+  cardIllustration: {fileID: 21300000, guid: bb133764a83e546c9bb6cbc639464969, type: 3}
   abilityPointCost: 5
   cardCategory: 0
   produceBuzzTile: 0

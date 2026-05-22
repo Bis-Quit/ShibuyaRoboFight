@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC002
   cardName: Double Damage
   description: Deal 2 Damage to Opponent
-  cardIllustration: {fileID: 21300000, guid: 3689488b3465c41c785c3756da2ad0e2, type: 3}
+  cardIllustration: {fileID: 21300000, guid: e6c45c5eb1c3a4b509c456fda2432b38, type: 3}
   abilityPointCost: 3
   cardCategory: 0
   produceBuzzTile: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC023
   cardName: Better Opportunities
   description: If Opponent Add More Than 3 Health Point, Add 1 Dice to Self
-  cardIllustration: {fileID: 21300000, guid: 28d9ce2386250491ea57bcbaf6138aca, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 400d3b7c88e1f46ddaa198588802ad9d, type: 3}
   abilityPointCost: 12
   cardCategory: 1
   produceBuzzTile: 0

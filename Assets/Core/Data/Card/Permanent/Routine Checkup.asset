@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC022
   cardName: Routine Checkup
   description: If Self Start Turn, Add 3 Health Point
-  cardIllustration: {fileID: 21300000, guid: 3050d9df3828e41dbb5dd9279157823a, type: 3}
+  cardIllustration: {fileID: 21300000, guid: fb699ae5f222d41b4a6beb01fc8f0e88, type: 3}
   abilityPointCost: 12
   cardCategory: 1
   produceBuzzTile: 0
