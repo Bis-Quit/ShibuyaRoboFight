@@ -410,7 +410,14 @@ public class DraftingManager : MonoBehaviour
     private IEnumerator EnemyDraftingSequence(RobotStats enemyStats, int slotIndex)
     {
         isProcessing = true;
-        if (enemyStats.SpendEnergy(activeCardData[slotIndex].abilityPointCost)) {
+        if (enemyStats.SpendEnergy(activeCardData[slotIndex].abilityPointCost)) 
+        {
+            CardData boughtCard = activeCardData[slotIndex];
+            if (EnemyCardContainer.Instance != null) 
+            {
+                EnemyCardContainer.Instance.ReceiveCard(boughtCard);
+            }
+
             if (activeCardsOnBoard[slotIndex] != null) Destroy(activeCardsOnBoard[slotIndex]);
             for (int i = slotIndex; i > 0; i--) {
                 activeCardData[i] = activeCardData[i - 1]; activeCardsOnBoard[i] = activeCardsOnBoard[i - 1];
@@ -427,7 +434,10 @@ public class DraftingManager : MonoBehaviour
             StartCoroutine(AnimateCardSlide(n3.transform, draftSlots[0]));
             yield return new WaitForSeconds(1.5f);
         }
-        isProcessing = false; TurnManager.Instance.ProcessedToTurnEnd();
+        if (EnemyAIManager.Instance != null) 
+        {
+        EnemyAIManager.Instance.StartCoroutine(EnemyAIManager.Instance.EnemyActionRoutine());
+        }
     }
 
     public IEnumerator EnemyTryResetAndBuy(RobotStats enemyStats)

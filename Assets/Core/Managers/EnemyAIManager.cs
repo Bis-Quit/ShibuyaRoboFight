@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class EnemyAIManager : MonoBehaviour
 {
+    public static EnemyAIManager Instance;
     private int aiDifficultyLevel; 
 
     [Header("AI Context (Wajib Isi)")]
@@ -158,6 +159,57 @@ public class EnemyAIManager : MonoBehaviour
 
         Debug.Log("<color=magenta>EnemyAIManager: Uang benar-benar habis. Skip belanja.</color>");
         yield return new WaitForSeconds(1.5f);
+        StartCoroutine(EnemyActionRoutine());
+    }
+
+    public IEnumerator EnemyActionRoutine()
+    {
+        Debug.Log("<color=magenta>EnemyAIManager: Memasuki Fase Eksekusi Kartu!</color>");
+        yield return new WaitForSeconds(1f); 
+
+        if (EnemyCardContainer.Instance != null && EnemyCardContainer.Instance.currentHand.Count > 0)
+        {
+            List<CardData> handCopy = new List<CardData>(EnemyCardContainer.Instance.currentHand);
+
+            foreach (CardData card in handCopy)
+            {
+                bool shouldPlayCard = false;
+                
+                string effectTypeName = card.effectType.ToString();
+                string targetStateName = card.targetState.ToString();
+
+                if (effectTypeName == "Add" && targetStateName == "HealthPoint")
+                {
+                    if (aiStats.currentHP < aiStats.baseData.maxHealth) 
+                    {
+                        shouldPlayCard = true;
+                    }
+                }
+                else
+                {
+                    shouldPlayCard = true;
+                }
+
+                if (shouldPlayCard)
+                {
+                    Debug.Log($"<color=magenta>EnemyAIManager: Memutuskan untuk pakai kartu {card.cardName}!</color>");
+                    EnemyCardContainer.Instance.PlayCard(card);
+                    yield return new WaitForSeconds(2.5f); 
+                }
+                else
+                {
+                    Debug.Log($"<color=magenta>EnemyAIManager: Nahan kartu {card.cardName} buat ronde depan aja.</color>");
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("<color=magenta>EnemyAIManager: Tangan kosong, gak ada kartu yang bisa dipake.</color>");
+            yield return new WaitForSeconds(1f);
+        }
+
+        Debug.Log("<color=magenta>EnemyAIManager: Giliran musuh BERAKHIR!</color>");
+        
         TurnManager.Instance.ProcessedToTurnEnd();
     }
 

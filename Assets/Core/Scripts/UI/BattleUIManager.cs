@@ -111,6 +111,7 @@ public class BattleUIManager : MonoBehaviour
     {
         if (panelMainBattle != null) panelMainBattle.SetActive(true);
         if (panelDiceScreen != null) panelDiceScreen.SetActive(false);
+        if (EnemyCardContainer.Instance != null) EnemyCardContainer.Instance.SetHandVisible(true);
         SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
     }
 
@@ -119,6 +120,7 @@ public class BattleUIManager : MonoBehaviour
         if (panelMainBattle != null) panelMainBattle.SetActive(false);
         if (btnTapToRoll != null) btnTapToRoll.SetActive(isPlayerTurn);
         if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
+        if (EnemyCardContainer.Instance != null) EnemyCardContainer.Instance.SetHandVisible(false);
         if (isPlayerTurn) SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
         else SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
         StartCoroutine(DelayDiceUI(2f));
@@ -159,6 +161,8 @@ public class BattleUIManager : MonoBehaviour
         if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, false);
         if (wasMainBattleActive) SetPanelVisible(panelMainBattle, false);
 
+        if (EnemyCardContainer.Instance != null) EnemyCardContainer.Instance.SetHandVisible(false);
+
         if (actionButtons != null) actionButtons.SetActive(false);
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(false);
     }
@@ -169,6 +173,11 @@ public class BattleUIManager : MonoBehaviour
 
         if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, true);
         if (wasMainBattleActive) SetPanelVisible(panelMainBattle, true);
+
+        if (EnemyCardContainer.Instance != null)
+        {
+            EnemyCardContainer.Instance.SetHandVisible(!wasDiceScreenActive);
+        }
 
         if (TurnManager.Instance != null && wasDiceScreenActive)
         {

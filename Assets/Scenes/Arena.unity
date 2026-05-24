@@ -4724,6 +4724,121 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7655760506913583325, guid: 50476305920f54335b6c3eda62b54cb5, type: 3}
   m_PrefabInstance: {fileID: 6407314464262434391}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1200311066
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1200311067}
+  - component: {fileID: 1200311071}
+  - component: {fileID: 1200311070}
+  - component: {fileID: 1200311069}
+  - component: {fileID: 1200311068}
+  m_Layer: 5
+  m_Name: Enemy Hand Panel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1200311067
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200311066}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.11803, y: 1.11803, z: 1.11803}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1254675536}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -100, y: 350}
+  m_SizeDelta: {x: 200, y: 500}
+  m_Pivot: {x: 1, y: 0}
+--- !u!114 &1200311068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200311066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 8
+  m_Spacing: -80
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!225 &1200311069
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200311066}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &1200311070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200311066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.5188679, g: 0.070977226, b: 0.070977226, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1200311071
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200311066}
+  m_CullTransparentMesh: 1
 --- !u!1 &1230974168
 GameObject:
   m_ObjectHideFlags: 0
@@ -5030,6 +5145,7 @@ RectTransform:
   - {fileID: 1530851091}
   - {fileID: 747251887}
   - {fileID: 194039437}
+  - {fileID: 1200311067}
   - {fileID: 1395374435}
   - {fileID: 1455829432}
   - {fileID: 768824735}
@@ -8414,6 +8530,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1955621581}
   m_CullTransparentMesh: 1
+--- !u!1 &1967763848 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8480668351551187331, guid: 73c699986dea84692b3a4624d88403dd, type: 3}
+  m_PrefabInstance: {fileID: 3714916455559474039}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1967763851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1967763848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6748f237b365c4f4497a3e2be7887d9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyCardContainer
+  currentHand: []
+  maxHandSize: 5
+  handCanvasGroup: {fileID: 1200311069}
+  enemyHandUIContainer: {fileID: 1200311067}
+  cardUIPrefab: {fileID: 5167255001264781725, guid: 800b9fde0d0f7419d94c0ef8e5ee3b68, type: 3}
+  testCardData: {fileID: 11400000, guid: 3a120b31a76da4262855b213b69cd02e, type: 2}
 --- !u!4 &1974193912 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2256533613161591615, guid: 3eb94d997a3474799af464ae4a652f45, type: 3}
@@ -9848,6 +9987,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6492713426238675348, guid: 73c699986dea84692b3a4624d88403dd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6977384457614217523}
+    - targetCorrespondingSourceObject: {fileID: 8480668351551187331, guid: 73c699986dea84692b3a4624d88403dd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1967763851}
   m_SourcePrefab: {fileID: 100100000, guid: 73c699986dea84692b3a4624d88403dd, type: 3}
 --- !u!1001 &6153753548929585836
 PrefabInstance:
