@@ -1353,7 +1353,7 @@ MonoBehaviour:
   accountGuestUI: {fileID: 19312740}
   accountLoggedInUI: {fileID: 766423230}
   profileNameText: {fileID: 1714152206}
-  profileEmailText: {fileID: 1306682266}
+  profileStatsText: {fileID: 1306682266}
   regUsernameInput: {fileID: 1898480369}
   regEmailInput: {fileID: 41147364}
   regPasswordInput: {fileID: 1634364114}
@@ -3874,7 +3874,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &894705982
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5592,7 +5592,7 @@ GameObject:
   - component: {fileID: 1306682267}
   - component: {fileID: 1306682266}
   m_Layer: 5
-  m_Name: email
+  m_Name: stats
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5637,7 +5637,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: nameuser@gmail.com
+  m_text: 'W:  | L: '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dac10eea9ed9bee4893301b83a83eaba, type: 2}
   m_sharedMaterial: {fileID: 8755987669672271758, guid: dac10eea9ed9bee4893301b83a83eaba, type: 2}
@@ -5664,13 +5664,13 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535

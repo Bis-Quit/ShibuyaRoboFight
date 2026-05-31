@@ -14,7 +14,7 @@ public class AuthUIManager : MonoBehaviour
     public GameObject accountGuestUI;
     public GameObject accountLoggedInUI;
     public TextMeshProUGUI profileNameText;
-    public TextMeshProUGUI profileEmailText;
+    public TextMeshProUGUI profileStatsText;
 
     [Header("REGISTER POPUP")]
     public TMP_InputField regUsernameInput;
@@ -49,7 +49,7 @@ public class AuthUIManager : MonoBehaviour
 
             PlayerData data = SaveSystem.LoadProfile();
             profileNameText.text = data.playerName.ToUpper();
-            profileEmailText.text = data.email;
+            profileStatsText.text = "W: " + data.totalWins + " | " + "L: " + data.totalLosses;
         }
         else
         {
