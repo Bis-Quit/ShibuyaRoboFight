@@ -28,17 +28,31 @@ public class CharacterSelectionManager : MonoBehaviour
     [Header("Background Name Setup")]
     public List<GameObject> backgroundNameList;
 
+    [Header("Audio BGM")]
+    public AudioClip sceneBGM;
+
     private int selectedIndex = 0;
 
     private void Start()
     {
+        if (sceneBGM != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayBGM(sceneBGM);
+        }
         PreviewCharacter(0);
     }
 
     public void PreviewCharacter(int index)
-    {
+    {   
+        if (index == selectedIndex && currentDisplayedModel != null) return;
+
         selectedIndex = index;
         CharacterData data = characterDatabase[index];
+
+        if (data.characterVO != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(data.characterVO, true);
+        }
 
         nameText.text = data.characterName;
         bgnameText.text = data.characterName;

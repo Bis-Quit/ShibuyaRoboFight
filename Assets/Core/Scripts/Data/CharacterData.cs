@@ -19,6 +19,9 @@ public class CharacterData : ScriptableObject
     [Header("Visual")]
     public GameObject visualPrefab;
 
+    [Header("Audio")]
+    public AudioClip characterVO;
+
     [Header("Special Skill Mechanics")]
     [TextArea(2,4)]
     public string specialSkillDescription;

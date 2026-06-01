@@ -20,6 +20,7 @@ MonoBehaviour:
   lockedDicePool: 0
   powerCardSlot: 0
   visualPrefab: {fileID: 3380078904896855110, guid: ab3b9ac845c604b068f5a462d057e44d, type: 3}
+  characterVO: {fileID: 8300000, guid: 4cc87992f43be49158b05b08dc93c5af, type: 3}
   specialSkillDescription: Add Ability Point for x Skill Point * x Ability Point
     from Dice Roll
   skillType: 1

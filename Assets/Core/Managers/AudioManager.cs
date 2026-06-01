@@ -2,15 +2,36 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public static AudioManager Instance { get; private set; }
+    public AudioSource sfxSource;
+    public AudioSource bgmSource;
+
+    private void Awake()
     {
-        
+        if (Instance == null) Instance = this;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void PlaySFX(AudioClip clip, bool stopPrevious = false)
     {
-        
+        if (clip != null && sfxSource != null)
+        {
+            if (stopPrevious)
+            {
+                sfxSource.Stop();
+            }
+
+            sfxSource.PlayOneShot(clip);
+        }
+    }
+
+    public void PlayBGM(AudioClip clip)
+    {
+        if (clip != null && bgmSource != null)
+        {
+            if (bgmSource.clip == clip) return;
+
+            bgmSource.clip = clip;
+            bgmSource.Play();
+        }
     }
 }
