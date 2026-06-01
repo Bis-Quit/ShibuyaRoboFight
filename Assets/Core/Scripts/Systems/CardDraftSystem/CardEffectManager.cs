@@ -20,8 +20,8 @@ public class CardEffectManager : MonoBehaviour
         bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
         RobotStats caster = isPlayerTurn ? playerStats : enemyStats;
         CharacterAnimator casterAnim = isPlayerTurn ? playerAnim : enemyAnim;
-        RobotStats target = (card.effectTarget == CardData.TargetSubject.Self) ? playerStats : enemyStats;
-        CharacterAnimator targetAnim = (card.effectTarget == CardData.TargetSubject.Self) ? playerAnim : enemyAnim;
+        RobotStats target = (card.effectTarget == CardData.TargetSubject.Self) ? caster : (isPlayerTurn ? enemyStats : playerStats);
+        CharacterAnimator targetAnim = (card.effectTarget == CardData.TargetSubject.Self) ? casterAnim : (isPlayerTurn ? enemyAnim : playerAnim);
 
         string casterSkillAnimName = string.IsNullOrEmpty(card.animationClipName) ? "Attack" : card.animationClipName;
 
@@ -101,5 +101,11 @@ public class CardEffectManager : MonoBehaviour
 
         float remainingTime = totalAnimDur - hitDelay;
         yield return new WaitForSeconds(remainingTime + 0.3f);
+
+        if (BattleUIManager.Instance != null)
+        {
+            BattleUIManager.Instance.ResetCamera();
+        }
+        Debug.Log($"<color=green> Efek '{card.cardName}' selesai diterapkan, Kamera kembali ke Arena.</color>");
     }
 }

@@ -41,9 +41,16 @@ public class EnemyAIManager : MonoBehaviour
             }
             else if (phase == TurnManager.TurnPhase.CardDrafting)
             {
-                StartCoroutine(EnemyDraftingRoutine());
+                StartCoroutine(EnemyPostRollRoutine());
             }
         }
+    }
+
+    private IEnumerator EnemyPostRollRoutine()
+    {
+        Debug.Log("<color=magenta>EnemyAIManager: Masuk fase sebelum Market. Cek kartu di tangan dulu!</color>");
+        yield return StartCoroutine(EnemyActionRoutine());
+        yield return StartCoroutine(EnemyDraftingRoutine());
     }
 
     private IEnumerator AutoRollRoutine()
@@ -145,21 +152,20 @@ public class EnemyAIManager : MonoBehaviour
             
             if (isBuying)
             {
-                yield break; 
+                yield return new WaitForSeconds(1.5f); 
             }
             else 
             {
                 if (aiStats.currentEnergy > 0) 
                 {
                     DraftingManager.Instance.StartCoroutine(DraftingManager.Instance.EnemyTryResetAndBuy(aiStats));
-                    yield break; 
+                    yield return new WaitForSeconds(1f); 
                 }
             }
         }
 
         Debug.Log("<color=magenta>EnemyAIManager: Uang benar-benar habis. Skip belanja.</color>");
-        yield return new WaitForSeconds(1.5f);
-        StartCoroutine(EnemyActionRoutine());
+        TurnManager.Instance.ProcessedToTurnEnd();
     }
 
     public IEnumerator EnemyActionRoutine()
@@ -209,8 +215,6 @@ public class EnemyAIManager : MonoBehaviour
         }
 
         Debug.Log("<color=magenta>EnemyAIManager: Giliran musuh BERAKHIR!</color>");
-        
-        TurnManager.Instance.ProcessedToTurnEnd();
     }
 
     private bool AllDiceStopped()
