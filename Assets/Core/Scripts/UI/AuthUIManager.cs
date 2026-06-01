@@ -41,25 +41,44 @@ public class AuthUIManager : MonoBehaviour
     public void RefreshSettingsUI()
     {
         int isLoggedIn = PlayerPrefs.GetInt("IsLoggedIn", 0);
+        string currentUser = PlayerPrefs.GetString("LoggedUsername", "");
 
-        if (isLoggedIn == 1 && SaveSystem.HasSaveFile())
+        if (isLoggedIn == 1 && !string.IsNullOrEmpty(currentUser))
         {
-            accountGuestUI.SetActive(false);
-            accountLoggedInUI.SetActive(true);
-
-            PlayerData data = SaveSystem.LoadProfile();
-            profileNameText.text = data.playerName.ToUpper();
-            profileStatsText.text = "W: " + data.totalWins + " | " + "L: " + data.totalLosses;
+            PlayerDatabase db = SaveSystem.LoadDatabase();
+            PlayerData myData = db.accountList.Find(x => x.playerName == currentUser);
+            
+            if (myData != null)
+            {
+                accountGuestUI.SetActive(false);
+                accountLoggedInUI.SetActive(true);
+                profileNameText.text = myData.playerName.ToUpper();
+                profileStatsText.text = "W: " + myData.totalWins + "   L: " + myData.totalLosses;
+                return;
+            }
         }
-        else
-        {
-            accountGuestUI.SetActive(true);
-            accountLoggedInUI.SetActive(false);
-        }
+        
+        accountGuestUI.SetActive(true);
+        accountLoggedInUI.SetActive(false);
     }
 
-    public void OpenRegisterPopup() { registerPanel.SetActive(true); }
-    public void CloseRegisterPopup() { registerPanel.SetActive(false); }
+    public void OpenRegisterPopup() 
+    {
+        regUsernameInput.text = "";
+        regEmailInput.text = "";
+        regPasswordInput.text = "";
+        regConfirmPasswordInput.text = "";
+
+        registerPanel.SetActive(true); 
+    }
+
+    public void CloseRegisterPopup()
+    {
+        loginIdInput.text = "";
+        loginPasswordInput.text = "";
+
+        registerPanel.SetActive(false);
+    }
 
     public void OpenLoginPopup() 
     { 
@@ -80,12 +99,23 @@ public class AuthUIManager : MonoBehaviour
         if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass)) return;
         if (pass != confPass) return; 
 
+        PlayerDatabase db = SaveSystem.LoadDatabase();
+
+        if (db.accountList.Exists(x => x.playerName == user || x.email == email))
+        {
+            Debug.LogWarning("NAMA/EMAIL SUDAH TERDAFTAR!");
+            return;
+        }
+
         PlayerData newData = new PlayerData();
         newData.playerName = user;
         newData.email = email;
         newData.password = pass;
-        SaveSystem.SaveProfile(newData);
 
+        db.accountList.Add(newData);
+        SaveSystem.SaveDatabase(db);
+
+        PlayerPrefs.SetString("LoggedUsername", user);
         PlayerPrefs.SetInt("IsLoggedIn", 1);
         PlayerPrefs.Save();
 
@@ -102,21 +132,25 @@ public class AuthUIManager : MonoBehaviour
 
     public void SubmitLogin()
     {
-        if (!SaveSystem.HasSaveFile())
-        {
-            ShowError("NO ACCOUNT FOUND! PLEASE REGISTER.");
-            return;
-        }
-
-        PlayerData data = SaveSystem.LoadProfile();
+        PlayerDatabase db = SaveSystem.LoadDatabase();
         string inputId = loginIdInput.text;
         string inputPass = loginPasswordInput.text;
+        bool found = false;
 
-        if ((inputId == data.email || inputId == data.playerName) && inputPass == data.password)
+        foreach (PlayerData p in db.accountList)
         {
-            PlayerPrefs.SetInt("IsLoggedIn", 1);
-            PlayerPrefs.Save();
-            
+            if ((inputId == p.email || inputId == p.playerName) && inputPass == p.password)
+            {
+                PlayerPrefs.SetString("LoggedUsername", p.playerName);
+                PlayerPrefs.SetInt("IsLoggedIn", 1);
+                PlayerPrefs.Save();
+                found = true;
+                break;
+            }
+        }
+
+        if (found)
+        {
             loginPanel.SetActive(false);
             RefreshSettingsUI();
         }
@@ -151,15 +185,19 @@ public class AuthUIManager : MonoBehaviour
     public void LogoutAccount()
     {
         PlayerPrefs.SetInt("IsLoggedIn", 0);
+        PlayerPrefs.SetString("LoggedUsername", "");
         PlayerPrefs.Save();
-        RefreshSettingsUI();
+        RefreshSettingsUI(); 
     }
 
     public void DeleteAccount()
     {
-        SaveSystem.DeleteProfile();
-        PlayerPrefs.SetInt("IsLoggedIn", 0);
-        PlayerPrefs.Save();
-        RefreshSettingsUI();
+        PlayerDatabase db = SaveSystem.LoadDatabase();
+        string currentUser = PlayerPrefs.GetString("LoggedUsername", "");
+
+        db.accountList.RemoveAll(x => x.playerName == currentUser);
+        SaveSystem.SaveDatabase(db);
+        
+        LogoutAccount();
     }
 }

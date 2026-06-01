@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 [System.Serializable] 
 public class PlayerData
 {
@@ -7,8 +9,6 @@ public class PlayerData
     
     public int totalWins;
     public int totalLosses;
-    public float bgmVolume;
-    public float sfxVolume;
 
     public PlayerData()
     {
@@ -17,7 +17,11 @@ public class PlayerData
         password = "";
         totalWins = 0;
         totalLosses = 0;
-        bgmVolume = 1f; 
-        sfxVolume = 1f; 
     }
+}
+
+[System.Serializable]
+public class PlayerDatabase
+{
+    public List<PlayerData> accountList = new List<PlayerData>(); 
 }

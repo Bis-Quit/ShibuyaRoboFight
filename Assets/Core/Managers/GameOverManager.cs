@@ -57,6 +57,8 @@ public class GameOverManager : MonoBehaviour
 
     public void TriggerGameOver(bool isPlayerWin)
     {
+        SaveMatchResult(isPlayerWin);
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
@@ -105,6 +107,26 @@ public class GameOverManager : MonoBehaviour
     public void LoadMainMenu()
     {
         SceneManager.LoadScene(mainMenuSceneName);
+    }
+
+    private void SaveMatchResult(bool isPlayerWin)
+    {
+        if (PlayerPrefs.GetInt("IsLoggedIn", 0) == 1)
+        {
+            string currentUser = PlayerPrefs.GetString("LoggedUsername", "");
+            PlayerDatabase db = SaveSystem.LoadDatabase();
+
+            int index = db.accountList.FindIndex(x => x.playerName == currentUser);
+
+            if (index != -1)
+            {
+                if (isPlayerWin) db.accountList[index].totalWins += 1;
+                else db.accountList[index].totalLosses += 1;
+
+                SaveSystem.SaveDatabase(db);
+                Debug.Log("<color=green>[SaveSystem] Statistik Ter-Update! W: " + db.accountList[index].totalWins + " | L: " + db.accountList[index].totalLosses + "</color>");
+            }
+        }
     }
 
     private void Update()

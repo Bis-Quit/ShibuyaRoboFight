@@ -3,27 +3,22 @@ using System.IO;
 
 public static class SaveSystem
 {
-    private static string saveFilePath = Application.persistentDataPath + "/playerStats.json";
+    private static string saveFilePath = Application.persistentDataPath + "/playerDatabase.json";
 
-    public static void SaveProfile(PlayerData data)
+    public static void SaveDatabase(PlayerDatabase db)
     {
-        string jsonText = JsonUtility.ToJson(data, true); 
-        File.WriteAllText(saveFilePath, jsonText);
+        string json = JsonUtility.ToJson(db, true);
+        File.WriteAllText(saveFilePath, json);
     }
 
-    public static PlayerData LoadProfile()
+    public static PlayerDatabase LoadDatabase()
     {
         if (File.Exists(saveFilePath))
         {
-            string jsonText = File.ReadAllText(saveFilePath);
-            return JsonUtility.FromJson<PlayerData>(jsonText);
+            string json = File.ReadAllText(saveFilePath);
+            return JsonUtility.FromJson<PlayerDatabase>(json);
         }
-        return new PlayerData(); 
-    }
-
-    public static void DeleteProfile()
-    {
-        if (File.Exists(saveFilePath)) File.Delete(saveFilePath);
+        return new PlayerDatabase();
     }
 
     public static bool HasSaveFile()
