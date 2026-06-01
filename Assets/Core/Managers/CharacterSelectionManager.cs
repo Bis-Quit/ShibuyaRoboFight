@@ -28,17 +28,10 @@ public class CharacterSelectionManager : MonoBehaviour
     [Header("Background Name Setup")]
     public List<GameObject> backgroundNameList;
 
-    [Header("Audio BGM")]
-    public AudioClip sceneBGM;
-
     private int selectedIndex = 0;
 
     private void Start()
     {
-        if (sceneBGM != null && AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlayBGM(sceneBGM);
-        }
         PreviewCharacter(0);
     }
 
