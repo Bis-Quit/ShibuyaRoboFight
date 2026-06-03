@@ -20,6 +20,9 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     public bool isHand = false;
     public int marketSlotIndex = -1;
 
+    [Header("Audio SFX")]
+    public AudioClip pickCardSFX;
+
     private void Awake()
     {
         canvas = GetComponent<Canvas>();
@@ -36,6 +39,8 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (pickCardSFX != null) AudioManager.Instance.PlaySFX(pickCardSFX);
+
         if (cardData == null) return;
 
         OnPointerExit(null); 

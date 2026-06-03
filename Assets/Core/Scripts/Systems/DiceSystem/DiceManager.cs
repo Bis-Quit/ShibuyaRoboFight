@@ -24,6 +24,9 @@ public class DiceManager : MonoBehaviour
     public int currentRollCount = 0;
     private bool isCheckingRollStatus = false;
 
+    [Header("Audio SFX")]
+    public AudioClip rollSFX;
+
     public static event Action OnAllDiceStopped;
 
     private void Awake()
@@ -129,6 +132,10 @@ public class DiceManager : MonoBehaviour
 
     public void RollAllDice()
     {
+        if (rollSFX != null)
+        {
+            AudioManager.Instance.PlaySFX(rollSFX);
+        }
         Debug.Log("DiceManager: Melempar SEMUA dadu!...");
 
 
@@ -147,6 +154,11 @@ public class DiceManager : MonoBehaviour
 
     public void ReRollActiveDice()
     {
+        if (rollSFX != null && activeDice.Count < 3)
+        {
+            AudioManager.Instance.PlaySFX(rollSFX);
+        }
+
         if (isCheckingRollStatus) return;
 
         if (activeDice.Count == 0)

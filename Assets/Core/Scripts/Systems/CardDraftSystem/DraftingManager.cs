@@ -41,6 +41,10 @@ public class DraftingManager : MonoBehaviour
     public RobotStats playerStats;
     public PlayerHand playerHand;
 
+    [Header("Audio SFX")]
+    public AudioClip draftSFX;
+    public AudioClip pickCardSFX;
+
     private void Awake()
     {
         Instance = this;
@@ -140,6 +144,7 @@ public class DraftingManager : MonoBehaviour
 
     public void OpenMarketUI()
     {
+        if (draftSFX != null) AudioManager.Instance.PlaySFX(draftSFX);
         if (TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
         if (TurnManager.Instance.CurrentPlayerIndex != 0 || draftingUIPanel.activeSelf || isProcessing) return;
         draftingUIPanel.SetActive(true);
@@ -151,6 +156,7 @@ public class DraftingManager : MonoBehaviour
     {
         isProcessing = true;
         foreach (Transform child in marketGridContainer) Destroy(child.gameObject);
+        if (pickCardSFX != null) AudioManager.Instance.PlaySFX(pickCardSFX);
         activeUICards.Clear();
 
         for (int i = 0; i < activeCardData.Length; i++)

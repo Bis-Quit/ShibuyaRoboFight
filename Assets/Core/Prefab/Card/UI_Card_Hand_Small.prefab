@@ -138,6 +138,7 @@ MonoBehaviour:
   hoverOffset: {x: 0, y: 0}
   isHand: 0
   marketSlotIndex: -1
+  pickCardSFX: {fileID: 8300000, guid: 2ebb5951a69224382aabbfa8dca1ae83, type: 3}
 --- !u!225 &8034146890868420991
 CanvasGroup:
   m_ObjectHideFlags: 0
