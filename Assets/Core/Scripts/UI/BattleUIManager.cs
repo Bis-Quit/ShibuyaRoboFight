@@ -18,12 +18,12 @@ public class BattleUIManager : MonoBehaviour
     public CinemachineCamera VCamPlayer;
     public CinemachineCamera VCamEnemy;
 
-    [Header("🎬 Cinematic Cams - Player POV")]
+    [Header("Cinematic Cams - Player POV")]
     public CinemachineCamera vCamPlayerAttack; 
     public CinemachineCamera vCamPlayerBuff;   
     public CinemachineCamera vCamPlayerHit;    
 
-    [Header("🎬 Cinematic Cams - Enemy POV")]
+    [Header("Cinematic Cams - Enemy POV")]
     public CinemachineCamera vCamEnemyAttack;
     public CinemachineCamera vCamEnemyBuff;
     public CinemachineCamera vCamEnemyHit;
@@ -32,6 +32,9 @@ public class BattleUIManager : MonoBehaviour
     [SerializeField] private int activePriority = 15;
     [SerializeField] private int inactivePriority = 10;
     [SerializeField] private int cinematicPriority = 30;
+
+    [Header("Market Panel")]
+    public GameObject marketClickIndicator;
 
     private bool wasDiceScreenActive;
     private bool wasMainBattleActive;
@@ -100,6 +103,7 @@ public class BattleUIManager : MonoBehaviour
         currentPhaseMemory = phase;
 
         bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
+        if (marketClickIndicator != null) marketClickIndicator.SetActive(phase == TurnManager.TurnPhase.CardDrafting && isPlayerTurn);
         if (phase == TurnManager.TurnPhase.FirstRoll) ShowDiceScreen(isPlayerTurn);
         else if (phase == TurnManager.TurnPhase.RerollPhase) {
             if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
@@ -185,5 +189,13 @@ public class BattleUIManager : MonoBehaviour
             if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
         }
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(true);
+    }
+
+    public void HideMarketIndicator()
+    {
+        if (marketClickIndicator != null)
+        {
+            marketClickIndicator.SetActive(false);
+        }
     }
 }

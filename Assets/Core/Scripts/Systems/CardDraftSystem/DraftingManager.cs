@@ -143,6 +143,7 @@ public class DraftingManager : MonoBehaviour
         if (TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
         if (TurnManager.Instance.CurrentPlayerIndex != 0 || draftingUIPanel.activeSelf || isProcessing) return;
         draftingUIPanel.SetActive(true);
+        if (BattleUIManager.Instance != null) BattleUIManager.Instance.HideMarketIndicator();
         StartCoroutine(PopulateMarketWithAnimation());
     }
 
