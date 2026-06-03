@@ -740,6 +740,7 @@ GameObject:
   - component: {fileID: 2901391364458912170}
   - component: {fileID: -4317241339846158849}
   - component: {fileID: 8520255712332232308}
+  - component: {fileID: -6875260015960732380}
   m_Layer: 0
   m_Name: Dice
   m_TagString: Untagged
@@ -888,6 +889,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Dice
   throwForce: 2
   rollTorque: 10
+  lockIconRenderer: {fileID: 0}
+  faceSprites: []
+--- !u!114 &-6875260015960732380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4774697364867494373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21c697935b5e74c8fa4b97f1c93528cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DiceInteractableVisual
+  pulseSpeed: 6
+  pulseAmount: 2
 --- !u!1 &5747645699388796584
 GameObject:
   m_ObjectHideFlags: 0

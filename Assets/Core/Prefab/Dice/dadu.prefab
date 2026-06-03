@@ -179,6 +179,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 78afde1486168458e8cd4a9f4b945ac1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4681047897062469494}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 78afde1486168458e8cd4a9f4b945ac1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7777818132769733026}
   m_SourcePrefab: {fileID: 100100000, guid: 78afde1486168458e8cd4a9f4b945ac1, type: 3}
 --- !u!4 &8425148311882050883 stripped
 Transform:
@@ -260,3 +263,17 @@ MonoBehaviour:
   - {fileID: 21300000, guid: d7301c8eed28c4ae5a5ec00402788376, type: 3}
   - {fileID: 21300000, guid: 13378b9f4bfae4cdc9afdfa98bb9f4d6, type: 3}
   - {fileID: 21300000, guid: edc3bcd152e1d49b8959c7c2a93aa21f, type: 3}
+--- !u!114 &7777818132769733026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9198588412582852601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21c697935b5e74c8fa4b97f1c93528cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DiceInteractableVisual
+  pulseSpeed: 4
+  pulseAmount: 0.05
