@@ -82,16 +82,12 @@ public class TurnManager : MonoBehaviour
 
     private void StartNewGameLoop()
     {
-        StartCoroutine(OpeningSceneRoutine());
+        Debug.Log("<color=yellow>TurnManager: Standby... Menunggu Sutradara Intro selesai bekerja.</color>");
     }
 
-    private IEnumerator OpeningSceneRoutine()
+    public void StartMatchAfterIntro()
     {
-        Debug.Log("<color=yellow>TurnManager: Memulai Opening Scene...</color>");
-
-        yield return new WaitForSeconds(3f);
-
-        Debug.Log("<color=yellow>TurnManager: Opening Scene selesai, memulai battle!</color>");
+        Debug.Log("<color=yellow>TurnManager: ROUND 1... FIGHT!</color>");
         CurrentPlayerIndex = 0;
         OnPlayerTurnChanged?.Invoke(CurrentPlayerIndex);
         ChangePhase(TurnPhase.TurnStart);
