@@ -26,7 +26,11 @@ public class DraftingManager : MonoBehaviour
     [SerializeField] private Image inspectImage;
     [SerializeField] private Button buyButton;
     [SerializeField] private Button closeInspectButton;
-    
+
+    [Header("Transition Settings")]
+    [SerializeField] private GameObject chooseCardSplash;
+    [SerializeField] private float splashDuration = 1.5f;
+
     private bool isProcessing = false;
     private List<CardData> currentCardPool = new List<CardData>();
 
@@ -144,12 +148,44 @@ public class DraftingManager : MonoBehaviour
 
     public void OpenMarketUI()
     {
-        if (draftSFX != null) AudioManager.Instance.PlaySFX(draftSFX);
-        if (TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) return;
-        if (TurnManager.Instance.CurrentPlayerIndex != 0 || draftingUIPanel.activeSelf || isProcessing) return;
+        Debug.Log("<color=yellow>Mencoba buka Market...</color>");
+
+        if (TurnManager.Instance.CurrentPhase != TurnManager.TurnPhase.CardDrafting) 
+        {
+            Debug.Log("<color=red>GAGAL: Bukan fase Card Drafting!</color>");
+            return;
+        }
+        if (TurnManager.Instance.CurrentPlayerIndex != 0) 
+        {
+            Debug.Log("<color=red>GAGAL: Bukan giliran Player!</color>");
+            return;
+        }
+        if (draftingUIPanel.activeSelf) 
+        {
+            Debug.Log("<color=red>GAGAL: UI Market sudah terbuka!</color>");
+            return;
+        }
+        if (isProcessing) 
+        {
+            Debug.Log("<color=red>GAGAL: isProcessing masih TRUE (Sistem masih sibuk)!</color>");
+            return;
+        }
+
+        Debug.Log("<color=green>LOLOS! Memulai Transisi Splash Screen...</color>");
+        StartCoroutine(DraftingTransitionRoutine());
+    }
+
+    private IEnumerator DraftingTransitionRoutine()
+    {
+        isProcessing = true;
+
+        if (chooseCardSplash != null) chooseCardSplash.SetActive(true);
+        yield return new WaitForSeconds(splashDuration);
+        if (chooseCardSplash != null) chooseCardSplash.SetActive(false);
         draftingUIPanel.SetActive(true);
         if (BattleUIManager.Instance != null) BattleUIManager.Instance.HideMarketIndicator();
-        StartCoroutine(PopulateMarketWithAnimation());
+
+    StartCoroutine(PopulateMarketWithAnimation());
     }
 
     private IEnumerator PopulateMarketWithAnimation()
