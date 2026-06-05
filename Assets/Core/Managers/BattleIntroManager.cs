@@ -8,7 +8,10 @@ public class BattleIntroManager : MonoBehaviour
     [Header("UI & Canvas")]
     public GameObject introOverlay;
     public GameObject battleUI;
+    public GameObject yellowGuideNotif; 
     public Slider loadingBar;
+    
+    public GameObject tapToNextImage; 
 
     [Header("Cinemachine CAM")]
     public CinemachineCamera vcamPlayer;
@@ -20,10 +23,7 @@ public class BattleIntroManager : MonoBehaviour
 
     public void Awake()
     {
-        if (battleUI != null)
-        {
-            battleUI.SetActive(false);
-        }
+        if (battleUI != null) battleUI.SetActive(false);
     }
 
     private void Start()
@@ -33,41 +33,51 @@ public class BattleIntroManager : MonoBehaviour
 
     private IEnumerator PlayIntroSequence()
     {
-        if (introOverlay != null)
+        if (introOverlay != null) introOverlay.SetActive(true);
+        if (loadingBar != null) loadingBar.value = 0f;
+
+        if (tapToNextImage != null) tapToNextImage.SetActive(false); 
+
+        if (yellowGuideNotif != null && NotificationManager.Instance != null)
         {
-            introOverlay.SetActive(true);
-        }
-        if (loadingBar != null)
-        {
-            loadingBar.value = 0f;
+            NotificationManager.Instance.ShowNotification(yellowGuideNotif);
         }
 
         float elapsed = 0f;
         while (elapsed < readingTime)
         {
             elapsed += Time.deltaTime;
-            
-            if (loadingBar != null) 
+            if (loadingBar != null) loadingBar.value = elapsed / readingTime;
+
+            if (Input.GetMouseButtonDown(0))
             {
-                loadingBar.value = elapsed / readingTime;
-                Debug.Log($"<color=cyan>Loading Bar: {loadingBar.value}</color>");
+                Debug.Log("<color=yellow>BattleIntro: Player nge-skip loading!</color>");
+                break;
             }
-            else
-            {
-                Debug.Log("<color=red>KABEL LOADING BAR KOSONG/LEPAS!</color>");
-            }
-            
+
             yield return null; 
         }
 
-        if (loadingBar != null)
+        if (loadingBar != null) loadingBar.value = 1f;
+
+        if (tapToNextImage != null) tapToNextImage.SetActive(true);
+
+        yield return new WaitForSeconds(0.2f);
+
+        while (!Input.GetMouseButtonDown(0))
         {
-            loadingBar.value = 1f;
+            yield return null;
         }
-        if (introOverlay != null)
+        
+        Debug.Log("<color=green>BattleIntro: Player lanjut! Mulai kamera sinematik...</color>");
+
+        if (yellowGuideNotif != null && NotificationManager.Instance != null)
         {
-            introOverlay.SetActive(false);
+            NotificationManager.Instance.HideNotification(yellowGuideNotif);
+            yield return new WaitForSeconds(0.2f); 
         }
+
+        if (introOverlay != null) introOverlay.SetActive(false);
 
         if (vcamPlayer != null && vcamEnemy != null && vcamArena != null)
         {
@@ -87,10 +97,8 @@ public class BattleIntroManager : MonoBehaviour
             yield return new WaitForSeconds(3f);
         }
 
-        if (battleUI != null)
-        {
-            battleUI.SetActive(true);
-        }
+        if (battleUI != null) battleUI.SetActive(true);
+
         if (TurnManager.Instance != null)
         {
             TurnManager.Instance.StartMatchAfterIntro();

@@ -24,8 +24,8 @@ public class TurnManager : MonoBehaviour
 
     public int CurrentPlayerIndex { get; private set; }
 
-    private int currentRerollCount = 0;
-    private const int MAX_REROLLS = 0;
+    public int currentRerollCount = 0;
+    public const int MAX_REROLLS = 0;
 
     public static event Action<TurnPhase> OnPhaseChanged;
     public static event Action<int> OnPlayerTurnChanged;

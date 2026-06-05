@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class DiceManager : MonoBehaviour
@@ -23,6 +24,9 @@ public class DiceManager : MonoBehaviour
     public int maxRolls = 3;
     public int currentRollCount = 0;
     private bool isCheckingRollStatus = false;
+
+    [Header("UI Button")]
+    public Button btnReroll;
 
     [Header("Audio SFX")]
     public AudioClip rollSFX;
@@ -47,6 +51,7 @@ public class DiceManager : MonoBehaviour
         if (phase == TurnManager.TurnPhase.FirstRoll)
         {
             currentRollCount = 1;
+            UpdateRerollButton();
 
             Debug.Log("DiceManager: Dadu disiapkan. Menunggu lemparan pertama...");
         }
@@ -170,6 +175,7 @@ public class DiceManager : MonoBehaviour
         if (currentRollCount < maxRolls)
         {
             currentRollCount++;
+            UpdateRerollButton();
             Debug.Log($"<color=green>DiceManager: Re-Roll! ini lemparan ke-{currentRollCount} dari {maxRolls}. Roll ulang {activeDice.Count} dadu di tray...</color>");
 
             RollAllDice();
@@ -212,6 +218,14 @@ public class DiceManager : MonoBehaviour
         }
     }
 
+    public void UpdateRerollButton()
+    {
+        if (btnReroll != null)
+        {
+            btnReroll.interactable = (currentRollCount < maxRolls);
+        }
+    }
+
     public void ClearActiveDice()
     {
         activeDice.Clear();
@@ -227,6 +241,8 @@ public class DiceManager : MonoBehaviour
         activeDice.Clear();
         lockedDice.Clear();
         currentRollCount = 0;
+
+        UpdateRerollButton();
 
         if (DiceUIManager.Instance != null)
         {
