@@ -6,11 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/AR(Testing).unity
-    guid: 897cbe747256c4341af776c23bdc1fed
-  - enabled: 0
+    path: Assets/Scenes/SplashScreen.unity
+    guid: fa3fabc0e7c684ba889a8605bdd791a4
+  - enabled: 1
     path: Assets/Scenes/Arena.unity
-    guid: 71f1bd81f8d264d75b239d6829c290a8
+    guid: 2f1379974ee244bed86e40e5bbda089c
   - enabled: 1
     path: Assets/Scenes/ChallengeMode.unity
     guid: 9a6d830aa841c9d4d8f0065a000df706
@@ -28,13 +28,10 @@ EditorBuildSettings:
     guid: 1d10c9aed5bedcd41b91124fa193d20f
   - enabled: 1
     path: Assets/Scenes/MainMenu.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    guid: 67e7a76ece9e24afeac8136fa3351135
   - enabled: 1
     path: Assets/Scenes/Materi.unity
     guid: 4dde40ca31338384ba4eaf3af5cb5f63
-  - enabled: 1
-    path: Assets/Scenes/Arena.unity
-    guid: 675255b3e2014408b993955abcca6ed1
   - enabled: 1
     path: Assets/Scenes/VS Screen Loading.unity
     guid: 5a9fd0fb0e5b14150bad6ee045e88b16
