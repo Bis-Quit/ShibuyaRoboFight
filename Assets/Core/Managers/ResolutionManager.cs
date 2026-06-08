@@ -103,11 +103,9 @@ public class ResolutionManager : MonoBehaviour
         int destructCount = diceCounts[DiceFace.Destruction];
         if (destructCount > 0)
         {
-            int destructPoints = 0;
             if (destructCount >= 3)
             {
-                destructPoints += 1;
-                if (destructCount % 3 > 0) destructPoints += (destructCount %3);
+                int destructPoints = 1 + (destructCount - 3); // RUMUS PATEN
 
                 Debug.Log($"[5] DESTRUCT: KOMBO AKTIF! Menarik Destruct Token sebanyak {destructPoints} poin.");
                 TugOfWarManager.Instance.MoveDestruction(destructPoints, TurnManager.Instance.CurrentPlayerIndex);
@@ -123,11 +121,9 @@ public class ResolutionManager : MonoBehaviour
         int fameCount = diceCounts[DiceFace.Fame];
         if (fameCount > 0)
         {
-            int famePoints = 0;
             if (fameCount >= 3)
             {
-                famePoints += 1;
-                if (fameCount % 3 > 0) famePoints += (fameCount % 3);
+                int famePoints = 1 + (fameCount - 3);
 
                 Debug.Log($"[6] FAME: KOMBO AKTIF! Menarik Fame Token sebanyak {famePoints} poin.");
                 TugOfWarManager.Instance.MoveFame(famePoints, TurnManager.Instance.CurrentPlayerIndex);

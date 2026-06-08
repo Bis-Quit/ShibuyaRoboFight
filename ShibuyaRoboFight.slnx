@@ -4,5 +4,4 @@
   <Project Path="Boxophobic.SkyboxCubemapExtended.Editor.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Boxophobic.Utils.Scripts.csproj" />
-  <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>

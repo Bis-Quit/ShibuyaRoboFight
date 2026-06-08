@@ -24,14 +24,8 @@ EditorBuildSettings:
     path: Assets/Scenes/HowToPlay.unity
     guid: e38c1804acc92444cb53462bbc60222e
   - enabled: 1
-    path: Assets/Scenes/Kuis.unity
-    guid: 1d10c9aed5bedcd41b91124fa193d20f
-  - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 67e7a76ece9e24afeac8136fa3351135
-  - enabled: 1
-    path: Assets/Scenes/Materi.unity
-    guid: 4dde40ca31338384ba4eaf3af5cb5f63
   - enabled: 1
     path: Assets/Scenes/VS Screen Loading.unity
     guid: 5a9fd0fb0e5b14150bad6ee045e88b16

@@ -14,7 +14,7 @@ public class ArenaManager : MonoBehaviour
     public Transform enemySpawnPoint;
     public RobotUI enemyUI;
 
-    public void Awake()
+    public void Start()
     {
         SpawnSelectedPlayer();
         SpawnEnemy();
@@ -38,6 +38,7 @@ public class ArenaManager : MonoBehaviour
                 if (statsCharacter != null)
                 {
                     statsCharacter.baseData = selectedData;
+                    statsCharacter.InitializeHP();
                 }
 
                 if (DiceManager.Instance != null)
@@ -128,6 +129,7 @@ public class ArenaManager : MonoBehaviour
             if (statsEnemy != null)
             {
                 statsEnemy.baseData = enemyData;
+                statsEnemy.InitializeHP();
             }
 
             if (DiceManager.Instance != null)

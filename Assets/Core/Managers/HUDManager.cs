@@ -31,6 +31,8 @@ public class HUDManager : MonoBehaviour
     {
         if (Instance == null)
             Instance = this;
+            
+        if (hudCanvasGroup != null) hudCanvasGroup.alpha = 0f; 
     }
 
     public void ToggleHUD(bool isVisible)
@@ -61,7 +63,6 @@ public class HUDManager : MonoBehaviour
         if (phase == TurnManager.TurnPhase.FirstRoll ||
             phase == TurnManager.TurnPhase.RerollPhase)
         {
-            hudCanvasGroup.DOFade(1f, animDuration);
             SwitchToActionUI();
         }
         else if ( phase == TurnManager.TurnPhase.CardDrafting ||
@@ -70,7 +71,6 @@ public class HUDManager : MonoBehaviour
                 phase == TurnManager.TurnPhase.TurnEnd)
         {
             Debug.Log($"<color=cyan>HUDManager: Fase {phase}, HUD balik ke atas!</color>");
-            hudCanvasGroup.DOFade(1f, animDuration);
             SwitchToArenaUI();
         }
     }

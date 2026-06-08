@@ -1,7 +1,6 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Card", menuName = "ShibuyaRoboFight/Card Data")]
-
 public class CardData : ScriptableObject
 {
     [Header("Card Idetity")]
@@ -54,4 +53,18 @@ public class CardData : ScriptableObject
         Turn,
         Dice
     }
+
+    public enum WeaponType 
+    { 
+        None, 
+        Attack_1, 
+        Attack_2, 
+        Attack_3, 
+        Destruction_1, 
+        Destruction_2, 
+        Destruction_3 
+    }
+    
+    [Header("VFX Routing")]
+    public WeaponType weaponType = WeaponType.None; 
 }

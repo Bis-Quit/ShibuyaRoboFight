@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,7 +15,6 @@ public class NotificationManager : MonoBehaviour
 
     [Header("UI Notif Merah (Reroll Warning)")]
     public GameObject rerollWarningNotif;
-    public float displayDuration = 3f;
     [Tooltip("Geser dari KIRI ke KANAN = X nya minus (-1000)")]
     public Vector2 rerollSlideOffset = new Vector2(-1000f, 0f);
 
@@ -25,7 +25,6 @@ public class NotificationManager : MonoBehaviour
     public Vector2 defaultSlideOffset = new Vector2(1000f, 0f);
 
     private Dictionary<GameObject, Vector2> originalPositions = new Dictionary<GameObject, Vector2>();
-    private Coroutine autoHideCoroutine;
 
     private void Start()
     {
@@ -49,27 +48,12 @@ public class NotificationManager : MonoBehaviour
             if (TurnManager.Instance.CurrentPlayerIndex == 0)
             {
                 ShowNotification(rerollWarningNotif);
-                
-                if (autoHideCoroutine != null) StopCoroutine(autoHideCoroutine);
-                autoHideCoroutine = StartCoroutine(AutoHideRoutine(rerollWarningNotif, displayDuration));
             }
         }
         else if (phase == TurnManager.TurnPhase.Resolution || phase == TurnManager.TurnPhase.TurnEnd || phase == TurnManager.TurnPhase.FirstRoll)
         {
             HideNotification(rerollWarningNotif);
-            
-            if (autoHideCoroutine != null)
-            {
-                StopCoroutine(autoHideCoroutine);
-                autoHideCoroutine = null;
-            }
         }
-    }
-
-    private IEnumerator AutoHideRoutine(GameObject notifObj, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        HideNotification(notifObj);
     }
 
     public void ShowNotification(GameObject notifObj)
@@ -104,12 +88,11 @@ public class NotificationManager : MonoBehaviour
         if (rect == null) yield break;
 
         Vector2 visiblePos = GetOriginalPosition(obj);
-        
-        Vector2 offsetToUse = (obj == rerollWarningNotif) ? rerollSlideOffset : defaultSlideOffset;
-        Vector2 hiddenPos = visiblePos + offsetToUse;
+        Vector2 slideInOffset = (obj == rerollWarningNotif) ? rerollSlideOffset : defaultSlideOffset;
+        Vector2 slideOutOffset = new Vector2(-slideInOffset.x, slideInOffset.y);
 
-        Vector2 startPos = isShowing ? hiddenPos : visiblePos;
-        Vector2 targetPos = isShowing ? visiblePos : hiddenPos;
+        Vector2 startPos = isShowing ? (visiblePos + slideInOffset) : visiblePos;
+        Vector2 targetPos = isShowing ? visiblePos : (visiblePos + slideOutOffset);
 
         rect.anchoredPosition = startPos;
         if (isShowing) obj.SetActive(true); 
@@ -119,7 +102,7 @@ public class NotificationManager : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = elapsed / animDuration;
-            t = Mathf.Sin(t * Mathf.PI * 0.5f); 
+            t = Mathf.SmoothStep(0f, 1f, t); 
 
             rect.anchoredPosition = Vector2.Lerp(startPos, targetPos, t);
             yield return null;

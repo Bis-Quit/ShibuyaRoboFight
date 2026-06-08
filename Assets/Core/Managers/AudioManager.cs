@@ -12,6 +12,7 @@ public class AudioManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            LoadVolume();
         }
         else
         {
@@ -41,5 +42,28 @@ public class AudioManager : MonoBehaviour
             bgmSource.clip = clip;
             bgmSource.Play();
         }
+    }
+
+    public void LoadVolume()
+    {
+        float savedBGM = PlayerPrefs.GetFloat("MasterBGM", 1f);
+        float savedSFX = PlayerPrefs.GetFloat("MasterSFX", 1f);
+
+        SetBGMVolume(savedBGM);
+        SetSFXVolume(savedSFX);
+    }
+
+    public void SetBGMVolume(float volume)
+    {
+        if (bgmSource != null) bgmSource.volume = volume;
+        PlayerPrefs.SetFloat("BGM_Volume", volume);
+        PlayerPrefs.Save();
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        if (sfxSource != null) sfxSource.volume = volume;
+        PlayerPrefs.SetFloat("SFX_Volume", volume);
+        PlayerPrefs.Save();
     }
 }

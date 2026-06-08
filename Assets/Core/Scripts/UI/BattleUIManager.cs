@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using Unity.Cinemachine;
+using DG.Tweening;
 
 public class BattleUIManager : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class BattleUIManager : MonoBehaviour
     public GameObject panelDiceScreen;
     public GameObject btnTapToRoll;
     public GameObject actionButtons;
+    public GameObject marketClickIndicator;
+    public RectTransform fightPanel;
+    private bool hasPlayedFightIntro = false;
 
     [Header("Main Cameras")]
     public CinemachineCamera VCamArena;
@@ -33,9 +37,6 @@ public class BattleUIManager : MonoBehaviour
     [SerializeField] private int inactivePriority = 10;
     [SerializeField] private int cinematicPriority = 30;
 
-    [Header("Market Panel")]
-    public GameObject marketClickIndicator;
-
     private bool wasDiceScreenActive;
     private bool wasMainBattleActive;
     private CinemachineCamera previousCam;
@@ -47,7 +48,9 @@ public class BattleUIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        ShowMainBattleScreen();
+        
+        if (panelMainBattle != null) panelMainBattle.SetActive(false);
+        if (panelDiceScreen != null) panelDiceScreen.SetActive(false);
     }
 
     public void SwitchCinematicPOV(bool isPlayerTurn, string actionPhase)
@@ -104,11 +107,25 @@ public class BattleUIManager : MonoBehaviour
 
         bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
         if (marketClickIndicator != null) marketClickIndicator.SetActive(phase == TurnManager.TurnPhase.CardDrafting && isPlayerTurn);
-        if (phase == TurnManager.TurnPhase.FirstRoll) ShowDiceScreen(isPlayerTurn);
-        else if (phase == TurnManager.TurnPhase.RerollPhase) {
+        
+        if (phase == TurnManager.TurnPhase.FirstRoll) 
+        {
+            if (!hasPlayedFightIntro)
+            {
+                StartCoroutine(IntroFightRoutine(isPlayerTurn));
+            }
+            else
+            {
+                ShowDiceScreen(isPlayerTurn);
+            }
+        }
+        // ---------------------------
+        else if (phase == TurnManager.TurnPhase.RerollPhase) 
+        {
             if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
             if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
-        } else ShowMainBattleScreen();
+        } 
+        else ShowMainBattleScreen();
     }
 
     private void ShowMainBattleScreen()
@@ -130,6 +147,68 @@ public class BattleUIManager : MonoBehaviour
         StartCoroutine(DelayDiceUI(2f));
     }
 
+    private IEnumerator IntroFightRoutine(bool isPlayerTurn)
+    {
+        hasPlayedFightIntro = true; 
+
+        // 1. MATIIN SEMUA UI BATTLE & HUD BIAR BERSIH
+        if (panelMainBattle != null) panelMainBattle.SetActive(false);
+        if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(false);
+
+        SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
+
+        // 2. ANIMASI "FIGHT!" ALA GAME FIGHTING BRUTAL 💥
+        if (fightPanel != null)
+        {
+            fightPanel.gameObject.SetActive(true);
+            
+            // Set posisi awal: Super Gede & Agak Miring
+            fightPanel.localScale = Vector3.one * 8f;
+            fightPanel.localRotation = Quaternion.Euler(0, 0, -15f);
+            
+            // Bikin Rangkaian Animasi (Sequence)
+            Sequence fightAnim = DOTween.Sequence();
+
+            // Tahap 1: SLAM IN! (Zoom masuk ngebut sambil muter balik jadi lurus)
+            fightAnim.Join(fightPanel.DOScale(Vector3.one, 0.2f).SetEase(Ease.InExpo));
+            fightAnim.Join(fightPanel.DORotate(Vector3.zero, 0.2f).SetEase(Ease.OutBack));
+
+            // Tahap 2: IMPACT SHAKE! (Teks bergetar keras kayak baru nabrak layar)
+            fightAnim.Append(fightPanel.DOShakeAnchorPos(0.4f, strength: 40f, vibrato: 30));
+
+            // Tahap 3: HOLD & ANTICIPATION (Jeda baca bentar, trus teksnya "mengecil/gepeng" ngambil ancang-ancang)
+            fightAnim.AppendInterval(0.6f); 
+            fightAnim.Append(fightPanel.DOScale(new Vector3(1.3f, 0.7f, 1f), 0.15f));
+
+            // Tahap 4: BLAST OUT! (Melesat nabrak muka player / zoom super gede ngelewatin kamera)
+            fightAnim.Append(fightPanel.DOScale(Vector3.one * 15f, 0.2f).SetEase(Ease.InExpo));
+        }
+
+        // 3. TAHAN SELAMA ANIMASI BERJALAN
+        // Total animasi di atas butuh sekitar 1.55 detik. Kita tahan 1.6 detik biar pas melesat langsung cut!
+        yield return new WaitForSeconds(1.6f); 
+
+        // 4. BERSIHIN SISA ANIMASI & MATIIN PANEL
+        if (fightPanel != null)
+        {
+            DOTween.Kill(fightPanel); 
+            fightPanel.gameObject.SetActive(false);
+            
+            // Wajib di-reset biar ronde depan bentuknya balik normal
+            fightPanel.localScale = Vector3.one; 
+            fightPanel.localRotation = Quaternion.identity; 
+            // Reset posisi kalau kegeser gara-gara layar getar
+            fightPanel.anchoredPosition = Vector2.zero; 
+        }
+
+        // 5. NYALAIN LAGI PANEL BATTLE & HUD-NYA
+        if (panelMainBattle != null) panelMainBattle.SetActive(true);
+        if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(true);
+
+        // 6. KAMERA PINDAH KE PLAYER & MASUK FASE DADU
+        ShowDiceScreen(isPlayerTurn);
+    }
+
     private void SetCameraPriority(CinemachineCamera targetActive, CinemachineCamera low1, CinemachineCamera low2)
     {
         if (targetActive != null) targetActive.Priority = activePriority;
@@ -140,6 +219,7 @@ public class BattleUIManager : MonoBehaviour
     private IEnumerator DelayDiceUI(float delay)
     {
         yield return new WaitForSeconds(delay);
+
         if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
     }
 

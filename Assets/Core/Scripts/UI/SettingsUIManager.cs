@@ -22,11 +22,21 @@ public class SettingsUIManager : MonoBehaviour
     {
         PlayerPrefs.SetFloat("MasterBGM", value);
         PlayerPrefs.Save();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetBGMVolume(value);
+        }
     }
 
     private void OnSFXChanged(float value)
     {
         PlayerPrefs.SetFloat("MasterSFX", value);
         PlayerPrefs.Save();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetSFXVolume(value);
+        }
     }
 }

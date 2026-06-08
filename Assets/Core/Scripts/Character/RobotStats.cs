@@ -10,6 +10,35 @@ public class RobotStats : MonoBehaviour
     public int currentHP;
     public int currentEnergy;
 
+    [Header("Combat Anchors (Pintu Toko)")]
+    public Transform attackMuzzle_1;
+    public Transform attackMuzzle_2;
+    public Transform attackMuzzle_3;
+    
+    public Transform destructionMuzzle_1;
+    public Transform destructionMuzzle_2;
+    public Transform destructionMuzzle_3;
+
+    public Transform healPoint;
+    public Transform braggingPoint;
+    public Transform gotPowerPoint;
+    public Transform defeatPoint;
+    public Transform hitPoint;
+
+    [Header("Personal VFX (Kurir Spesial)")]
+    public GameObject attackVFX_1;
+    public GameObject attackVFX_2;
+    public GameObject attackVFX_3;
+    
+    public GameObject destructionVFX_1;
+    public GameObject destructionVFX_2;
+    public GameObject destructionVFX_3;
+    
+    public GameObject healVFX;
+    public GameObject braggingVFX;
+    public GameObject gotPowerVFX;
+    public GameObject defeatVFX;
+
     public event Action<int, int> OnHPChanged;
     public event Action<int> OnEnergyChanged;
     public event Action<int> OnSkillPowerChanged;
@@ -25,25 +54,20 @@ public class RobotStats : MonoBehaviour
     [Header("Buff Status")]
     public int bonusDice = 0;
 
-    private void Awake()
+    public void InitializeHP()
     {
-        if (baseData != null)
-        {
-            currentHP = baseData.maxHealth;
-            currentEnergy = baseData.startingEnergy;
-            currentSkillPower = 0;
-            Debug.Log($"<color=cyan>[{gameObject.name}] {baseData.characterName} siap bertempur! HP: {currentHP}, Energy {currentEnergy}</color>");
-        }
-    }
+        if (baseData == null) return;
+        
+        currentHP = baseData.maxHealth;
+        currentEnergy = baseData.startingEnergy;
+        currentSkillPower = 0;
+        bonusDice = 0;
 
-    private void Start()
-    {
-        if (baseData != null)
-        {
-            OnHPChanged?.Invoke(currentHP, baseData.maxHealth);
-            OnEnergyChanged?.Invoke(currentEnergy);
-            OnSkillPowerChanged?.Invoke(currentSkillPower);
-        }
+        OnHPChanged?.Invoke(currentHP, baseData.maxHealth);
+        OnEnergyChanged?.Invoke(currentEnergy);
+        OnSkillPowerChanged?.Invoke(currentSkillPower);
+
+        Debug.Log($"<color=cyan>[{gameObject.name}] {baseData.characterName} SIAP! HP: {currentHP}/{baseData.maxHealth}</color>");
     }
 
     public void TakeDamage(int amount)
