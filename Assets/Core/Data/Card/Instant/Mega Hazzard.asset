@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC011
   cardName: Mega Hazzard
   description: Pull Destruction Token 2 Tiles
-  cardIllustration: {fileID: 21300000, guid: b6aa68fabb0eb45b0b99e17c14a9ce55, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 5117a730ad6eb45f3be0ed0007560fa6, type: 3}
   abilityPointCost: 7
   cardCategory: 0
   produceBuzzTile: 1
@@ -31,3 +31,4 @@ MonoBehaviour:
   targetState: 4
   effectValue: 2
   animationClipName: destruct
+  weaponType: 0

@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC010
   cardName: Stylish Move
   description: Pull Fame Token 2 Tiles
-  cardIllustration: {fileID: 21300000, guid: 356ddb80f810f4639955de882e043e3d, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 8ccbe448f66ef4085a581e72f3a67257, type: 3}
   abilityPointCost: 7
   cardCategory: 0
   produceBuzzTile: 1
@@ -31,3 +31,4 @@ MonoBehaviour:
   targetState: 3
   effectValue: 2
   animationClipName: Bragging
+  weaponType: 0

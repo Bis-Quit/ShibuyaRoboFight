@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC001
   cardName: Tune Up
   description: Add 3 Health Point to Self
-  cardIllustration: {fileID: 21300000, guid: 86473974074db48a9aa75866155452ea, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 42371061211d64cb59ad7e3f2e81b478, type: 3}
   abilityPointCost: 3
   cardCategory: 0
   produceBuzzTile: 0
@@ -31,3 +31,4 @@ MonoBehaviour:
   targetState: 2
   effectValue: 3
   animationClipName: restore
+  weaponType: 0
