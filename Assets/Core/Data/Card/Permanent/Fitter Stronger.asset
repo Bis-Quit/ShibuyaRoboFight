@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC019
   cardName: Fitter Stronger
   description: If Self Add Any Health Point, Add 2 Ability Point to Self
-  cardIllustration: {fileID: 21300000, guid: 19a45cdb7822041a7bc60c6b8bcf920d, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 1e38a1c1d01fe45a98e37d92f7dabd26, type: 3}
   abilityPointCost: 9
   cardCategory: 1
   produceBuzzTile: 0
@@ -31,3 +31,4 @@ MonoBehaviour:
   targetState: 1
   effectValue: 2
   animationClipName: Bragging
+  weaponType: 0

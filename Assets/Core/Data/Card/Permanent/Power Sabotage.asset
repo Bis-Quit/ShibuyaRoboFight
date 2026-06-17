@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC013
   cardName: Power Sabotage
   description: If Opponent Buy Ability Card, Add 2 Ability Point to Self
-  cardIllustration: {fileID: 21300000, guid: 5ac8618e64c0e4f188db7e4ad18b528b, type: 3}
+  cardIllustration: {fileID: 21300000, guid: be7dda7d58f63439aa9f5cbb3f07e71d, type: 3}
   abilityPointCost: 5
   cardCategory: 1
   produceBuzzTile: 0
@@ -31,3 +31,4 @@ MonoBehaviour:
   targetState: 1
   effectValue: 2
   animationClipName: Bragging
+  weaponType: 0

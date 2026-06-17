@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC004
   cardName: Gain Support
   description: Pull Fame Token 1 Tile
-  cardIllustration: {fileID: 21300000, guid: 46bc6eb8db3584f6fa941c74f3945c6d, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 524bca1cfcb4b4c929d88f85e63fc57d, type: 3}
   abilityPointCost: 3
   cardCategory: 0
   produceBuzzTile: 0

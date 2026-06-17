@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: AC017
   cardName: Destruction Feed Power
   description: If Opponent Pull Destruction Token, Add 3 Ability Point to Self
-  cardIllustration: {fileID: 21300000, guid: 85c23447bd5fe4d3d8590e9166866ddb, type: 3}
+  cardIllustration: {fileID: 21300000, guid: 9d9735b465fd84cb8bf2a1ad62113e36, type: 3}
   abilityPointCost: 7
   cardCategory: 1
   produceBuzzTile: 0
@@ -31,3 +31,4 @@ MonoBehaviour:
   targetState: 1
   effectValue: 3
   animationClipName: get power
+  weaponType: 0
