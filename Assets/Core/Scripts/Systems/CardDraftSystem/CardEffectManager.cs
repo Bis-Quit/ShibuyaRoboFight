@@ -87,6 +87,16 @@ public class CardEffectManager : MonoBehaviour
                 case "DicePool":
                     target.AddbonusDice(finalValue);
                     break;
+                    
+                case "Fame":
+                    int famePullIndex = (effectTypeName == "Add") ? TurnManager.Instance.CurrentPlayerIndex : (1 - TurnManager.Instance.CurrentPlayerIndex);
+                    TugOfWarManager.Instance.MoveFame(finalValue, famePullIndex);
+                    break;
+                    
+                case "Destruction":
+                    int destructPullIndex = (effectTypeName == "Add") ? TurnManager.Instance.CurrentPlayerIndex : (1 - TurnManager.Instance.CurrentPlayerIndex);
+                    TugOfWarManager.Instance.MoveDestruction(finalValue, destructPullIndex);
+                    break;
             }
         };
 
@@ -133,7 +143,7 @@ public class CardEffectManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"<color=red>VFX {card.weaponType} ga ada di {caster.gameObject.name}! Damage instan.</color>");
+                Debug.LogWarning($"<color=red>VFX {card.weaponType} tidak ada di {caster.gameObject.name}! Damage instan.</color>");
                 deliverPackage.Invoke();
             }
         }
@@ -168,13 +178,37 @@ public class CardEffectManager : MonoBehaviour
             }
         }
 
+        if (card.produceBuzzTile && !string.IsNullOrEmpty(card.buzzTileID))
+        {
+            bool isBuffTile = (card.buzzTileID == "BT006" || card.buzzTileID == "BT007" || card.buzzTileID == "BT008");
+
+            Debug.Log($"<color=cyan>Menanam Buzz Tile {card.buzzTileID}. Tipe Buff? {isBuffTile}</color>");
+
+            bool plantOnPlayerSide = (isPlayerTurn && isBuffTile) || (!isPlayerTurn && !isBuffTile);
+
+            if (plantOnPlayerSide)
+            {
+                Debug.Log("Menanam Buzz Tile di kotak ungu milik PLAYER!");
+                TugOfWarManager.Instance.playerFameBuzzTile.SetBuzzTrap(card.buzzTileID);
+                TugOfWarManager.Instance.playerDestructionBuzzTile.SetBuzzTrap(card.buzzTileID);
+            }
+            else
+            {
+                Debug.Log("Menanam Buzz Tile di kotak ungu milik ENEMY!");
+                TugOfWarManager.Instance.enemyFameBuzzTile.SetBuzzTrap(card.buzzTileID);
+                TugOfWarManager.Instance.enemyDestructionBuzzTile.SetBuzzTrap(card.buzzTileID);
+            }
+        }
+
         float remainingTime = totalAnimDur - hitDelay;
+        if (remainingTime < 0) remainingTime = 0; 
+        
         yield return new WaitForSeconds(remainingTime + 0.3f);
 
         if (BattleUIManager.Instance != null)
         {
             BattleUIManager.Instance.ResetCamera();
         }
-        Debug.Log($"<color=green> Efek '{card.cardName}' selesai diterapkan, Kamera kembali ke Arena.</color>");
+        Debug.Log($"<color=green>Efek '{card.cardName}' selesai diterapkan, Kamera kembali ke Arena.</color>");
     }
 }

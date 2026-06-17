@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,8 @@ using UnityEngine.UI;
 public class DraftingManager : MonoBehaviour
 {
     public static DraftingManager Instance;
+
+    public static event Action<int> OnAbilityCardBought;
 
     [Header("Dependencies 3D")]
     [SerializeField] private List<CardData> masterCardDatabase;
@@ -94,7 +97,7 @@ public class DraftingManager : MonoBehaviour
     {
         for (int i = deck.Count - 1; i > 0; i--)
         {
-            int randomIndex = Random.Range(0, i + 1);
+            int randomIndex = UnityEngine.Random.Range(0, i + 1);
             CardData temp = deck[i];
             deck[i] = deck[randomIndex];
             deck[randomIndex] = temp;
@@ -280,6 +283,8 @@ public class DraftingManager : MonoBehaviour
 
         if (playerStats.SpendEnergy(selectedCardData.abilityPointCost))
         {
+            OnAbilityCardBought?.Invoke(TurnManager.Instance.CurrentPlayerIndex);
+
             if (inspectPanel != null) inspectPanel.SetActive(false);
 
             if (activeUICards.Count > selectedSlotIndex && activeUICards[selectedSlotIndex] != null)
@@ -407,7 +412,7 @@ public class DraftingManager : MonoBehaviour
     {
         Vector3 orig = ui.localPosition;
         for (int i = 0; i < 5; i++) {
-            ui.localPosition += new Vector3(Random.Range(-15, 15), 0, 0);
+            ui.localPosition += new Vector3(UnityEngine.Random.Range(-15, 15), 0, 0);
             yield return new WaitForSeconds(0.04f); ui.localPosition = orig;
         }
     }
@@ -455,6 +460,8 @@ public class DraftingManager : MonoBehaviour
         isProcessing = true;
         if (enemyStats.SpendEnergy(activeCardData[slotIndex].abilityPointCost)) 
         {
+            OnAbilityCardBought?.Invoke(1);
+
             CardData boughtCard = activeCardData[slotIndex];
             if (EnemyCardContainer.Instance != null) 
             {

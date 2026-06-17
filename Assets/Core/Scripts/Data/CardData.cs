@@ -51,7 +51,9 @@ public class CardData : ScriptableObject
         Fame,
         Destruction,
         Turn,
-        Dice
+        Dice,
+        BuyCard,
+        BuzzTile,
     }
 
     public enum WeaponType 

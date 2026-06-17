@@ -35,7 +35,13 @@ public class PassiveCardManager : MonoBehaviour
         RobotStats.OnAnyRobotDamaged += (robot, amount) => CheckPassives(CardData.GameState.HealthPoint, CardData.OperativeAction.Subtract, robot, amount);
         RobotStats.OnAnyRobotEnergyAdded += (robot, amount) => CheckPassives(CardData.GameState.AbilityPoint, CardData.OperativeAction.Add, robot, amount);
         RobotStats.OnAnyRobotEnergyLost += (robot, amount) => CheckPassives(CardData.GameState.AbilityPoint, CardData.OperativeAction.Subtract, robot, amount);
-        
+
+        DraftingManager.OnAbilityCardBought += (playerIdx) => 
+        {
+            RobotStats triggerRobot = (playerIdx == 0) ? CardEffectManager.Instance.playerStats : CardEffectManager.Instance.enemyStats;
+            CheckPassives(CardData.GameState.BuyCard, CardData.OperativeAction.Add, triggerRobot, 1);
+        };
+
         TurnManager.OnPlayerTurnChanged += (playerIndex) => 
         {
             RobotStats subject = (playerIndex == 0) ? CardEffectManager.Instance.playerStats : CardEffectManager.Instance.enemyStats;
