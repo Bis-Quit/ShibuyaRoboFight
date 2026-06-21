@@ -48,7 +48,9 @@ public class HandInspectManager : MonoBehaviour
         bool isMyTurn = TurnManager.Instance.CurrentPlayerIndex == 0;
         bool isInstant = data.cardCategory == CardData.CardCategory.Instant;
 
-        useButton.interactable = (isMyTurn && isInstant);
+        useButton.gameObject.SetActive(isInstant); 
+        
+        useButton.interactable = isMyTurn; 
 
         inspectPanel.SetActive(true);
     }
@@ -65,7 +67,24 @@ public class HandInspectManager : MonoBehaviour
 
     private void ConfirmUseCard()
     {
+        if (CardEffectManager.Instance != null && CardEffectManager.Instance.isResolvingEffect) return;
+
+        if (CardEffectManager.Instance != null) CardEffectManager.Instance.isResolvingEffect = true;
+
         inspectPanel.SetActive(false);
+
+        if (originalCardObject != null)
+        {
+            originalCardObject.SetActive(false);
+
+            PlayerHand hand = originalCardObject.GetComponentInParent<PlayerHand>();
+            if (hand != null)
+            {
+                hand.cardsInHand.Remove(originalCardObject.GetComponent<RectTransform>());
+                hand.RearrangeHand();
+            }
+        }
+
         StartCoroutine(CinematicCutInRoutine(currentCardData, originalCardObject));
     }
 
@@ -76,7 +95,7 @@ public class HandInspectManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.2f);
 
-        // --- CARD SUMMON ---
+        // --- CARD SUMMON CINEMATIC ---
         if (cinematicContainer != null && cinematicCardUI != null)
         {
             cinematicCardUI.Setup(currentCardData);
@@ -89,9 +108,7 @@ public class HandInspectManager : MonoBehaviour
             cinematicContainer.gameObject.SetActive(true);
 
             cinematicContainer.DOFade(1, 0.2f);
-
             cinematicCardPosition.DOScale(0.8f, 0.4f).SetEase(Ease.OutBack);
-
             cinematicCardPosition.DOLocalRotate(Vector3.zero, 0.4f).SetEase(Ease.OutBack);
             cinematicCardPosition.DOShakeAnchorPos(0.2f, 15f);
 
@@ -118,7 +135,7 @@ public class HandInspectManager : MonoBehaviour
             Destroy(originalCardObject);
         }
 
-        // --- CAMERA BACK TO NORMAL ---
+        // --- CAMERA & UI BACK TO NORMAL ---
         if (BattleUIManager.Instance != null)
             BattleUIManager.Instance.ResetCamera();
 

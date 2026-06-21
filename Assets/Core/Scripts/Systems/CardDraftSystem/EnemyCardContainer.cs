@@ -94,6 +94,21 @@ public class EnemyCardContainer : MonoBehaviour
         StartCoroutine(CardEffectManager.Instance.ApplyCardEffect(cardToPlay));
     }
 
+    public void RemoveCardQuietly(CardData cardToRemove)
+    {
+        if (currentHand.Contains(cardToRemove))
+        {
+            currentHand.Remove(cardToRemove);
+
+            if (visualCards.Count > 0)
+            {
+                GameObject cardToDestroy = visualCards[visualCards.Count - 1];
+                visualCards.Remove(cardToDestroy);
+                Destroy(cardToDestroy);
+            }
+        }
+    }
+
     public void ClearHand()
     {
         currentHand.Clear();

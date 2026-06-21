@@ -12,17 +12,23 @@ public class CardEffectManager : MonoBehaviour
     public CharacterAnimator playerAnim; 
     public CharacterAnimator enemyAnim;
 
+    [HideInInspector] public bool isResolvingEffect = false;
+
+    private ArenaTile selectedBuzzTile = null;
+
     private void Awake() { Instance = this; }
 
-    public IEnumerator ApplyCardEffect(CardData card)
+    public IEnumerator ApplyCardEffect(CardData card, bool skipBuzzTile = false, int forcedCaster = -1)
     {
+        isResolvingEffect = true;
         Debug.Log($"<color=cyan>MENGAKTIFKAN JURUS: {card.cardName}</color>");
 
-        bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
-        RobotStats caster = isPlayerTurn ? playerStats : enemyStats;
-        CharacterAnimator casterAnim = isPlayerTurn ? playerAnim : enemyAnim;
-        RobotStats target = (card.effectTarget == CardData.TargetSubject.Self) ? caster : (isPlayerTurn ? enemyStats : playerStats);
-        CharacterAnimator targetAnim = (card.effectTarget == CardData.TargetSubject.Self) ? casterAnim : (isPlayerTurn ? enemyAnim : playerAnim);
+        bool isPlayerCaster = (forcedCaster == -1) ? (TurnManager.Instance.CurrentPlayerIndex == 0) : (forcedCaster == 0);
+        
+        RobotStats caster = isPlayerCaster ? playerStats : enemyStats;
+        CharacterAnimator casterAnim = isPlayerCaster ? playerAnim : enemyAnim;
+        RobotStats target = (card.effectTarget == CardData.TargetSubject.Self) ? caster : (isPlayerCaster ? enemyStats : playerStats);
+        CharacterAnimator targetAnim = (card.effectTarget == CardData.TargetSubject.Self) ? casterAnim : (isPlayerCaster ? enemyAnim : playerAnim);
 
         string casterSkillAnimName = string.IsNullOrEmpty(card.animationClipName) ? "Attack" : card.animationClipName;
         string stateTargetName = card.targetState.ToString();
@@ -33,7 +39,7 @@ public class CardEffectManager : MonoBehaviour
         if (BattleUIManager.Instance != null)
         {
             string actionCam = isAttackCard ? "AttackAction" : "BuffAction";
-            BattleUIManager.Instance.SwitchCinematicPOV(isPlayerTurn, actionCam);
+            BattleUIManager.Instance.SwitchCinematicPOV(isPlayerCaster, actionCam);
         }
 
         yield return new WaitForSeconds(0.5f); 
@@ -55,7 +61,7 @@ public class CardEffectManager : MonoBehaviour
 
         if (isAttackCard && BattleUIManager.Instance != null)
         {
-            BattleUIManager.Instance.SwitchCinematicPOV(isPlayerTurn, "Reaction");
+            BattleUIManager.Instance.SwitchCinematicPOV(isPlayerCaster, "Reaction");
             yield return new WaitForSeconds(0.2f); 
         }
 
@@ -178,37 +184,107 @@ public class CardEffectManager : MonoBehaviour
             }
         }
 
-        if (card.produceBuzzTile && !string.IsNullOrEmpty(card.buzzTileID))
-        {
-            bool isBuffTile = (card.buzzTileID == "BT006" || card.buzzTileID == "BT007" || card.buzzTileID == "BT008");
-
-            Debug.Log($"<color=cyan>Menanam Buzz Tile {card.buzzTileID}. Tipe Buff? {isBuffTile}</color>");
-
-            bool plantOnPlayerSide = (isPlayerTurn && isBuffTile) || (!isPlayerTurn && !isBuffTile);
-
-            if (plantOnPlayerSide)
-            {
-                Debug.Log("Menanam Buzz Tile di kotak ungu milik PLAYER!");
-                TugOfWarManager.Instance.playerFameBuzzTile.SetBuzzTrap(card.buzzTileID);
-                TugOfWarManager.Instance.playerDestructionBuzzTile.SetBuzzTrap(card.buzzTileID);
-            }
-            else
-            {
-                Debug.Log("Menanam Buzz Tile di kotak ungu milik ENEMY!");
-                TugOfWarManager.Instance.enemyFameBuzzTile.SetBuzzTrap(card.buzzTileID);
-                TugOfWarManager.Instance.enemyDestructionBuzzTile.SetBuzzTrap(card.buzzTileID);
-            }
-        }
-
         float remainingTime = totalAnimDur - hitDelay;
-        if (remainingTime < 0) remainingTime = 0; 
-        
+        if (remainingTime < 0) remainingTime = 0;
+
         yield return new WaitForSeconds(remainingTime + 0.3f);
 
         if (BattleUIManager.Instance != null)
         {
             BattleUIManager.Instance.ResetCamera();
         }
-        Debug.Log($"<color=green>Efek '{card.cardName}' selesai diterapkan, Kamera kembali ke Arena.</color>");
+
+        if (card.produceBuzzTile && !string.IsNullOrEmpty(card.buzzTileID) && !skipBuzzTile)
+        {
+            yield return new WaitForSeconds(1.0f);
+
+            if (BattleUIManager.Instance != null && BattleUIManager.Instance.VCamArena != null)
+            {
+                if (BattleUIManager.Instance.VCamPlayer != null) BattleUIManager.Instance.VCamPlayer.Priority = 10;
+                if (BattleUIManager.Instance.VCamEnemy != null) BattleUIManager.Instance.VCamEnemy.Priority = 10;
+                BattleUIManager.Instance.VCamArena.Priority = 30; 
+            }
+
+            yield return new WaitForSeconds(1.5f);
+
+            yield return StartCoroutine(HandleBuzzTilePlacement(card.buzzTileID, isPlayerCaster));
+
+            if (BattleUIManager.Instance != null && BattleUIManager.Instance.VCamArena != null)
+            {
+                BattleUIManager.Instance.VCamArena.Priority = 10;
+            }
+        }
+
+        if (BattleUIManager.Instance != null)
+        {
+            BattleUIManager.Instance.ResetCamera();
+        }
+
+        if (card.cardCategory == CardData.CardCategory.Permanent && !skipBuzzTile)
+        {
+            if (PassiveCardManager.Instance != null)
+            {
+                PassiveCardManager.Instance.RegisterPassiveCard(card, isPlayerCaster);
+            }
+        }
+
+        Debug.Log($"<color=green> Efek '{card.cardName}' Selesai! Coroutine selesai dan kartu siap dihancurkan.</color>");
+
+        isResolvingEffect = false;
+    }
+
+    private IEnumerator HandleBuzzTilePlacement(string buzzID, bool isPlayer)
+    {
+        Debug.Log($"<color=magenta>🎬 Memasuki Fase Buzz Tile:{buzzID}</color>");
+
+        ArenaTile[] allBuzzTiles = new ArenaTile[]
+        {
+            TugOfWarManager.Instance.playerFameBuzzTile,
+            TugOfWarManager.Instance.playerDestructionBuzzTile,
+            TugOfWarManager.Instance.enemyFameBuzzTile,
+            TugOfWarManager.Instance.enemyDestructionBuzzTile
+        };
+
+        selectedBuzzTile = null;
+
+        if (isPlayer)
+        {
+            Debug.Log("Menunggu Player memilih kotak Buzz Tile...");
+
+            ArenaTile.OnTileClicked += OnBuzzTileSelected;
+            foreach (var tile in allBuzzTiles)
+            {
+                if (tile != null) tile.SetClickable(true);
+            }
+
+            yield return new WaitUntil(() => selectedBuzzTile != null);
+
+            ArenaTile.OnTileClicked -= OnBuzzTileSelected;
+            foreach (var tile in allBuzzTiles)
+            {
+                if (tile != null) tile.SetClickable(false);
+            }
+        }
+        else
+        {
+            Debug.Log("Enemy sedang berpikir memilih kotak Buzz Tile...");
+            yield return new WaitForSeconds(1.5f);
+
+            int randomIndex = UnityEngine.Random.Range(0, allBuzzTiles.Length);
+            selectedBuzzTile = allBuzzTiles[randomIndex];
+        }
+
+        if (selectedBuzzTile != null)
+        {
+            Debug.Log($"<color=green>Buzz Tile {buzzID} berhasil ditanam di {selectedBuzzTile.gameObject.name}!</color>");
+            selectedBuzzTile.SetBuzzTrap(buzzID);
+        }
+        
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    private void OnBuzzTileSelected(ArenaTile clickedTile)
+    {
+        selectedBuzzTile = clickedTile;
     }
 }

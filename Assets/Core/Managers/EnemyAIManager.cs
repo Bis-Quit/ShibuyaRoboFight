@@ -179,6 +179,11 @@ public class EnemyAIManager : MonoBehaviour
 
             foreach (CardData card in handCopy)
             {
+                if (card.cardCategory == CardData.CardCategory.Permanent)
+                {
+                    Debug.Log($"<color=magenta>EnemyAIManager: Menahan kartu jebakan {card.cardName} di tangan.</color>");
+                    continue;
+                }
                 bool shouldPlayCard = false;
                 
                 string effectTypeName = card.effectType.ToString();

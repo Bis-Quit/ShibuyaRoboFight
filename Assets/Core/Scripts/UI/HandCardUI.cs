@@ -58,6 +58,11 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         if (isHand)
         {
+            if (CardEffectManager.Instance != null && CardEffectManager.Instance.isResolvingEffect)
+            {
+                return;
+            }
+
             if (eventData.button == PointerEventData.InputButton.Left)
             {
                 if (HandInspectManager.Instance != null)
@@ -92,14 +97,17 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         parentHand.RearrangeHand(-1);
     }
 
-    private void PlayCard()
+    public void PlayCard()
     {
         if (!isHand) return;
         if (TurnManager.Instance.CurrentPlayerIndex != 0) return;
         if (cardData.cardCategory != CardData.CardCategory.Instant) return;
+
+        if (CardEffectManager.Instance != null && CardEffectManager.Instance.isResolvingEffect) return;
+
         if (CardEffectManager.Instance != null)
         {
-            CardEffectManager.Instance.ApplyCardEffect(cardData);
+            CardEffectManager.Instance.StartCoroutine(CardEffectManager.Instance.ApplyCardEffect(cardData));
         }
 
         PlayerHand hand = GetComponentInParent<PlayerHand>();
@@ -108,6 +116,8 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             hand.cardsInHand.Remove(rectTransform);
             hand.RearrangeHand();
         }
-        Destroy(this.gameObject);
+
+        gameObject.SetActive(false); 
+        Destroy(this.gameObject, 0.5f);
     }
 }

@@ -119,7 +119,6 @@ public class BattleUIManager : MonoBehaviour
                 ShowDiceScreen(isPlayerTurn);
             }
         }
-        // ---------------------------
         else if (phase == TurnManager.TurnPhase.RerollPhase) 
         {
             if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
@@ -151,61 +150,46 @@ public class BattleUIManager : MonoBehaviour
     {
         hasPlayedFightIntro = true; 
 
-        // 1. MATIIN SEMUA UI BATTLE & HUD BIAR BERSIH
         if (panelMainBattle != null) panelMainBattle.SetActive(false);
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(false);
 
         SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
 
-        // 2. ANIMASI "FIGHT!" ALA GAME FIGHTING BRUTAL 💥
         if (fightPanel != null)
         {
             fightPanel.gameObject.SetActive(true);
-            
-            // Set posisi awal: Super Gede & Agak Miring
+
             fightPanel.localScale = Vector3.one * 8f;
             fightPanel.localRotation = Quaternion.Euler(0, 0, -15f);
-            
-            // Bikin Rangkaian Animasi (Sequence)
+
             Sequence fightAnim = DOTween.Sequence();
 
-            // Tahap 1: SLAM IN! (Zoom masuk ngebut sambil muter balik jadi lurus)
             fightAnim.Join(fightPanel.DOScale(Vector3.one, 0.2f).SetEase(Ease.InExpo));
             fightAnim.Join(fightPanel.DORotate(Vector3.zero, 0.2f).SetEase(Ease.OutBack));
 
-            // Tahap 2: IMPACT SHAKE! (Teks bergetar keras kayak baru nabrak layar)
             fightAnim.Append(fightPanel.DOShakeAnchorPos(0.4f, strength: 40f, vibrato: 30));
 
-            // Tahap 3: HOLD & ANTICIPATION (Jeda baca bentar, trus teksnya "mengecil/gepeng" ngambil ancang-ancang)
             fightAnim.AppendInterval(0.6f); 
             fightAnim.Append(fightPanel.DOScale(new Vector3(1.3f, 0.7f, 1f), 0.15f));
 
-            // Tahap 4: BLAST OUT! (Melesat nabrak muka player / zoom super gede ngelewatin kamera)
             fightAnim.Append(fightPanel.DOScale(Vector3.one * 15f, 0.2f).SetEase(Ease.InExpo));
         }
 
-        // 3. TAHAN SELAMA ANIMASI BERJALAN
-        // Total animasi di atas butuh sekitar 1.55 detik. Kita tahan 1.6 detik biar pas melesat langsung cut!
         yield return new WaitForSeconds(1.6f); 
 
-        // 4. BERSIHIN SISA ANIMASI & MATIIN PANEL
         if (fightPanel != null)
         {
             DOTween.Kill(fightPanel); 
             fightPanel.gameObject.SetActive(false);
             
-            // Wajib di-reset biar ronde depan bentuknya balik normal
             fightPanel.localScale = Vector3.one; 
             fightPanel.localRotation = Quaternion.identity; 
-            // Reset posisi kalau kegeser gara-gara layar getar
             fightPanel.anchoredPosition = Vector2.zero; 
         }
 
-        // 5. NYALAIN LAGI PANEL BATTLE & HUD-NYA
         if (panelMainBattle != null) panelMainBattle.SetActive(true);
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(true);
 
-        // 6. KAMERA PINDAH KE PLAYER & MASUK FASE DADU
         ShowDiceScreen(isPlayerTurn);
     }
 
