@@ -48,7 +48,6 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if (!isHand) 
         {
             Debug.Log($"<color=cyan>Market: Membuka Inspect untuk {cardData.cardName}</color>");
-
             if (DraftingManager.Instance != null)
             {
                 DraftingManager.Instance.OpenInspectPanel(cardData, marketSlotIndex); 
@@ -60,6 +59,7 @@ public class HandCardUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             if (CardEffectManager.Instance != null && CardEffectManager.Instance.isResolvingEffect)
             {
+                Debug.LogWarning("Klik ditolak: Sistem mengira ada animasi efek yang belum selesai!");
                 return;
             }
 

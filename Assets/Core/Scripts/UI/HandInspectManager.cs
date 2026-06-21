@@ -52,6 +52,8 @@ public class HandInspectManager : MonoBehaviour
         
         useButton.interactable = isMyTurn; 
 
+        if (BattleUIManager.Instance != null) BattleUIManager.Instance.HideMarketIndicator();
+
         inspectPanel.SetActive(true);
     }
 
@@ -62,6 +64,17 @@ public class HandInspectManager : MonoBehaviour
         if (originalCardObject != null)
         {
             originalCardObject.SetActive(true);
+        }
+
+        if (BattleUIManager.Instance != null && TurnManager.Instance != null)
+        {
+            bool isDraftingPhase = TurnManager.Instance.CurrentPhase == TurnManager.TurnPhase.CardDrafting;
+            bool isPlayerTurn = TurnManager.Instance.CurrentPlayerIndex == 0;
+
+            if (BattleUIManager.Instance.marketClickIndicator != null)
+            {
+                BattleUIManager.Instance.marketClickIndicator.SetActive(isDraftingPhase && isPlayerTurn);
+            }
         }
     }
 

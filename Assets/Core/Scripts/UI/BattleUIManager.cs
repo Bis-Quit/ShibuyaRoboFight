@@ -233,6 +233,13 @@ public class BattleUIManager : MonoBehaviour
 
         if (actionButtons != null) actionButtons.SetActive(false);
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(false);
+
+        HideMarketIndicator();
+
+        if (PassiveCardManager.Instance != null && PassiveCardManager.Instance.playerHand != null)
+        {
+            PassiveCardManager.Instance.playerHand.gameObject.SetActive(false);
+        }
     }
 
     public void RestoreUIAfterCinematic()
@@ -253,6 +260,19 @@ public class BattleUIManager : MonoBehaviour
             if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
         }
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(true);
+
+        if (PassiveCardManager.Instance != null && PassiveCardManager.Instance.playerHand != null)
+        {
+            PassiveCardManager.Instance.playerHand.gameObject.SetActive(true);
+        }
+
+        if (TurnManager.Instance != null && TurnManager.Instance.CurrentPhase == TurnManager.TurnPhase.CardDrafting)
+        {
+            if (TurnManager.Instance.CurrentPlayerIndex == 0 && marketClickIndicator != null)
+            {
+                marketClickIndicator.SetActive(true);
+            }
+        }
     }
 
     public void HideMarketIndicator()
