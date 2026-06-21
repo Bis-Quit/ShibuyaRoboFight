@@ -15,6 +15,7 @@ public class BattleUIManager : MonoBehaviour
     public GameObject actionButtons;
     public GameObject marketClickIndicator;
     public RectTransform fightPanel;
+    public GameObject notifDice;
     private bool hasPlayedFightIntro = false;
 
     [Header("Main Cameras")]
@@ -39,6 +40,7 @@ public class BattleUIManager : MonoBehaviour
 
     private bool wasDiceScreenActive;
     private bool wasMainBattleActive;
+    private bool wasNotifActive;
     private CinemachineCamera previousCam;
     
     [HideInInspector] public bool isCinematicActive = false;
@@ -106,7 +108,18 @@ public class BattleUIManager : MonoBehaviour
         currentPhaseMemory = phase;
 
         bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
-        if (marketClickIndicator != null) marketClickIndicator.SetActive(phase == TurnManager.TurnPhase.CardDrafting && isPlayerTurn);
+        
+        if (marketClickIndicator != null) 
+        {
+            bool canShow = (phase == TurnManager.TurnPhase.CardDrafting) && isPlayerTurn;
+            
+            if (HandInspectManager.Instance != null && HandInspectManager.Instance.inspectPanel != null)
+            {
+                if (HandInspectManager.Instance.inspectPanel.activeSelf) canShow = false; 
+            }
+
+            marketClickIndicator.SetActive(canShow);
+        }
         
         if (phase == TurnManager.TurnPhase.FirstRoll) 
         {
@@ -226,6 +239,12 @@ public class BattleUIManager : MonoBehaviour
         wasDiceScreenActive = panelDiceScreen != null && panelDiceScreen.activeSelf;
         wasMainBattleActive = panelMainBattle != null && panelMainBattle.activeSelf;
 
+        if (notifDice != null)
+        {
+            wasNotifActive = notifDice.activeSelf;
+            notifDice.SetActive(false);
+        }
+
         if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, false);
         if (wasMainBattleActive) SetPanelVisible(panelMainBattle, false);
 
@@ -236,6 +255,8 @@ public class BattleUIManager : MonoBehaviour
 
         HideMarketIndicator();
 
+        if (btnTapToRoll != null) btnTapToRoll.SetActive(false);
+
         if (PassiveCardManager.Instance != null && PassiveCardManager.Instance.playerHand != null)
         {
             PassiveCardManager.Instance.playerHand.gameObject.SetActive(false);
@@ -245,6 +266,11 @@ public class BattleUIManager : MonoBehaviour
     public void RestoreUIAfterCinematic()
     {
         isCinematicActive = false;
+
+        if (notifDice != null)
+        {
+            notifDice.SetActive(wasNotifActive);
+        }
 
         if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, true);
         if (wasMainBattleActive) SetPanelVisible(panelMainBattle, true);
@@ -270,7 +296,13 @@ public class BattleUIManager : MonoBehaviour
         {
             if (TurnManager.Instance.CurrentPlayerIndex == 0 && marketClickIndicator != null)
             {
-                marketClickIndicator.SetActive(true);
+                bool isPanelOpen = false;
+                if (HandInspectManager.Instance != null && HandInspectManager.Instance.inspectPanel != null)
+                {
+                    isPanelOpen = HandInspectManager.Instance.inspectPanel.activeSelf;
+                }
+
+                marketClickIndicator.SetActive(!isPanelOpen);
             }
         }
     }
