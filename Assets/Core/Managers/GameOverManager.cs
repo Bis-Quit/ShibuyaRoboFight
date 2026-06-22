@@ -44,6 +44,9 @@ public class GameOverManager : MonoBehaviour
     public RobotStats playerRobot;
     public RobotStats enemyRobot;
 
+    [Header("VFX Defeat")]
+    public GameObject defeatExplosionPrefab;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -65,6 +68,15 @@ public class GameOverManager : MonoBehaviour
         }
 
         if (battleUICanvas != null) battleUICanvas.SetActive(false);
+
+        RobotStats loserRobot = isPlayerWin ? enemyRobot : playerRobot;
+        if (defeatExplosionPrefab != null && loserRobot != null)
+        {
+            RobotVFXManager loserVFX = loserRobot.GetComponent<RobotVFXManager>();
+            Transform explosionCenter = (loserVFX != null && loserVFX.hitPoint != null) ? loserVFX.hitPoint : loserRobot.transform;
+            
+            Instantiate(defeatExplosionPrefab, explosionCenter.position, Quaternion.identity);
+        }
 
         string winningRobotName = "UNKNOWN ROBOT";
         if (isPlayerWin && playerRobot != null && playerRobot.baseData != null)

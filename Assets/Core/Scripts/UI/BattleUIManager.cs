@@ -41,6 +41,7 @@ public class BattleUIManager : MonoBehaviour
     private bool wasDiceScreenActive;
     private bool wasMainBattleActive;
     private bool wasNotifActive;
+    private bool wasTapToRollActive;
     private CinemachineCamera previousCam;
     
     [HideInInspector] public bool isCinematicActive = false;
@@ -242,7 +243,13 @@ public class BattleUIManager : MonoBehaviour
         if (notifDice != null)
         {
             wasNotifActive = notifDice.activeSelf;
-            notifDice.SetActive(false);
+            notifDice.SetActive(false);            
+        }
+
+        if (btnTapToRoll != null)
+        {
+            wasTapToRollActive = btnTapToRoll.activeSelf;
+            btnTapToRoll.SetActive(false);
         }
 
         if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, false);
@@ -254,8 +261,6 @@ public class BattleUIManager : MonoBehaviour
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(false);
 
         HideMarketIndicator();
-
-        if (btnTapToRoll != null) btnTapToRoll.SetActive(false);
 
         if (PassiveCardManager.Instance != null && PassiveCardManager.Instance.playerHand != null)
         {
@@ -269,7 +274,12 @@ public class BattleUIManager : MonoBehaviour
 
         if (notifDice != null)
         {
-            notifDice.SetActive(wasNotifActive);
+            notifDice.SetActive(wasNotifActive); 
+        }
+
+        if (btnTapToRoll != null)
+        {
+            btnTapToRoll.SetActive(wasTapToRollActive);
         }
 
         if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, true);

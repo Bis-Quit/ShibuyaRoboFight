@@ -33,4 +33,4 @@ MonoBehaviour:
   targetState: 2
   effectValue: 1
   animationClipName: Attack
-  weaponType: 0
+  weaponType: 1

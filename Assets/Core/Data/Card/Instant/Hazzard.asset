@@ -26,9 +26,9 @@ MonoBehaviour:
   conditionState: 0
   comprativeCondition: 0
   conditionValue: 0
-  effectTarget: 0
+  effectTarget: 1
   effectType: 0
   targetState: 4
   effectValue: 2
   animationClipName: destruct
-  weaponType: 0
+  weaponType: 4
