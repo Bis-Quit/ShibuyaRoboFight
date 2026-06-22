@@ -90,6 +90,11 @@ public class GameOverManager : MonoBehaviour
 
         if (robotNameText != null) robotNameText.text = winningRobotName.ToUpper();
 
+        if (AudioManager.Instance != null && AudioManager.Instance.victoryBGM != null)
+        {
+            AudioManager.Instance.PlayBGM(AudioManager.Instance.victoryBGM);
+        }
+
         if (isPlayerWin)
         {
             if (iconTopImage != null) iconTopImage.sprite = crownSprite;

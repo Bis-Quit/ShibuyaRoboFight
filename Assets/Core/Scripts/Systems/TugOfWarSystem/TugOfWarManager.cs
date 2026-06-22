@@ -77,6 +77,11 @@ public class TugOfWarManager : MonoBehaviour
 
         float elapsedTime = 0f;
 
+        if (AudioManager.Instance != null && AudioManager.Instance.bidakSFX != null)
+        {
+            AudioManager.Instance.PlaySFX(AudioManager.Instance.bidakSFX);
+        }
+
         while (elapsedTime < moveDuration)
         {
             token.position = Vector3.Lerp(startPos, targetPos, elapsedTime / moveDuration);
@@ -92,7 +97,7 @@ public class TugOfWarManager : MonoBehaviour
         
         if (landedTile != null && !string.IsNullOrEmpty(landedTile.activeBuzzEffectID))
         {
-            Debug.Log($"<color=red>💥 BOOM! Bidak menginjak ranjau: {landedTile.activeBuzzEffectID}</color>");
+            Debug.Log($"<color=red>Bidak menginjak ranjau: {landedTile.activeBuzzEffectID}</color>");
             
             ExecuteBuzzEffect(landedTile.activeBuzzEffectID);
 
@@ -143,7 +148,7 @@ public class TugOfWarManager : MonoBehaviour
             case "BT006":
                 Debug.Log("✨ Efek Buzz Tile: -1 Health Point & +1 EXTRA DICE!");
                 victimStats.TakeDamage(1);
-                if (victimAnim != null) victimAnim.PlayAnim("got attacked");             // Tambah 1 Dadu ke korban yang nginjek!
+                if (victimAnim != null) victimAnim.PlayAnim("got attacked");
                 victimStats.AddbonusDice(1);
                 break;
 

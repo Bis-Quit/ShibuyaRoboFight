@@ -31,4 +31,4 @@ MonoBehaviour:
   targetState: 4
   effectValue: 1
   animationClipName: destruct
-  weaponType: 0
+  weaponType: 4

@@ -6,6 +6,13 @@ public class AudioManager : MonoBehaviour
     public AudioSource sfxSource;
     public AudioSource bgmSource;
 
+    [Header("Game SFX & BGM")]
+    public AudioClip fightSFX;
+    public AudioClip bidakSFX;
+    public AudioClip openCardSFX1;
+    public AudioClip openCardSFX2;
+    public AudioClip victoryBGM;
+
     private void Awake()
     {
         if (Instance == null) 

@@ -74,7 +74,7 @@ public class PassiveCardManager : MonoBehaviour
             if (!activePlayerPassives.Contains(card))
             {
                 activePlayerPassives.Add(card);
-                Debug.Log($"<color=magenta>CCTV PLAYER DIPASANG: {card.cardName}</color>");
+                Debug.Log($"<color=magenta>CCTV PLAYER DIPASANG DI ARENA: {card.cardName}</color>");
 
                 if (activeTrapContainer != null && trapIconPrefab != null)
                 {
@@ -93,7 +93,7 @@ public class PassiveCardManager : MonoBehaviour
             if (!activeEnemyPassives.Contains(card))
             {
                 activeEnemyPassives.Add(card);
-                Debug.Log($"<color=red>CCTV MUSUH DIPASANG: {card.cardName}</color>");
+                Debug.Log($"<color=red>CCTV MUSUH DIPASANG DI ARENA: {card.cardName}</color>");
             }
         }
     }
@@ -125,7 +125,7 @@ public class PassiveCardManager : MonoBehaviour
     {
         if (CardEffectManager.Instance == null) return;
 
-        // ================== SCAN PLAYER ==================
+        // ================== SCAN PLAYER HAND (PERMANENT STAY DI TANGAN) ==================
         CardData.TargetSubject playerPOV = GetRelativeSubject(true, triggerRobot);
         
         if (playerHand != null && playerHand.cardsInHand.Count > 0)
@@ -138,13 +138,12 @@ public class PassiveCardManager : MonoBehaviour
                 if (handUI.cardData.cardCategory == CardData.CardCategory.Permanent && 
                     IsConditionMet(handUI.cardData, triggerState, triggerAction, playerPOV, amountValue))
                 {
-                    playerHand.cardsInHand.RemoveAt(i);
-                    playerHand.RearrangeHand();
                     EnqueuePassive(handUI.cardData, false, handUI, true);
                 }
             }
         }
 
+        // ================== SCAN PLAYER CCTV ==================
         if (activePlayerPassives.Count > 0)
         {
             for (int i = activePlayerPassives.Count - 1; i >= 0; i--)
@@ -156,7 +155,7 @@ public class PassiveCardManager : MonoBehaviour
             }
         }
 
-        // ================== SCAN ENEMY ==================
+        // ================== SCAN ENEMY HAND (PERMANENT STAY) ==================
         CardData.TargetSubject enemyPOV = GetRelativeSubject(false, triggerRobot);
 
         if (EnemyCardContainer.Instance != null && EnemyCardContainer.Instance.currentHand.Count > 0)
@@ -167,8 +166,7 @@ public class PassiveCardManager : MonoBehaviour
                 if (enemyHandCard.cardCategory == CardData.CardCategory.Permanent && 
                     IsConditionMet(enemyHandCard, triggerState, triggerAction, enemyPOV, amountValue))
                 {
-                    Debug.Log($"<color=red>ENEMY HAND TRAP TRIGGERED: {enemyHandCard.cardName}</color>");
-                    EnemyCardContainer.Instance.RemoveCardQuietly(enemyHandCard);
+                    Debug.Log($"<color=red>ENEMY HAND TRAP TRIGGERED (STAY): {enemyHandCard.cardName}</color>");
                     EnqueuePassive(enemyHandCard, false, null, false);
                 }
             }
@@ -211,8 +209,8 @@ public class PassiveCardManager : MonoBehaviour
 
             if (task.handUIObject != null)
             {
-                task.handUIObject.gameObject.SetActive(false);
-                Destroy(task.handUIObject.gameObject, 0.5f);
+                task.handUIObject.transform.DOKill(true);
+                task.handUIObject.transform.DOPunchScale(new Vector3(0.5f, 0.5f, 0f), 0.5f, 5, 1f);
             }
 
             if (task.skipBuzzTile && trapUI_Dictionary.ContainsKey(task.card))

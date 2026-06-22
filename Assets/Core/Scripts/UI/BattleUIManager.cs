@@ -183,6 +183,11 @@ public class BattleUIManager : MonoBehaviour
 
             fightAnim.Append(fightPanel.DOShakeAnchorPos(0.4f, strength: 40f, vibrato: 30));
 
+            if (AudioManager.Instance != null && AudioManager.Instance.fightSFX != null)
+            {
+                AudioManager.Instance.PlaySFX(AudioManager.Instance.fightSFX);
+            }
+
             fightAnim.AppendInterval(0.6f); 
             fightAnim.Append(fightPanel.DOScale(new Vector3(1.3f, 0.7f, 1f), 0.15f));
 
