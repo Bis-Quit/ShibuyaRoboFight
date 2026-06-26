@@ -1030,6 +1030,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: '[AUDIO_MANAGER]'
       objectReference: {fileID: 0}
+    - target: {fileID: 5732486324425607158, guid: 1bcfba70c37734671bdd8b40699d4fde, type: 3}
+      propertyPath: bidakSFX
+      value: 
+      objectReference: {fileID: 8300000, guid: b23560f27c73c4ffa8bb9c03c2542e0d, type: 3}
+    - target: {fileID: 5732486324425607158, guid: 1bcfba70c37734671bdd8b40699d4fde, type: 3}
+      propertyPath: fightSFX
+      value: 
+      objectReference: {fileID: 8300000, guid: 249df949c3c17472e8945aec047e1e76, type: 3}
+    - target: {fileID: 5732486324425607158, guid: 1bcfba70c37734671bdd8b40699d4fde, type: 3}
+      propertyPath: victoryBGM
+      value: 
+      objectReference: {fileID: 8300000, guid: 0afb01d56cdea44ce954cff99c5fff21, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

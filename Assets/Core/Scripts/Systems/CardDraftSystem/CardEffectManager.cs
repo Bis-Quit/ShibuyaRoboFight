@@ -41,8 +41,7 @@ public class CardEffectManager : MonoBehaviour
 
         if (BattleUIManager.Instance != null)
         {
-            string actionCam = isAttackCard ? "AttackAction" : "BuffAction";
-            BattleUIManager.Instance.SwitchCinematicPOV(isPlayerCaster, actionCam);
+            BattleUIManager.Instance.SwitchCinematicPOV(isPlayerCaster, casterSkillAnimName);
         }
 
         yield return new WaitForSeconds(0.5f); 
@@ -69,7 +68,7 @@ public class CardEffectManager : MonoBehaviour
 
         if (isAttackCard && BattleUIManager.Instance != null)
         {
-            BattleUIManager.Instance.SwitchCinematicPOV(isPlayerCaster, "Reaction");
+            BattleUIManager.Instance.SwitchCinematicPOV(!isPlayerCaster, "Reaction");
             yield return new WaitForSeconds(0.2f); 
         }
 
@@ -91,13 +90,10 @@ public class CardEffectManager : MonoBehaviour
                 case "DicePool":
                     target.AddbonusDice(finalValue);
                     break;
+
                 case "Fame":
-                    int famePullIndex = (effectTypeName == "Add") ? TurnManager.Instance.CurrentPlayerIndex : (1 - TurnManager.Instance.CurrentPlayerIndex);
-                    TugOfWarManager.Instance.MoveFame(finalValue, famePullIndex);
                     break;
                 case "Destruction":
-                    int destructPullIndex = (effectTypeName == "Add") ? TurnManager.Instance.CurrentPlayerIndex : (1 - TurnManager.Instance.CurrentPlayerIndex);
-                    TugOfWarManager.Instance.MoveDestruction(finalValue, destructPullIndex);
                     if (targetAnim != null) targetAnim.PlayAnim("got attacked");
                     break;
             }
@@ -219,28 +215,31 @@ public class CardEffectManager : MonoBehaviour
         if (remainingTime < 0) remainingTime = 0;
         yield return new WaitForSeconds(remainingTime + 0.3f);
 
-        if (BattleUIManager.Instance != null) BattleUIManager.Instance.ResetCamera();
+        if (BattleUIManager.Instance != null) BattleUIManager.Instance.SwitchCinematicPOV(true, "Reset");
 
-        if (card.produceBuzzTile && !string.IsNullOrEmpty(card.buzzTileID) && !skipBuzzTile)
+        if (stateTargetName == "Fame")
         {
-            yield return new WaitForSeconds(1.0f);
-            if (BattleUIManager.Instance != null && BattleUIManager.Instance.VCamArena != null)
-            {
-                if (BattleUIManager.Instance.VCamPlayer != null) BattleUIManager.Instance.VCamPlayer.Priority = 10;
-                if (BattleUIManager.Instance.VCamEnemy != null) BattleUIManager.Instance.VCamEnemy.Priority = 10;
-                BattleUIManager.Instance.VCamArena.Priority = 30; 
-            }
-
+            yield return new WaitForSeconds(0.4f);
+            int famePullIndex = (effectTypeName == "Add") ? TurnManager.Instance.CurrentPlayerIndex : (1 - TurnManager.Instance.CurrentPlayerIndex);
+            
+            TugOfWarManager.Instance.MoveFame(finalValue, famePullIndex);
             yield return new WaitForSeconds(1.5f);
-            yield return StartCoroutine(HandleBuzzTilePlacement(card.buzzTileID, isPlayerCaster));
-
-            if (BattleUIManager.Instance != null && BattleUIManager.Instance.VCamArena != null)
-            {
-                BattleUIManager.Instance.VCamArena.Priority = 10;
-            }
+        }
+        else if (stateTargetName == "Destruction")
+        {
+            yield return new WaitForSeconds(0.4f);
+            int destructPullIndex = (effectTypeName == "Add") ? TurnManager.Instance.CurrentPlayerIndex : (1 - TurnManager.Instance.CurrentPlayerIndex);
+            
+            TugOfWarManager.Instance.MoveDestruction(finalValue, destructPullIndex);
+            yield return new WaitForSeconds(1.5f);
         }
 
         if (BattleUIManager.Instance != null) BattleUIManager.Instance.ResetCamera();
+
+        if (card.produceBuzzTile && !skipBuzzTile)
+        {
+            yield return StartCoroutine(HandleBuzzTilePlacement(card.buzzTileID, isPlayerCaster));
+        }
 
         if (card.cardCategory == CardData.CardCategory.Permanent && !skipBuzzTile)
         {
@@ -253,6 +252,12 @@ public class CardEffectManager : MonoBehaviour
     private IEnumerator HandleBuzzTilePlacement(string buzzID, bool isPlayer)
     {
         Debug.Log($"<color=magenta>🎬 Memasuki Fase Buzz Tile:{buzzID}</color>");
+
+        if (BattleUIManager.Instance != null && BattleUIManager.Instance.VCamArena != null)
+        {
+            BattleUIManager.Instance.SwitchCinematicPOV(true, "Reset");
+            BattleUIManager.Instance.VCamArena.Priority = 50; 
+        }
 
         ArenaTile[] allBuzzTiles = new ArenaTile[]
         {
@@ -298,6 +303,12 @@ public class CardEffectManager : MonoBehaviour
         }
         
         yield return new WaitForSeconds(0.5f);
+
+        if (BattleUIManager.Instance != null && BattleUIManager.Instance.VCamArena != null)
+        {
+            BattleUIManager.Instance.VCamArena.Priority = 10;
+            BattleUIManager.Instance.ResetCamera();
+        }
     }
 
     private void OnBuzzTileSelected(ArenaTile clickedTile)

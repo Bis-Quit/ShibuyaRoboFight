@@ -37,12 +37,16 @@ public class TugOfWarManager : MonoBehaviour
         currentDestructionIndex = destructTiles.Length / 2;
 
         if (fameTiles.Length > 0 && fameToken != null)
+        {
             fameToken.position = fameTiles[currentFameIndex].position + new Vector3(0, yOffset, 0);
             fameToken.rotation = fameTiles[currentFameIndex].rotation;
+        }
 
         if (destructTiles.Length > 0 && destructToken != null)
+        {
             destructToken.position = destructTiles[currentDestructionIndex].position + new Vector3(0, yOffset, 0);
-            destructToken.rotation = destructTiles[currentFameIndex].rotation;
+            destructToken.rotation = destructTiles[currentDestructionIndex].rotation; 
+        }
     }
 
     public void MoveFame(int points, int playerIndex)
@@ -82,6 +86,11 @@ public class TugOfWarManager : MonoBehaviour
             AudioManager.Instance.PlaySFX(AudioManager.Instance.bidakSFX);
         }
 
+        if (BattleUIManager.Instance != null)
+        {
+            BattleUIManager.Instance.SwitchCinematicPOV(true, "TokenMove", token);
+        }
+
         while (elapsedTime < moveDuration)
         {
             token.position = Vector3.Lerp(startPos, targetPos, elapsedTime / moveDuration);
@@ -102,6 +111,17 @@ public class TugOfWarManager : MonoBehaviour
             ExecuteBuzzEffect(landedTile.activeBuzzEffectID);
 
             landedTile.ClearBuzzTrap();
+        }
+
+        yield return new WaitForSeconds(1.5f); 
+
+        if (CardEffectManager.Instance != null && CardEffectManager.Instance.isResolvingEffect)
+        {
+            Debug.Log("TugOfWarManager: Kamera aman, diserahkan ke CardEffectManager.");
+        }
+        else if (BattleUIManager.Instance != null)
+        {
+            BattleUIManager.Instance.ResetCamera();
         }
     }
 

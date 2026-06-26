@@ -224,6 +224,7 @@ public class PassiveCardManager : MonoBehaviour
             }
 
             int forcedOwnerID = task.isPlayerCard ? 0 : 1;
+            
             yield return StartCoroutine(CardEffectManager.Instance.ApplyCardEffect(task.card, task.skipBuzzTile, forcedOwnerID));
         }
 

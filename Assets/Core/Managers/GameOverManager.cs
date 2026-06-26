@@ -145,10 +145,4 @@ public class GameOverManager : MonoBehaviour
             }
         }
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Y)) TriggerGameOver(true);
-        if (Input.GetKeyDown(KeyCode.U)) TriggerGameOver(false);
-    }
 }

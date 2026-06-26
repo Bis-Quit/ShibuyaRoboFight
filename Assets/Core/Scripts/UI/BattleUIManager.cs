@@ -32,6 +32,8 @@ public class BattleUIManager : MonoBehaviour
     public CinemachineCamera vCamEnemyAttack;
     public CinemachineCamera vCamEnemyBuff;
     public CinemachineCamera vCamEnemyHit;
+    
+    public CinemachineCamera vCamTokenMove;
 
     [Header("Priority Settings")]
     [SerializeField] private int activePriority = 15;
@@ -56,7 +58,7 @@ public class BattleUIManager : MonoBehaviour
         if (panelDiceScreen != null) panelDiceScreen.SetActive(false);
     }
 
-    public void SwitchCinematicPOV(bool isPlayerTurn, string actionPhase)
+    public void SwitchCinematicPOV(bool isPlayerTurn, string animName, Transform dynamicTarget = null)
     {
         if(vCamPlayerAttack != null) vCamPlayerAttack.Priority = inactivePriority;
         if(vCamPlayerBuff != null) vCamPlayerBuff.Priority = inactivePriority;
@@ -64,21 +66,41 @@ public class BattleUIManager : MonoBehaviour
         if(vCamEnemyAttack != null) vCamEnemyAttack.Priority = inactivePriority;
         if(vCamEnemyBuff != null) vCamEnemyBuff.Priority = inactivePriority;
         if(vCamEnemyHit != null) vCamEnemyHit.Priority = inactivePriority;
+        if(vCamTokenMove != null) vCamTokenMove.Priority = inactivePriority;
 
-        if (actionPhase == "AttackAction") 
+        switch (animName)
         {
-            if (isPlayerTurn && vCamPlayerAttack != null) vCamPlayerAttack.Priority = cinematicPriority;
-            else if (!isPlayerTurn && vCamEnemyAttack != null) vCamEnemyAttack.Priority = cinematicPriority;
-        }
-        else if (actionPhase == "BuffAction") 
-        {
-            if (isPlayerTurn && vCamPlayerBuff != null) vCamPlayerBuff.Priority = cinematicPriority;
-            else if (!isPlayerTurn && vCamEnemyBuff != null) vCamEnemyBuff.Priority = cinematicPriority;
-        }
-        else if (actionPhase == "Reaction") 
-        {
-            if (isPlayerTurn && vCamEnemyHit != null) vCamEnemyHit.Priority = cinematicPriority;
-            else if (!isPlayerTurn && vCamPlayerHit != null) vCamPlayerHit.Priority = cinematicPriority;
+            case "Attack":
+            case "destruct":
+                if (isPlayerTurn && vCamPlayerAttack != null) vCamPlayerAttack.Priority = cinematicPriority;
+                else if (!isPlayerTurn && vCamEnemyAttack != null) vCamEnemyAttack.Priority = cinematicPriority;
+                break;
+
+            case "restore":
+            case "get power":
+            case "Bragging":
+            case "Signaling":
+                if (isPlayerTurn && vCamPlayerBuff != null) vCamPlayerBuff.Priority = cinematicPriority;
+                else if (!isPlayerTurn && vCamEnemyBuff != null) vCamEnemyBuff.Priority = cinematicPriority;
+                break;
+
+            case "got attacked":
+            case "Reaction":
+                if (isPlayerTurn && vCamPlayerHit != null) vCamPlayerHit.Priority = cinematicPriority;
+                else if (!isPlayerTurn && vCamEnemyHit != null) vCamEnemyHit.Priority = cinematicPriority;
+                break;
+
+            case "TokenMove":
+                if (vCamTokenMove != null && dynamicTarget != null) 
+                {
+                    vCamTokenMove.LookAt = dynamicTarget;
+                    vCamTokenMove.Follow = dynamicTarget;
+                    vCamTokenMove.Priority = cinematicPriority;
+                }
+                break;
+
+            case "Reset":
+                break;
         }
     }
 
@@ -149,6 +171,8 @@ public class BattleUIManager : MonoBehaviour
         SetCameraPriority(VCamArena, VCamPlayer, VCamEnemy);
     }
 
+    private Coroutine diceUIDelayCoroutine;
+
     private void ShowDiceScreen(bool isPlayerTurn)
     {
         if (panelMainBattle != null) panelMainBattle.SetActive(false);
@@ -157,7 +181,9 @@ public class BattleUIManager : MonoBehaviour
         if (EnemyCardContainer.Instance != null) EnemyCardContainer.Instance.SetHandVisible(false);
         if (isPlayerTurn) SetCameraPriority(VCamPlayer, VCamArena, VCamEnemy);
         else SetCameraPriority(VCamEnemy, VCamArena, VCamPlayer);
-        StartCoroutine(DelayDiceUI(2f));
+
+        if (diceUIDelayCoroutine != null) StopCoroutine(diceUIDelayCoroutine);
+        diceUIDelayCoroutine = StartCoroutine(DelayDiceUI(2f));
     }
 
     private IEnumerator IntroFightRoutine(bool isPlayerTurn)
@@ -229,42 +255,40 @@ public class BattleUIManager : MonoBehaviour
     private void SetPanelVisible(GameObject panel, bool isVisible)
     {
         if (panel == null) return;
-        
+
+        if (isVisible && !panel.activeSelf) 
+        {
+            panel.SetActive(true);
+        }
+
         CanvasGroup cg = panel.GetComponent<CanvasGroup>();
         if (cg == null) cg = panel.AddComponent<CanvasGroup>();
 
         cg.alpha = isVisible ? 1f : 0f;
         cg.interactable = isVisible;
         cg.blocksRaycasts = isVisible;
+
+        if (!isVisible) 
+        {
+            panel.SetActive(false);
+        }
     }
 
     public void HideUIForCinematic()
     {
         isCinematicActive = true;
 
-        wasDiceScreenActive = panelDiceScreen != null && panelDiceScreen.activeSelf;
-        wasMainBattleActive = panelMainBattle != null && panelMainBattle.activeSelf;
+        if (diceUIDelayCoroutine != null) StopCoroutine(diceUIDelayCoroutine);
 
-        if (notifDice != null)
-        {
-            wasNotifActive = notifDice.activeSelf;
-            notifDice.SetActive(false);            
-        }
+        if (notifDice != null) { wasNotifActive = notifDice.activeSelf; notifDice.SetActive(false); }
+        if (btnTapToRoll != null) { wasTapToRollActive = btnTapToRoll.activeSelf; btnTapToRoll.SetActive(false); }
 
-        if (btnTapToRoll != null)
-        {
-            wasTapToRollActive = btnTapToRoll.activeSelf;
-            btnTapToRoll.SetActive(false);
-        }
-
-        if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, false);
-        if (wasMainBattleActive) SetPanelVisible(panelMainBattle, false);
+        SetPanelVisible(panelDiceScreen, false);
+        SetPanelVisible(panelMainBattle, false);
 
         if (EnemyCardContainer.Instance != null) EnemyCardContainer.Instance.SetHandVisible(false);
-
         if (actionButtons != null) actionButtons.SetActive(false);
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(false);
-
         HideMarketIndicator();
 
         if (PassiveCardManager.Instance != null && PassiveCardManager.Instance.playerHand != null)
@@ -277,29 +301,8 @@ public class BattleUIManager : MonoBehaviour
     {
         isCinematicActive = false;
 
-        if (notifDice != null)
-        {
-            notifDice.SetActive(wasNotifActive); 
-        }
-
-        if (btnTapToRoll != null)
-        {
-            btnTapToRoll.SetActive(wasTapToRollActive);
-        }
-
-        if (wasDiceScreenActive) SetPanelVisible(panelDiceScreen, true);
-        if (wasMainBattleActive) SetPanelVisible(panelMainBattle, true);
-
-        if (EnemyCardContainer.Instance != null)
-        {
-            EnemyCardContainer.Instance.SetHandVisible(!wasDiceScreenActive);
-        }
-
-        if (TurnManager.Instance != null && wasDiceScreenActive)
-        {
-            bool isPlayerTurn = (TurnManager.Instance.CurrentPlayerIndex == 0);
-            if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
-        }
+        if (notifDice != null) notifDice.SetActive(wasNotifActive);
+        if (btnTapToRoll != null) btnTapToRoll.SetActive(wasTapToRollActive);
         if (HUDManager.Instance != null) HUDManager.Instance.ToggleHUD(true);
 
         if (PassiveCardManager.Instance != null && PassiveCardManager.Instance.playerHand != null)
@@ -307,18 +310,22 @@ public class BattleUIManager : MonoBehaviour
             PassiveCardManager.Instance.playerHand.gameObject.SetActive(true);
         }
 
-        if (TurnManager.Instance != null && TurnManager.Instance.CurrentPhase == TurnManager.TurnPhase.CardDrafting)
+        if (currentPhaseMemory == TurnManager.TurnPhase.FirstRoll || currentPhaseMemory == TurnManager.TurnPhase.RerollPhase)
         {
-            if (TurnManager.Instance.CurrentPlayerIndex == 0 && marketClickIndicator != null)
-            {
-                bool isPanelOpen = false;
-                if (HandInspectManager.Instance != null && HandInspectManager.Instance.inspectPanel != null)
-                {
-                    isPanelOpen = HandInspectManager.Instance.inspectPanel.activeSelf;
-                }
-
-                marketClickIndicator.SetActive(!isPanelOpen);
-            }
+            if (panelDiceScreen != null) panelDiceScreen.SetActive(true);
+            SetPanelVisible(panelDiceScreen, true);
+            SetPanelVisible(panelMainBattle, false);
+            
+            if (EnemyCardContainer.Instance != null) EnemyCardContainer.Instance.SetHandVisible(false);
+            
+            bool isPlayerTurn = TurnManager.Instance != null && TurnManager.Instance.CurrentPlayerIndex == 0;
+            if (actionButtons != null) actionButtons.SetActive(isPlayerTurn);
+        }
+        else
+        {
+            SetPanelVisible(panelDiceScreen, false);
+            SetPanelVisible(panelMainBattle, true);
+            if (EnemyCardContainer.Instance != null) EnemyCardContainer.Instance.SetHandVisible(true);
         }
     }
 
